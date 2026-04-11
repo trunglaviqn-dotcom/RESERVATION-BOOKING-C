@@ -20,12 +20,11 @@
         .sidebar-footer strong { color: var(--primary); font-weight: 700; font-size: 13px;}
         
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .header h1 { margin: 0; font-size: 22px; color: var(--dark); }
         
         .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .card-title { font-size: 16px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--light); padding-bottom: 10px; color: var(--secondary); }
+        .card-title { font-size: 16px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--light); padding-bottom: 10px; color: var(--secondary); display: flex; justify-content: space-between;}
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
@@ -33,7 +32,7 @@
         input, select, textarea { padding: 10px 12px; border: 1px solid #ccd1d9; border-radius: 6px; font-family: 'Inter', sans-serif; transition: 0.3s; font-size: 14px;}
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
         
-        /* RICH TEXT EDITOR (EXCEL/WORD/IMAGE PASTE) */
+        /* RICH TEXT EDITOR */
         .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid #ccd1d9; border-radius: 6px; padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; background: #fff; outline: none; transition: 0.3s; box-sizing: border-box;}
         .rich-text-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
         .rich-text-editor:empty:before { content: attr(data-placeholder); color: #aaa; pointer-events: none; display: block; }
@@ -100,10 +99,15 @@
         .pdf-notes { font-size: 12px; color: #666; line-height: 1.6; padding: 20px; background: #fbf9f6; border-left: 4px solid var(--tan); border-radius: 4px;}
         .pdf-notes h4 { margin: 0 0 10px 0; color: var(--brown); font-size: 14px; text-transform: uppercase;}
         
-        /* Cho phép bảng trong PDF giữ nguyên viền khi paste từ excel */
         .ph-policy-text table { border-collapse: collapse; width: 100%; margin: 10px 0;}
         .ph-policy-text td, .ph-policy-text th { border: 1px solid #ccc; padding: 5px; }
         .ph-policy-text img { max-width: 100%; height: auto; }
+        
+        /* Thông báo Notification */
+        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1000; right: 30px; bottom: 30px; font-size: 15px; }
+        #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
 </head>
 <body>
@@ -159,6 +163,18 @@
 
         <div id="settings" class="tab-content">
             <div class="header"><h1>Quản Lý Dữ Liệu Nền</h1></div>
+            
+            <div class="card" style="background: #e8f4f8; border: 1px solid #bce8f1;">
+                <h2 class="card-title" style="color: #31708f; border-bottom: none;"><i class="fa-solid fa-shield-halved"></i> Bảo Vệ & Phục Hồi Dữ Liệu</h2>
+                <p style="font-size: 13px; margin-top: 0;">Sử dụng chức năng này để lưu cài đặt ra một file dự phòng. Tránh rủi ro bị xóa cache trình duyệt hoặc khi cần chuyển máy tính.</p>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <button class="btn btn-primary" onclick="exportData()"><i class="fa-solid fa-download"></i> Tải Dữ Liệu Về Máy (Backup)</button>
+                    <div style="border-left: 2px solid #ccc; height: 30px; margin: 0 10px;"></div>
+                    <input type="file" id="importFile" accept=".json" style="padding: 5px; background: white;">
+                    <button class="btn btn-danger" onclick="importData()"><i class="fa-solid fa-upload"></i> Nhập Dữ Liệu (Restore)</button>
+                </div>
+            </div>
+
             <div class="form-grid">
                 <div>
                     <div class="card">
@@ -201,7 +217,6 @@
             <div class="form-group" style="margin-bottom: 20px;">
                 <label><b>Điều khoản & Chính sách riêng (Hỗ trợ Copy/Paste từ Excel, Word, Ảnh):</b></label>
                 <div id="companyPolicy" class="rich-text-editor" contenteditable="true" onblur="updateCompanyPolicy()" data-placeholder="Dán nội dung, bảng biểu Excel, chữ màu hoặc Ảnh vào đây..."></div>
-                <span style="font-size: 11px; color: var(--danger);">* Mẹo: Cứ Copy (Ctrl+C) file Excel hoặc Ảnh rồi Paste (Ctrl+V) thẳng vào khung trắng ở trên. Hệ thống sẽ tự nhận dạng. <br>Lưu ý: Không paste ảnh quá nặng để tránh đầy bộ nhớ trình duyệt!</span>
             </div>
 
             <hr style="border: 1px solid #eee; margin-bottom: 20px;">
@@ -292,23 +307,89 @@
             </div>
         </div>
     </div>
+    
+    <div id="toast">Thông báo hệ thống</div>
 
     <script>
-        // --- 1. DATA INITIALIZATION ---
+        // --- 1. DATA INITIALIZATION & RECOVERY ---
+        const MASTER_DB_KEY = 'henryPro_Data_Master';
         const DEFAULT_POLICY = `- Rates are NETT, inclusive of 5% Service Charge and 8% VAT.
 - Standard Check-in: 03:00 PM | Standard Check-out: 11:00 AM.
 - Advanced payment will be required 3 days before arrival.
 - Cancellation within 7 days or non-arrival will be subjected to penalty charge.`;
 
-        let db = JSON.parse(localStorage.getItem('henryProDB4')) || {
-            rooms: ['Studio Deluxe', '1 Bedroom Executive', '2 Bedroom Deluxe'],
-            addons: [{ id: 1, name: 'Phụ thu người lớn thứ 3', price: 600000 }, { id: 2, name: 'Giường phụ', price: 500000 }],
-            companies: [{ id: 'c1', name: 'CÔNG TY CỔ PHẦN VINTRAVEL', policy: '', seasons: [] }]
-        };
+        function initDatabase() {
+            // Kiểm tra xem đã có Master DB chưa
+            let saved = localStorage.getItem(MASTER_DB_KEY);
+            if (saved) return JSON.parse(saved);
 
-        function saveData() { localStorage.setItem('henryProDB4', JSON.stringify(db)); renderSettings(); }
+            // Tự động tìm và cứu dữ liệu từ các bản nâng cấp cũ của bạn (DB4, DB3...)
+            let oldKeys = ['henryProDB4', 'henryProDB3', 'henryProDB2', 'henryProDB'];
+            for(let key of oldKeys) {
+                let oldData = localStorage.getItem(key);
+                if(oldData) {
+                    let parsed = JSON.parse(oldData);
+                    localStorage.setItem(MASTER_DB_KEY, JSON.stringify(parsed));
+                    return parsed;
+                }
+            }
+
+            // Dữ liệu mặc định nếu là lần đầu tiên dùng
+            return {
+                rooms: ['Studio Deluxe', '1 Bedroom Executive', '2 Bedroom Deluxe'],
+                addons: [{ id: 1, name: 'Phụ thu người lớn thứ 3', price: 600000 }, { id: 2, name: 'Giường phụ', price: 500000 }],
+                companies: [{ id: 'c1', name: 'CÔNG TY CỔ PHẦN VINTRAVEL', policy: '', seasons: [] }]
+            };
+        }
+
+        let db = initDatabase();
+
+        // Migrate older versions gracefully (nếu lôi từ DB3 cũ lên chưa có surcharge)
+        db.companies.forEach(c => {
+            c.seasons.forEach(s => {
+                if(!s.surcharge) s.surcharge = { enabled: false, fri: 100000, sat: 500000 };
+            });
+        });
+
+        function saveData() { localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); renderSettings(); }
+
+        // --- 1.5. BACKUP & RESTORE DATA ---
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href",     dataStr);
+            downloadAnchorNode.setAttribute("download", "Henry_System_Backup_" + new Date().toLocaleDateString('vi-VN').replace(/\//g,'-') + ".json");
+            document.body.appendChild(downloadAnchorNode); 
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            showToast("Đã tải tệp sao lưu dữ liệu thành công!");
+        }
+
+        function importData() {
+            const file = document.getElementById('importFile').files[0];
+            if(!file) return alert("Vui lòng chọn file JSON để phục hồi!");
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedDB = JSON.parse(e.target.result);
+                    if(importedDB.rooms && importedDB.companies) {
+                        db = importedDB;
+                        saveData();
+                        showToast("Phục hồi dữ liệu thành công! Trang web sẽ tải lại.");
+                        setTimeout(() => location.reload(), 1500);
+                    } else { alert("File không hợp lệ hoặc cấu trúc bị hỏng!"); }
+                } catch (err) { alert("Lỗi đọc file: " + err); }
+            };
+            reader.readAsText(file);
+        }
 
         // --- 2. RENDER UI ---
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg; toast.className = "show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        }
+
         function renderSettings() {
             const rList = document.getElementById('roomList'); rList.innerHTML = '';
             db.rooms.forEach((r, i) => rList.innerHTML += `<li>${r} <button class="btn btn-danger" onclick="delRoom(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
@@ -582,7 +663,7 @@
             
             const content = `Dear Quý Công Ty,\n\nKhách sạn xin xác nhận đặt phòng:\nMã đặt phòng: ${document.getElementById('confNo').value}\nKhách hàng: ${document.getElementById('guestName').value}\nNgày đến: ${formatDateVN(document.getElementById('arrivalDate').value)}\nNgày đi: ${formatDateVN(document.getElementById('departureDate').value)}\nSố đêm: ${bData.totalNights}\n\nCHI TIẾT PHÒNG:\n${roomsStr || '- Không có'}\n\nDỊCH VỤ PHÁT SINH:\n${addonsStr || '- Không có'}\n\nTỔNG THANH TOÁN: ${document.getElementById('finalTotalRate').value} nett\n\nTrân trọng.`;
             navigator.clipboard.writeText(content);
-            alert("Đã copy nội dung Email!");
+            showToast("Đã copy nội dung Email!");
         }
 
         function generatePDF() {
