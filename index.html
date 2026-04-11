@@ -49,10 +49,13 @@
         .btn-outline:hover { background: var(--primary); color: white; }
         .btn-info { background: #17a2b8; color: white; }
         
+        .action-group { display: flex; gap: 5px; }
+        .action-group .btn { padding: 6px 10px; font-size: 12px; }
+
         .dynamic-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #fdfdfd; padding: 10px; border: 1px dashed #ccc; border-radius: 6px;}
         .addon-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee; flex-wrap: wrap;}
         
-        .list-group { list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; }
+        .list-group { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; }
         .list-group li { padding: 12px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; background: #fff;}
         .clickable { cursor: pointer; color: var(--secondary); font-weight: 600;}
         .clickable:hover { text-decoration: underline; }
@@ -98,12 +101,10 @@
         
         .pdf-notes { font-size: 12px; color: #666; line-height: 1.6; padding: 20px; background: #fbf9f6; border-left: 4px solid var(--tan); border-radius: 4px;}
         .pdf-notes h4 { margin: 0 0 10px 0; color: var(--brown); font-size: 14px; text-transform: uppercase;}
-        
         .ph-policy-text table { border-collapse: collapse; width: 100%; margin: 10px 0;}
         .ph-policy-text td, .ph-policy-text th { border: 1px solid #ccc; padding: 5px; }
         .ph-policy-text img { max-width: 100%; height: auto; }
         
-        /* Thông báo Notification */
         #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1000; right: 30px; bottom: 30px; font-size: 15px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
@@ -170,7 +171,7 @@
                 <div style="display: flex; gap: 15px; align-items: center;">
                     <button class="btn btn-primary" onclick="exportData()"><i class="fa-solid fa-download"></i> Tải Dữ Liệu Về Máy (Backup)</button>
                     <div style="border-left: 2px solid #ccc; height: 30px; margin: 0 10px;"></div>
-                    <input type="file" id="importFile" accept=".json" style="padding: 5px; background: white;">
+                    <input type="file" id="importFile" accept=".json" style="padding: 5px; background: white; border: 1px solid #ccc; border-radius: 4px;">
                     <button class="btn btn-danger" onclick="importData()"><i class="fa-solid fa-upload"></i> Nhập Dữ Liệu (Restore)</button>
                 </div>
             </div>
@@ -197,11 +198,12 @@
                 </div>
                 <div>
                     <div class="card">
-                        <h2 class="card-title">Hồ Sơ Công Ty & Bảng Giá (Policies & Weekend)</h2>
+                        <h2 class="card-title">Hồ Sơ Công Ty & Bảng Giá</h2>
                         <div style="display: flex; gap: 10px; margin-bottom: 15px;">
                             <input type="text" id="newCompany" placeholder="Tên Công ty/Đại lý..." style="flex: 1;">
-                            <button class="btn btn-primary" onclick="addCompany()"><i class="fa-solid fa-plus"></i></button>
+                            <button class="btn btn-primary" onclick="addCompany()"><i class="fa-solid fa-plus"></i> Thêm mới</button>
                         </div>
+                        <p style="font-size: 12px; color: #777;">* Nhấp vào tên công ty để cài đặt cấu hình giá. Sử dụng các nút <i class="fa-solid fa-pen"></i> để đổi tên hoặc <i class="fa-solid fa-copy"></i> để sao chép.</p>
                         <ul id="companyList" class="list-group"></ul>
                     </div>
                 </div>
@@ -319,11 +321,9 @@
 - Cancellation within 7 days or non-arrival will be subjected to penalty charge.`;
 
         function initDatabase() {
-            // Kiểm tra xem đã có Master DB chưa
             let saved = localStorage.getItem(MASTER_DB_KEY);
             if (saved) return JSON.parse(saved);
 
-            // Tự động tìm và cứu dữ liệu từ các bản nâng cấp cũ của bạn (DB4, DB3...)
             let oldKeys = ['henryProDB4', 'henryProDB3', 'henryProDB2', 'henryProDB'];
             for(let key of oldKeys) {
                 let oldData = localStorage.getItem(key);
@@ -334,7 +334,6 @@
                 }
             }
 
-            // Dữ liệu mặc định nếu là lần đầu tiên dùng
             return {
                 rooms: ['Studio Deluxe', '1 Bedroom Executive', '2 Bedroom Deluxe'],
                 addons: [{ id: 1, name: 'Phụ thu người lớn thứ 3', price: 600000 }, { id: 2, name: 'Giường phụ', price: 500000 }],
@@ -344,7 +343,6 @@
 
         let db = initDatabase();
 
-        // Migrate older versions gracefully (nếu lôi từ DB3 cũ lên chưa có surcharge)
         db.companies.forEach(c => {
             c.seasons.forEach(s => {
                 if(!s.surcharge) s.surcharge = { enabled: false, fri: 100000, sat: 500000 };
@@ -400,8 +398,17 @@
             const cList = document.getElementById('companyList');
             const sComp = document.getElementById('selectCompany');
             cList.innerHTML = ''; const prevComp = sComp.value; sComp.innerHTML = '<option value="">-- Chọn Công ty --</option>';
+            
             db.companies.forEach((c, i) => {
-                cList.innerHTML += `<li><span class="clickable" onclick="openCompanyModal('${c.id}')"><i class="fa-solid fa-pen-to-square"></i> ${c.name}</span> <button class="btn btn-danger" onclick="delCompany(${i})"><i class="fa-solid fa-trash"></i></button></li>`;
+                // UI MỚI: Thêm nút sửa tên và sao chép Công ty
+                cList.innerHTML += `<li>
+                    <span class="clickable" onclick="openCompanyModal('${c.id}')"><i class="fa-solid fa-pen-to-square"></i> ${c.name}</span>
+                    <div class="action-group">
+                        <button class="btn btn-info" onclick="renameCompany(${i})" title="Đổi tên Công ty"><i class="fa-solid fa-pen"></i></button>
+                        <button class="btn btn-secondary" onclick="copyCompany(${i})" title="Nhân bản Công ty (Copy)"><i class="fa-solid fa-copy"></i></button>
+                        <button class="btn btn-danger" onclick="delCompany(${i})" title="Xóa Công ty"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </li>`;
                 sComp.innerHTML += `<option value="${c.id}">${c.name}</option>`;
             });
             if(prevComp) sComp.value = prevComp;
@@ -440,22 +447,43 @@
         function delRoom(i) { db.rooms.splice(i, 1); saveData(); }
         function addAddon() { const n = document.getElementById('newAddonName').value; const p = parseInt(document.getElementById('newAddonPrice').value)||0; if(n) { db.addons.push({id: Date.now(), name: n, price: p}); document.getElementById('newAddonName').value=''; document.getElementById('newAddonPrice').value=''; saveData(); renderBookingAddons(); } }
         function delAddon(i) { db.addons.splice(i, 1); saveData(); renderBookingAddons(); }
+        
         function addCompany() { const v = document.getElementById('newCompany').value; if(v) { db.companies.push({id: 'c'+Date.now(), name: v, policy: '', seasons: []}); document.getElementById('newCompany').value=''; saveData(); } }
         function delCompany(i) { db.companies.splice(i, 1); saveData(); }
+        
+        // TÍNH NĂNG MỚI: SỬA TÊN CÔNG TY
+        function renameCompany(index) {
+            const newName = prompt("Nhập tên mới cho công ty/đại lý:", db.companies[index].name);
+            if(newName && newName.trim() !== "") {
+                db.companies[index].name = newName.trim();
+                saveData();
+                showToast("Đã cập nhật tên công ty!");
+            }
+        }
 
-        // --- 4. COMPANY MODAL & RICH TEXT EDITOR ---
+        // TÍNH NĂNG MỚI: NHÂN BẢN CÔNG TY
+        function copyCompany(index) {
+            const original = db.companies[index];
+            const cloned = JSON.parse(JSON.stringify(original)); // Clone sâu vĩnh viễn (Deep Copy)
+            cloned.id = 'c' + Date.now();
+            cloned.name = original.name + " (Copy)";
+            // Cấp lại ID mới cho các seasons bên trong để tránh trùng lặp
+            cloned.seasons.forEach(s => s.id = 's' + Math.random().toString(36).substr(2, 9));
+            
+            db.companies.splice(index + 1, 0, cloned); // Chèn vào ngay dưới công ty gốc
+            saveData();
+            showToast("Đã nhân bản công ty thành công!");
+        }
+
+        // --- 4. COMPANY MODAL ---
         let curCompId = null;
         function openCompanyModal(id) { 
             curCompId = id; const comp = db.companies.find(c => c.id === id);
             document.getElementById('modalCompanyName').innerText = comp.name; 
-            
-            // Đổ HTML lưu từ trước vào khung contenteditable
             document.getElementById('companyPolicy').innerHTML = comp.policy || '';
-            
             document.getElementById('companyModal').style.display = "block"; renderSeasons(); 
         }
         
-        // Lưu trữ lại cả thẻ HTML, Bảng biểu hoặc Hình ảnh khi người dùng rời chuột khỏi khung nhập liệu
         function updateCompanyPolicy() { 
             db.companies.find(c => c.id === curCompId).policy = document.getElementById('companyPolicy').innerHTML; 
             saveData(); 
@@ -475,7 +503,32 @@
             comp.seasons.push({ id: 's'+Date.now(), name: n, start: s, end: e, rates, surcharge: { enabled: wkE, fri: wkF, sat: wkS } });
             saveData(); renderSeasons();
         }
+        
         function delSeason(sId) { const comp = db.companies.find(c => c.id === curCompId); comp.seasons = comp.seasons.filter(s => s.id !== sId); saveData(); renderSeasons(); }
+        
+        // TÍNH NĂNG MỚI: CHỈNH SỬA TÊN & NGÀY TRONG SEASON
+        function updateSeasonField(sId, field, value) {
+            const comp = db.companies.find(c => c.id === curCompId);
+            const season = comp.seasons.find(s => s.id === sId);
+            season[field] = value;
+            saveData(); 
+        }
+
+        // TÍNH NĂNG MỚI: NHÂN BẢN GIAI ĐOẠN (SEASON)
+        function copySeason(sId) {
+            const comp = db.companies.find(c => c.id === curCompId);
+            const original = comp.seasons.find(s => s.id === sId);
+            const cloned = JSON.parse(JSON.stringify(original));
+            cloned.id = 's' + Date.now() + Math.random().toString(36).substr(2, 5);
+            cloned.name = original.name + " (Copy)";
+            // Tìm index để chèn vào ngay dưới
+            const index = comp.seasons.findIndex(s => s.id === sId);
+            comp.seasons.splice(index + 1, 0, cloned);
+            saveData();
+            renderSeasons();
+            showToast("Đã nhân bản giai đoạn!");
+        }
+
         function updateRate(sId, roomName, val) { const comp = db.companies.find(c => c.id === curCompId); comp.seasons.find(s => s.id === sId).rates[roomName] = parseInt(val) || 0; saveData(); }
         function updateSurcharge(sId, field, val) {
             const comp = db.companies.find(c => c.id === curCompId);
@@ -488,16 +541,28 @@
         function renderSeasons() {
             const comp = db.companies.find(c => c.id === curCompId);
             const container = document.getElementById('seasonsContainer'); container.innerHTML = '';
+            
             comp.seasons.forEach(s => {
                 let rHTML = ''; db.rooms.forEach(r => rHTML += `<div class="form-group"><label>${r}</label><input type="number" value="${s.rates[r]||0}" onchange="updateRate('${s.id}', '${r}', this.value)"></div>`);
                 const chk = s.surcharge.enabled ? 'checked' : '';
+                
+                // MỚI: Biến các trường Tên và Ngày thành Input để có thể sửa tay. Thêm nút Copy Giai Đoạn.
                 container.innerHTML += `
                 <div class="season-card">
-                    <div style="display:flex; justify-content: space-between;">
-                        <b><i class="fa-regular fa-calendar"></i> ${s.name} (${formatDateVN(s.start)} -> ${formatDateVN(s.end)})</b>
-                        <button class="btn btn-danger" onclick="delSeason('${s.id}')">Xóa</button>
+                    <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <b><i class="fa-regular fa-calendar"></i></b>
+                            <input type="text" value="${s.name}" onchange="updateSeasonField('${s.id}', 'name', this.value)" title="Đổi tên Giai đoạn" style="width: 130px; font-weight: bold; padding: 6px;">
+                            <input type="date" value="${s.start}" onchange="updateSeasonField('${s.id}', 'start', this.value)" title="Sửa ngày Bắt đầu" style="padding: 6px;">
+                            <span>-></span>
+                            <input type="date" value="${s.end}" onchange="updateSeasonField('${s.id}', 'end', this.value)" title="Sửa ngày Kết thúc" style="padding: 6px;">
+                        </div>
+                        <div class="action-group">
+                            <button class="btn btn-secondary" onclick="copySeason('${s.id}')" title="Nhân bản Giai đoạn này"><i class="fa-solid fa-copy"></i> Copy</button>
+                            <button class="btn btn-danger" onclick="delSeason('${s.id}')" title="Xóa Giai đoạn này"><i class="fa-solid fa-trash"></i> Xóa</button>
+                        </div>
                     </div>
-                    <div class="weekend-box" style="margin-top:10px; background:#f5f5f5; border:1px solid #ddd;">
+                    <div class="weekend-box" style="margin-top:15px; background:#f5f5f5; border:1px solid #ddd;">
                         <label><input type="checkbox" ${chk} onchange="updateSurcharge('${s.id}', 'enabled', this.checked)"> Phụ thu Cuối tuần</label>
                         <div style="margin-left: 20px;">
                             T6: <input type="number" value="${s.surcharge.fri}" onchange="updateSurcharge('${s.id}', 'fri', this.value)" style="width:70px;">
@@ -630,7 +695,6 @@
             templateElement.querySelector('.ph-grandTotal').innerText = document.getElementById('finalTotalRate').value + " nett";
 
             const comp = db.companies.find(c => c.id === cId);
-            // Ánh xạ Policy từ khung HTML (Đã bao gồm cấu trúc bảng biểu, hình ảnh nếu có)
             let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : DEFAULT_POLICY.replace(/\n/g, '<br>');
             templateElement.querySelector('.ph-policy-text').innerHTML = policyText;
 
