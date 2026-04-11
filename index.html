@@ -11,10 +11,14 @@
         :root { --primary: #00a896; --secondary: #028090; --dark: #2c3e50; --light: #f8f9fa; --danger: #e63946; --warning: #f39c12; --border: #e0e0e0; --brown: #8B5A2B; --beige: #F5F5DC; --tan: #D2B48C;}
         body { font-family: 'Inter', sans-serif; background-color: #eef2f5; margin: 0; color: #333; display: flex; height: 100vh; overflow: hidden; }
         
+        /* SIDEBAR & CREDIT FOOTER */
         .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; }
         .sidebar-brand { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 30px; letter-spacing: 1px; color: var(--primary); text-transform: uppercase;}
         .nav-item { padding: 15px 25px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); }
+        .sidebar-footer { margin-top: auto; padding: 20px; font-size: 12px; color: rgba(255,255,255,0.5); text-align: center; line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.1); }
+        .sidebar-footer strong { color: var(--primary); font-weight: 700; font-size: 13px;}
+        
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
         
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
@@ -29,6 +33,14 @@
         input, select, textarea { padding: 10px 12px; border: 1px solid #ccd1d9; border-radius: 6px; font-family: 'Inter', sans-serif; transition: 0.3s; font-size: 14px;}
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
         
+        /* RICH TEXT EDITOR (EXCEL/WORD/IMAGE PASTE) */
+        .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid #ccd1d9; border-radius: 6px; padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; background: #fff; outline: none; transition: 0.3s; box-sizing: border-box;}
+        .rich-text-editor:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
+        .rich-text-editor:empty:before { content: attr(data-placeholder); color: #aaa; pointer-events: none; display: block; }
+        .rich-text-editor img { max-width: 100%; height: auto; border-radius: 4px; margin: 5px 0;}
+        .rich-text-editor table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 12px;}
+        .rich-text-editor td, .rich-text-editor th { border: 1px solid #ccc; padding: 6px; }
+
         .btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; transition: 0.2s;}
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--secondary); }
@@ -87,6 +99,11 @@
         
         .pdf-notes { font-size: 12px; color: #666; line-height: 1.6; padding: 20px; background: #fbf9f6; border-left: 4px solid var(--tan); border-radius: 4px;}
         .pdf-notes h4 { margin: 0 0 10px 0; color: var(--brown); font-size: 14px; text-transform: uppercase;}
+        
+        /* Cho phép bảng trong PDF giữ nguyên viền khi paste từ excel */
+        .ph-policy-text table { border-collapse: collapse; width: 100%; margin: 10px 0;}
+        .ph-policy-text td, .ph-policy-text th { border: 1px solid #ccc; padding: 5px; }
+        .ph-policy-text img { max-width: 100%; height: auto; }
     </style>
 </head>
 <body>
@@ -95,6 +112,12 @@
         <div class="sidebar-brand"><i class="fa-solid fa-crown"></i> Henry (PRO)</div>
         <div class="nav-item active" onclick="switchTab('booking')"><i class="fa-solid fa-file-invoice"></i> Tạo Xác Nhận Booking</div>
         <div class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-database"></i> Quản Lý Dữ Liệu</div>
+        
+        <div class="sidebar-footer">
+            Trang web được thiết kế và tối ưu bởi<br>
+            <strong>Trung - Income Auditor</strong><br>
+            Bộ phận Kế toán
+        </div>
     </div>
 
     <div class="main-content">
@@ -176,9 +199,11 @@
             <h2 id="modalCompanyName" style="color: var(--primary); margin-top: 0;"></h2>
             
             <div class="form-group" style="margin-bottom: 20px;">
-                <label><b>Điều khoản & Chính sách riêng (Terms & Policies):</b></label>
-                <textarea id="companyPolicy" rows="4" placeholder="Ví dụ: Thanh toán 100% trước 7 ngày. Phạt hủy 1 đêm..." onchange="updateCompanyPolicy()"></textarea>
+                <label><b>Điều khoản & Chính sách riêng (Hỗ trợ Copy/Paste từ Excel, Word, Ảnh):</b></label>
+                <div id="companyPolicy" class="rich-text-editor" contenteditable="true" onblur="updateCompanyPolicy()" data-placeholder="Dán nội dung, bảng biểu Excel, chữ màu hoặc Ảnh vào đây..."></div>
+                <span style="font-size: 11px; color: var(--danger);">* Mẹo: Cứ Copy (Ctrl+C) file Excel hoặc Ảnh rồi Paste (Ctrl+V) thẳng vào khung trắng ở trên. Hệ thống sẽ tự nhận dạng. <br>Lưu ý: Không paste ảnh quá nặng để tránh đầy bộ nhớ trình duyệt!</span>
             </div>
+
             <hr style="border: 1px solid #eee; margin-bottom: 20px;">
             
             <h3 style="font-size: 16px; margin-top:0;">Giai Đoạn Giá & Phụ Thu Cuối Tuần</h3>
@@ -281,13 +306,6 @@
             companies: [{ id: 'c1', name: 'CÔNG TY CỔ PHẦN VINTRAVEL', policy: '', seasons: [] }]
         };
 
-        // Migrate older versions gracefully
-        db.companies.forEach(c => {
-            c.seasons.forEach(s => {
-                if(!s.surcharge) s.surcharge = { enabled: false, fri: 100000, sat: 500000 };
-            });
-        });
-
         function saveData() { localStorage.setItem('henryProDB4', JSON.stringify(db)); renderSettings(); }
 
         // --- 2. RENDER UI ---
@@ -344,15 +362,24 @@
         function addCompany() { const v = document.getElementById('newCompany').value; if(v) { db.companies.push({id: 'c'+Date.now(), name: v, policy: '', seasons: []}); document.getElementById('newCompany').value=''; saveData(); } }
         function delCompany(i) { db.companies.splice(i, 1); saveData(); }
 
-        // --- 4. COMPANY MODAL ---
+        // --- 4. COMPANY MODAL & RICH TEXT EDITOR ---
         let curCompId = null;
         function openCompanyModal(id) { 
             curCompId = id; const comp = db.companies.find(c => c.id === id);
             document.getElementById('modalCompanyName').innerText = comp.name; 
-            document.getElementById('companyPolicy').value = comp.policy || '';
+            
+            // Đổ HTML lưu từ trước vào khung contenteditable
+            document.getElementById('companyPolicy').innerHTML = comp.policy || '';
+            
             document.getElementById('companyModal').style.display = "block"; renderSeasons(); 
         }
-        function updateCompanyPolicy() { db.companies.find(c => c.id === curCompId).policy = document.getElementById('companyPolicy').value; saveData(); }
+        
+        // Lưu trữ lại cả thẻ HTML, Bảng biểu hoặc Hình ảnh khi người dùng rời chuột khỏi khung nhập liệu
+        function updateCompanyPolicy() { 
+            db.companies.find(c => c.id === curCompId).policy = document.getElementById('companyPolicy').innerHTML; 
+            saveData(); 
+        }
+        
         function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; curCompId = null; calcTotal(); }
         
         function addSeason() {
@@ -442,7 +469,6 @@
             }
             document.getElementById('weekendNotice').innerHTML = wkndMsg;
 
-            // Tính tiền phòng (Giá cơ bản + Phụ thu cuối tuần) x Số lượng
             document.querySelectorAll('.room-row').forEach(row => {
                 const roomType = row.querySelector('.room-select').value;
                 const qty = parseInt(row.querySelector('.room-qty').value) || 1;
@@ -457,7 +483,6 @@
                 grandTotal += subtotal;
             });
 
-            // Tính tiền Addons
             document.querySelectorAll('.addon-item').forEach((row, i) => {
                 const isChecked = document.getElementById(`chk_addon_${i}`).checked;
                 const price = parseInt(document.getElementById(`val_addon_price_${i}`).value) || 0;
@@ -524,8 +549,9 @@
             templateElement.querySelector('.ph-grandTotal').innerText = document.getElementById('finalTotalRate').value + " nett";
 
             const comp = db.companies.find(c => c.id === cId);
-            let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : DEFAULT_POLICY;
-            templateElement.querySelector('.ph-policy-text').innerHTML = policyText.replace(/\n/g, '<br>');
+            // Ánh xạ Policy từ khung HTML (Đã bao gồm cấu trúc bảng biểu, hình ảnh nếu có)
+            let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : DEFAULT_POLICY.replace(/\n/g, '<br>');
+            templateElement.querySelector('.ph-policy-text').innerHTML = policyText;
 
             const tbody = templateElement.querySelector('.ph-table-body'); tbody.innerHTML = '';
             
