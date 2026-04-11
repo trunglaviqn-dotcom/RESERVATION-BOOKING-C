@@ -11,31 +11,26 @@
         :root { --primary: #00a896; --secondary: #028090; --dark: #2c3e50; --light: #f8f9fa; --danger: #e63946; --warning: #f39c12;}
         body { font-family: 'Inter', sans-serif; background-color: #eef2f5; margin: 0; color: #333; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Sidebar layout */
-        .sidebar { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; }
+        .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; }
         .sidebar-brand { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 30px; letter-spacing: 1px; color: var(--primary); text-transform: uppercase;}
         .nav-item { padding: 15px 25px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
         .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); }
         
-        /* Main Content layout */
         .main-content { flex: 1; padding: 30px; overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .header h1 { margin: 0; font-size: 24px; color: var(--dark); }
+        .header h1 { margin: 0; font-size: 22px; color: var(--dark); }
         .header-actions { display: flex; gap: 10px; }
         
-        /* Cards */
         .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .card-title { font-size: 18px; font-weight: 600; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: var(--secondary); }
+        .card-title { font-size: 18px; font-weight: 600; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: var(--secondary); display: flex; justify-content: space-between;}
         
-        /* Forms */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group.full-width { grid-column: span 2; }
         label { font-size: 14px; font-weight: 600; color: #555; }
         input, select { padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Inter', sans-serif; transition: 0.3s; }
         input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
-        
-        /* Buttons */
+        .auto-fill-notice { font-size: 11px; color: var(--warning); margin-top: 2px; font-style: italic;}
+
         .btn { padding: 12px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; font-family: 'Inter', sans-serif; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--secondary); }
@@ -43,17 +38,13 @@
         .btn-secondary:hover { background: #d68910; }
         .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 12px;}
         
-        /* Lists */
-        .list-group { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+        .list-group { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
         .list-group li { padding: 10px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-        .list-group li:last-child { border-bottom: none; }
         
-        /* Tab Control */
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Mẫu PDF Ẩn */
         #pdf-container { position: absolute; left: -9999px; top: 0; }
         #pdf-template { width: 800px; padding: 40px; background: white; font-family: Arial, sans-serif; color: #333; }
         .pdf-header { background: #00a896; color: white; padding: 30px 20px; text-align: right; font-size: 22px; font-weight: bold; letter-spacing: 1px; }
@@ -65,7 +56,6 @@
         .pdf-notes h4 { margin: 15px 0 5px 0; color: #222; font-size: 14px; }
         .pdf-notes ul { margin: 0; padding-left: 20px; }
         
-        /* Thông báo Notification */
         #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 1; right: 30px; bottom: 30px; font-size: 15px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
@@ -76,12 +66,11 @@
 
     <div class="sidebar">
         <div class="sidebar-brand"><i class="fa-solid fa-crown"></i> Henry (PRO) system</div>
-        <div class="nav-item active" onclick="switchTab('booking')"><i class="fa-solid fa-file-invoice"></i> Tạo Báo Giá / Xác Nhận</div>
+        <div class="nav-item active" onclick="switchTab('booking')"><i class="fa-solid fa-file-invoice"></i> Tạo Xác Nhận Booking</div>
         <div class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-database"></i> Quản Lý Dữ Liệu</div>
     </div>
 
     <div class="main-content">
-        
         <div id="booking" class="tab-content active">
             <div class="header">
                 <h1>Tạo Xác Nhận Đặt Phòng (Confirmation)</h1>
@@ -92,7 +81,10 @@
             </div>
 
             <div class="card">
-                <h2 class="card-title">Thông tin khách hàng & Dịch vụ</h2>
+                <h2 class="card-title">
+                    <span>Thông tin khách hàng & Dịch vụ</span>
+                    <span style="font-size: 12px; color: #00a896; font-weight: normal;"><i class="fa-solid fa-wand-magic-sparkles"></i> Hệ thống tự động tính giá 2026</span>
+                </h2>
                 <form id="bookingForm" class="form-grid">
                     <div class="form-group">
                         <label>Mã Xác Nhận (Conf No.)</label>
@@ -102,29 +94,47 @@
                         <label>Tên Khách Hàng</label>
                         <input type="text" id="guestName" placeholder="Tên khách lưu trú" required>
                     </div>
+                    
                     <div class="form-group">
                         <label>Công Ty / Đại Lý</label>
                         <select id="selectCompany"></select>
                     </div>
                     <div class="form-group">
                         <label>Hạng Phòng</label>
-                        <select id="selectRoom"></select>
+                        <select id="selectRoom" onchange="autoCalculatePrice()"></select>
                     </div>
+
                     <div class="form-group">
                         <label>Ngày Đến (Check-in 15:00)</label>
-                        <input type="date" id="arrivalDate" required>
+                        <input type="date" id="arrivalDate" onchange="autoCalculatePrice()" required>
                     </div>
                     <div class="form-group">
                         <label>Ngày Đi (Check-out 11:00)</label>
-                        <input type="date" id="departureDate" required>
+                        <input type="date" id="departureDate" onchange="autoCalculatePrice()" required>
                     </div>
+
+                    <div class="form-group">
+                        <label>Mã Giá (Rate Code 2026)</label>
+                        <select id="rateCode" onchange="autoCalculatePrice()">
+                            <option value="MANUAL">-- Tính giá thủ công --</option>
+                            <option value="COR1">COR1 (Corporate Daily)</option>
+                            <option value="COR2">COR2 (Corporate Daily)</option>
+                            <option value="COR3">COR3 (Corporate Daily)</option>
+                            <option value="WHOLESALES 1">WHOLESALES 1 (Domestic Commitment)</option>
+                            <option value="WHOLESALES 2">WHOLESALES 2 (Strategies Rates)</option>
+                        </select>
+                        <span class="auto-fill-notice">Hệ thống sẽ dựa vào Mã Giá, Hạng Phòng và Số Đêm để gợi ý Tổng giá.</span>
+                    </div>
+
                     <div class="form-group">
                         <label>Số lượng khách</label>
                         <input type="text" id="persons" placeholder="VD: 02 NL + 01 TE" required>
                     </div>
-                    <div class="form-group">
-                        <label>Tổng Giá (VND)</label>
-                        <input type="text" id="totalRate" placeholder="VD: 1,000,000" required>
+                    
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Tổng Thanh Toán (VND)</label>
+                        <input type="text" id="totalRate" placeholder="Nhập giá tiền hoặc để hệ thống tự tính..." style="font-size: 16px; font-weight: bold; color: var(--danger);">
+                        <span class="auto-fill-notice">* Bạn có thể sửa trực tiếp ô này nếu có phụ thu cuối tuần, lễ tết hoặc extra bed.</span>
                     </div>
                 </form>
             </div>
@@ -137,9 +147,9 @@
 
             <div class="form-grid">
                 <div class="card">
-                    <h2 class="card-title">Danh sách Hạng Phòng</h2>
+                    <h2 class="card-title">Danh sách Hạng Phòng (Khớp Báo Giá)</h2>
                     <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <input type="text" id="newRoom" placeholder="Nhập tên hạng phòng mới..." style="flex: 1;">
+                        <input type="text" id="newRoom" placeholder="Nhập tên hạng phòng..." style="flex: 1;">
                         <button class="btn btn-primary" onclick="addRoom()"><i class="fa-solid fa-plus"></i></button>
                     </div>
                     <ul id="roomList" class="list-group"></ul>
@@ -155,10 +165,9 @@
                 </div>
             </div>
         </div>
-
     </div>
 
-    <div id="toast">Đã copy nội dung Email vào Clipboard!</div>
+    <div id="toast">Thông báo hệ thống!</div>
 
     <div id="pdf-container">
         <div id="pdf-template">
@@ -194,7 +203,7 @@
     </div>
 
     <script>
-        // --- CHUYỂN TAB ---
+        // --- 1. CHUYỂN TAB ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
@@ -202,8 +211,18 @@
             event.currentTarget.classList.add('active');
         }
 
-        // --- QUẢN LÝ DỮ LIỆU ---
-        let rooms = JSON.parse(localStorage.getItem('hotelRooms')) || ['1 Bedroom Executive', 'One Bedroom King', 'Studio Premier'];
+        // --- 2. CƠ SỞ DỮ LIỆU GIÁ (Dựa trên File CSV) ---
+        const rateDatabase = {
+            "COR1": { "Deluxe Twin": 1950000, "Executive Room": 1950000, "Studio Deluxe": 2100000, "1 Bedroom Executive": 2350000, "2 Bedroom Deluxe": 4100000, "2 Bedroom Premier": 4700000, "2 Bedroom Executive": 4700000, "3 Bedrooms Deluxe": 7250000 },
+            "COR2": { "Deluxe Twin": 1800000, "Executive Room": 1800000, "Studio Deluxe": 1950000, "1 Bedroom Executive": 2200000, "2 Bedroom Deluxe": 3800000, "2 Bedroom Premier": 4400000, "2 Bedroom Executive": 4400000, "3 Bedrooms Deluxe": 6800000 },
+            "COR3": { "Deluxe Twin": 1650000, "Executive Room": 1650000, "Studio Deluxe": 1800000, "1 Bedroom Executive": 2050000, "2 Bedroom Deluxe": 3500000, "2 Bedroom Premier": 4100000, "2 Bedroom Executive": 4100000, "3 Bedrooms Deluxe": 6350000 },
+            "WHOLESALES 1": { "Deluxe Twin": 1250000, "Executive Room": 1250000, "Studio Deluxe": 1350000, "1 Bedroom Executive": 1550000, "2 Bedroom Deluxe": 2700000, "2 Bedroom Premier": 3000000, "2 Bedroom Executive": 3000000, "3 Bedrooms Deluxe": 4650000 },
+            "WHOLESALES 2": { "Deluxe Twin": 1350000, "Executive Room": 1350000, "Studio Deluxe": 1450000, "1 Bedroom Executive": 1650000, "2 Bedroom Deluxe": 2900000, "2 Bedroom Premier": 3200000, "2 Bedroom Executive": 3200000, "3 Bedrooms Deluxe": 4950000 }
+        };
+
+        // Danh sách phòng chuẩn mặc định (để hệ thống có thể đối chiếu giá)
+        let defaultRooms = ['Deluxe Twin', 'Executive Room', 'Studio Deluxe', '1 Bedroom Executive', '2 Bedroom Deluxe', '2 Bedroom Premier', '2 Bedroom Executive', '3 Bedrooms Deluxe'];
+        let rooms = JSON.parse(localStorage.getItem('hotelRooms')) || defaultRooms;
         let companies = JSON.parse(localStorage.getItem('hotelCompanies')) || ['CÔNG TY CỔ PHẦN VINTRAVEL'];
 
         function renderData() {
@@ -224,15 +243,55 @@
             });
         }
 
-        function addRoom() { const v = document.getElementById('newRoom').value; if(v) { rooms.push(v); localStorage.setItem('hotelRooms', JSON.stringify(rooms)); renderData(); document.getElementById('newRoom').value=''; } }
-        function delRoom(i) { rooms.splice(i, 1); localStorage.setItem('hotelRooms', JSON.stringify(rooms)); renderData(); }
+        function addRoom() { const v = document.getElementById('newRoom').value; if(v) { rooms.push(v); localStorage.setItem('hotelRooms', JSON.stringify(rooms)); renderData(); document.getElementById('newRoom').value=''; autoCalculatePrice();} }
+        function delRoom(i) { rooms.splice(i, 1); localStorage.setItem('hotelRooms', JSON.stringify(rooms)); renderData(); autoCalculatePrice();}
         
         function addCompany() { const v = document.getElementById('newCompany').value; if(v) { companies.push(v); localStorage.setItem('hotelCompanies', JSON.stringify(companies)); renderData(); document.getElementById('newCompany').value=''; } }
         function delCompany(i) { companies.splice(i, 1); localStorage.setItem('hotelCompanies', JSON.stringify(companies)); renderData(); }
 
         renderData();
 
-        // --- CÁC HÀM TIỆN ÍCH CHO NGÀY THÁNG ---
+        // --- 3. LOGIC TỰ ĐỘNG TÍNH GIÁ (AUTO-CALCULATE) ---
+        function calculateNights(arr, dep) {
+            if(!arr || !dep) return 0;
+            const d1 = new Date(arr);
+            const d2 = new Date(dep);
+            if (d2 <= d1) return 0; // Trả phòng phải sau nhận phòng
+            const diffTime = Math.abs(d2 - d1);
+            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount);
+        }
+
+        function autoCalculatePrice() {
+            const arr = document.getElementById('arrivalDate').value;
+            const dep = document.getElementById('departureDate').value;
+            const roomType = document.getElementById('selectRoom').value;
+            const rateCode = document.getElementById('rateCode').value;
+            const totalRateInput = document.getElementById('totalRate');
+
+            // Nếu người dùng chọn Manual, không tự động điền
+            if (rateCode === "MANUAL") return; 
+
+            const nights = calculateNights(arr, dep);
+            if (nights > 0) {
+                // Lấy giá cơ sở từ Database
+                if (rateDatabase[rateCode] && rateDatabase[rateCode][roomType]) {
+                    const basePrice = rateDatabase[rateCode][roomType];
+                    const totalPrice = basePrice * nights;
+                    totalRateInput.value = formatCurrency(totalPrice);
+                } else {
+                    // Nếu hạng phòng mới thêm không nằm trong khung giá chuẩn
+                    totalRateInput.value = "Chưa có dữ liệu giá chuẩn";
+                }
+            } else {
+                totalRateInput.value = "";
+            }
+        }
+
+        // --- 4. CÁC HÀM XUẤT FILE ---
         function formatDateEN(dateStr) {
             if (!dateStr) return "";
             const d = new Date(dateStr);
@@ -246,15 +305,13 @@
             return dateStr;
         }
 
-        function calculateNights(arr, dep) {
-            if(!arr || !dep) return "0";
-            const d1 = new Date(arr);
-            const d2 = new Date(dep);
-            const diffTime = Math.abs(d2 - d1);
-            return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        function showToast(msg) {
+            const toast = document.getElementById("toast");
+            toast.innerText = msg;
+            toast.className = "show";
+            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
         }
 
-        // --- TẠO VÀ COPY EMAIL THEO MẪU ---
         function copyEmail() {
             const confNo = document.getElementById('confNo').value || "Chưa nhập";
             const guestName = document.getElementById('guestName').value || "Chưa nhập";
@@ -266,7 +323,6 @@
             const rate = document.getElementById('totalRate').value;
             const nights = calculateNights(arr, dep);
 
-            // Bố cục text email chuẩn
             const emailContent = `Dear Quý công ty,
 
 Cám ơn anh/chị đã sử dụng dịch vụ của Citadines Marina Hạ Long
@@ -283,8 +339,8 @@ Số khách: ${persons}
 Quốc tịch: Việt Nam
 Số phòng: 01
 Loại phòng: ${roomType}
-Giá phòng: VND ${rate}
-Tổng thanh toán: VND ${rate}
+Giá phòng: VND ${rate} ++
+Tổng thanh toán: VND ${rate} ++
 Thanh toán: Chi phí phòng thanh toán 100% ngay khi nhận được xác nhận, xuất VAT. Cấp các chi phí phát sinh do khách tự thanh toán.
 Yêu cầu đặc biệt: Các yêu cầu đặc biệt sẽ được sắp xếp tùy theo tình trạng phòng trống.
 
@@ -296,22 +352,11 @@ Yêu cầu đặc biệt: Các yêu cầu đặc biệt sẽ được sắp xế
 Trân trọng,
 Hệ thống quản lý đặt phòng Henry (PRO) system`;
 
-            // Copy vào clipboard
             navigator.clipboard.writeText(emailContent).then(() => {
-                showToast();
-            }).catch(err => {
-                alert('Lỗi khi copy: ' + err);
-            });
+                showToast("Đã copy nội dung Email vào Clipboard!");
+            }).catch(err => { alert('Lỗi khi copy: ' + err); });
         }
 
-        // Hiển thị thông báo nhỏ khi copy thành công
-        function showToast() {
-            const toast = document.getElementById("toast");
-            toast.className = "show";
-            setTimeout(function(){ toast.className = toast.className.replace("show", ""); }, 3000);
-        }
-
-        // --- XUẤT PDF ---
         function generatePDF() {
             document.getElementById('pdf-confNo').innerText = document.getElementById('confNo').value || "N/A";
             document.getElementById('pdf-guestName').innerText = document.getElementById('guestName').value || "N/A";
@@ -324,7 +369,7 @@ Hệ thống quản lý đặt phòng Henry (PRO) system`;
             document.getElementById('pdf-departure').innerHTML = (dep ? formatDateEN(dep) : "TBD") + "<br>11:00 AM";
             
             document.getElementById('pdf-persons').innerText = document.getElementById('persons').value;
-            document.getElementById('pdf-rate').innerText = "VND " + document.getElementById('totalRate').value;
+            document.getElementById('pdf-rate').innerText = "VND " + document.getElementById('totalRate').value + " ++";
 
             const element = document.getElementById('pdf-template');
             element.parentElement.style.left = '0px'; 
@@ -341,6 +386,7 @@ Hệ thống quản lý đặt phòng Henry (PRO) system`;
             html2pdf().set(opt).from(element).save().then(() => {
                 element.parentElement.style.position = 'absolute';
                 element.parentElement.style.left = '-9999px';
+                showToast("Đã xuất file PDF thành công!");
             });
         }
     </script>
