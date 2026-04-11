@@ -43,9 +43,10 @@
         .card-title { font-size: 16px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--light); padding-bottom: 10px; color: var(--secondary); display: flex; justify-content: space-between;}
         
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 13px; font-weight: 600; color: #555; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; position: relative;}
+        label { font-size: 13px; font-weight: 600; color: #555; display: flex; justify-content: space-between; align-items: center;}
         input, select, textarea { padding: 10px 12px; border: 1px solid #ccd1d9; border-radius: 6px; font-family: 'Inter', sans-serif; transition: 0.3s; font-size: 14px;}
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
         
         .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid #ccd1d9; border-radius: 6px; padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; background: #fff;}
         .rich-text-editor img { max-width: 100%; height: auto;}
@@ -68,6 +69,12 @@
         .list-group { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; }
         .list-group li { padding: 12px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; background: #fff;}
         .clickable { cursor: pointer; color: var(--secondary); font-weight: 600;}
+
+        /* Bảng Lịch Sử */
+        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
+        .history-table th { background: var(--dark); color: white; padding: 12px; text-align: left; }
+        .history-table td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle;}
+        .history-table tr:hover { background: #f5f5f5; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
@@ -144,6 +151,7 @@
 
             <div id="nav-b2b" class="nav-item" onclick="switchTab('booking-b2b')"><i class="fa-solid fa-building"></i> Booking Công Ty (B2B)</div>
             <div id="nav-b2c" class="nav-item" onclick="switchTab('booking-b2c')"><i class="fa-solid fa-user"></i> Booking Khách Lẻ (B2C)</div>
+            <div id="nav-history" class="nav-item" onclick="switchTab('history')"><i class="fa-solid fa-clock-rotate-left"></i> Lịch Sử Đặt Phòng</div>
             <div id="nav-settings" class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-lock"></i> Quản Lý Dữ Liệu</div>
             
             <div class="sidebar-footer">
@@ -157,10 +165,10 @@
                 <div class="header">
                     <h1>Tạo Xác Nhận Đặt Phòng (Corporate / TA)</h1>
                     <div style="display:flex; gap:8px; flex-wrap: wrap;">
+                        <button class="btn btn-dark" style="background:#8e44ad;" onclick="saveBookingLog()"><i class="fa-solid fa-floppy-disk"></i> Lưu Booking</button>
                         <button class="btn btn-info" onclick="openPreview()"><i class="fa-solid fa-eye"></i> Xem trước</button>
-                        <button class="btn btn-secondary" onclick="copyEmailText()"><i class="fa-solid fa-envelope"></i> Copy Text Email</button>
+                        <button class="btn btn-secondary" onclick="copyEmailText()"><i class="fa-solid fa-envelope"></i> Copy Email</button>
                         <button class="btn btn-success" onclick="copyImageToClipboard()"><i class="fa-solid fa-images"></i> Copy Ảnh</button>
-                        <button class="btn btn-dark" onclick="exportImage()"><i class="fa-solid fa-download"></i> Xuất Ảnh</button>
                         <button class="btn btn-primary" onclick="generatePDF()"><i class="fa-solid fa-file-pdf"></i> Xuất PDF</button>
                     </div>
                 </div>
@@ -170,7 +178,14 @@
                     <div class="form-grid">
                         <div class="form-group"><label>Mã Xác Nhận</label><input type="text" id="confNo" placeholder="VD: 18794869"></div>
                         <div class="form-group"><label>Tên Khách Hàng</label><input type="text" id="guestName" placeholder="Tên khách"></div>
-                        <div class="form-group"><label>Công Ty / Profile</label><select id="selectCompany" onchange="calcTotal()"></select></div>
+                        
+                        <div class="form-group">
+                            <label>
+                                Công Ty / Profile 
+                                <input type="text" id="searchCompDropdown" placeholder="🔍 Tìm nhanh..." onkeyup="renderCompanyDropdown(this.value)" style="width: 140px; padding: 4px 8px; font-size: 11px; border-radius: 4px; border: 1px solid var(--primary);">
+                            </label>
+                            <select id="selectCompany" onchange="calcTotal()"></select>
+                        </div>
                         
                         <div class="form-group">
                             <label>Số lượng khách</label>
@@ -210,6 +225,27 @@
                     <i class="fa-solid fa-person-digging" style="font-size: 60px; color: var(--warning); margin-bottom: 20px;"></i>
                     <h2 style="color: var(--secondary);">Module F.I.T Đang Được Phát Triển</h2>
                     <p style="color: #666; max-width: 600px; margin: 0 auto;">Dành riêng cho Lễ tân và Sales FIT. Module này sẽ có cấu trúc giá linh hoạt và chính sách cọc/hủy riêng biệt.</p>
+                </div>
+            </div>
+
+            <div id="history" class="tab-content">
+                <div class="header"><h1>Lịch Sử Booking (100 bản lưu gần nhất)</h1></div>
+                <div class="card" style="padding: 0; overflow: hidden;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian lưu</th>
+                                <th>Mã Booking</th>
+                                <th>Tên Khách</th>
+                                <th>Công Ty / Đại lý</th>
+                                <th style="text-align: right;">Tổng Tiền</th>
+                                <th style="text-align: right;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            </tbody>
+                    </table>
+                    <div id="emptyHistoryMsg" style="text-align:center; padding: 30px; color:#888; display:none;">Chưa có dữ liệu lịch sử nào được lưu.</div>
                 </div>
             </div>
 
@@ -274,7 +310,10 @@
                     </div>
                     <div>
                         <div class="card">
-                            <h2 class="card-title">Hồ Sơ Công Ty & Bảng Giá</h2>
+                            <h2 class="card-title">
+                                Hồ Sơ Công Ty & Bảng Giá
+                            </h2>
+                            <input type="text" id="searchCompanySetting" placeholder="🔍 Tìm nhanh công ty..." onkeyup="renderCompanyList(this.value)" style="width: 100%; margin-bottom: 15px; border-color: var(--primary);">
                             <div style="display: flex; gap: 10px; margin-bottom: 15px;"><input type="text" id="newCompany" style="flex: 1;"><button class="btn btn-primary" onclick="addCompany()"><i class="fa-solid fa-plus"></i> Thêm mới</button></div>
                             <ul id="companyList" class="list-group"></ul>
                         </div>
@@ -316,7 +355,8 @@
             if (!parsed) {
                 parsed = {
                     rooms: ['Studio Deluxe'], addons: [], companies: [{ id: 'c1', name: 'DEMO COMPANY', policy: '', seasons: [] }],
-                    pdfSettings: { logoBase64: "", title: "Reservation Confirmation", color: "#8B5A2B", fontSize: 14, logoHeight: 60, address: "Marina Hạ Long", email: "contact@citadines.com" }
+                    pdfSettings: { logoBase64: "", title: "Reservation Confirmation", color: "#8B5A2B", fontSize: 14, logoHeight: 60, address: "Marina Hạ Long", email: "contact@citadines.com" },
+                    bookingHistory: []
                 };
             }
             if(!parsed.users) {
@@ -326,11 +366,17 @@
                     { id: 'u3', user: 'fo1', pass: '123456', role: 'fo' }
                 ];
             }
+            if(!parsed.bookingHistory) parsed.bookingHistory = [];
             return parsed;
         }
 
         let db = initDatabase();
-        function saveData() { localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); renderSettings(); renderUserList(); }
+        function saveData() { 
+            localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); 
+            renderCompanyList(); 
+            renderUserList(); 
+            renderHistoryLog();
+        }
 
         function attemptLogin() {
             const u = document.getElementById('loginUser').value.trim();
@@ -359,24 +405,25 @@
             document.getElementById('displayUsername').innerText = currentUser.user;
             let roleText = "";
             
-            // Ẩn các Tab làm việc
             document.getElementById('nav-b2b').style.display = "none";
             document.getElementById('nav-b2c').style.display = "none";
             document.getElementById('nav-settings').style.display = "none";
+            document.getElementById('nav-history').style.display = "none";
             
-            // TẤT CẢ mọi người đều thấy nút Cập Nhật Dữ Liệu
             document.getElementById('nav-import').style.display = "flex";
 
             if(currentUser.role === 'admin') {
                 roleText = "Administrator";
                 document.getElementById('nav-b2b').style.display = "flex";
                 document.getElementById('nav-b2c').style.display = "flex";
+                document.getElementById('nav-history').style.display = "flex";
                 document.getElementById('nav-settings').style.display = "flex";
                 switchTab('booking-b2b');
             } 
             else if (currentUser.role === 'sales') {
                 roleText = "Sales Department";
                 document.getElementById('nav-b2b').style.display = "flex";
+                document.getElementById('nav-history').style.display = "flex";
                 switchTab('booking-b2b');
             } 
             else if (currentUser.role === 'fo') {
@@ -394,19 +441,196 @@
             
             if(tabId==='booking-b2b') document.getElementById('nav-b2b').classList.add('active');
             if(tabId==='booking-b2c') document.getElementById('nav-b2c').classList.add('active');
+            if(tabId==='history') document.getElementById('nav-history').classList.add('active');
             if(tabId==='settings') document.getElementById('nav-settings').classList.add('active');
         }
 
-        // --- 3. IMPORT / EXPORT DÀNH CHO ONEDRIVE ---
-        
-        function triggerImportFromMenu() {
-            document.getElementById('hiddenImportFile').click();
+        // --- TÍNH NĂNG TÌM KIẾM CÔNG TY ---
+        function renderCompanyDropdown(filterText = "") {
+            const sComp = document.getElementById('selectCompany');
+            const prevComp = sComp.value;
+            sComp.innerHTML = '<option value="">-- Chọn Công ty --</option>';
+            
+            db.companies.forEach(c => {
+                if(c.name.toLowerCase().includes(filterText.toLowerCase())) {
+                    sComp.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+                }
+            });
+            
+            let exists = Array.from(sComp.options).some(opt => opt.value === prevComp);
+            if(exists && prevComp) sComp.value = prevComp;
         }
 
+        function renderCompanyList(filterText = "") {
+            const cList = document.getElementById('companyList');
+            cList.innerHTML = ''; 
+            
+            db.companies.forEach((c, i) => {
+                if(c.name.toLowerCase().includes(filterText.toLowerCase())) {
+                    cList.innerHTML += `<li>
+                        <span class="clickable" onclick="openCompanyModal('${c.id}')"><i class="fa-solid fa-pen-to-square"></i> ${c.name}</span>
+                        <div class="action-group">
+                            <button class="btn btn-info" onclick="renameCompany(${i})" title="Đổi tên Công ty"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-secondary" onclick="copyCompany(${i})" title="Nhân bản Công ty (Copy)"><i class="fa-solid fa-copy"></i></button>
+                            <button class="btn btn-danger" onclick="delCompany(${i})" title="Xóa Công ty"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </li>`;
+                }
+            });
+        }
+
+        // --- TÍNH NĂNG LỊCH SỬ & COPY BOOKING ---
+        function saveBookingLog() {
+            const confNo = document.getElementById('confNo').value || "Bản nháp";
+            const guestName = document.getElementById('guestName').value || "Chưa nhập tên";
+            const cId = document.getElementById('selectCompany').value;
+            const comp = db.companies.find(c => c.id === cId);
+            const compName = comp ? comp.name : "Chưa chọn";
+            const total = document.getElementById('finalTotalRate').value || "0";
+
+            // Thu thập toàn bộ chi tiết để Copy
+            const adults = document.getElementById('adults').value;
+            const children = document.getElementById('children').value;
+            const arrivalDate = document.getElementById('arrivalDate').value;
+            const departureDate = document.getElementById('departureDate').value;
+            const bookingComments = document.getElementById('bookingComments').value;
+
+            let savedRooms = [];
+            document.querySelectorAll('.room-row').forEach(row => {
+                savedRooms.push({
+                    type: row.querySelector('.room-select').value,
+                    qty: row.querySelector('.room-qty').value
+                });
+            });
+
+            let savedAddons = [];
+            document.querySelectorAll('.addon-item').forEach((row, idx) => {
+                const chkBox = document.getElementById(`chk_addon_${idx}`);
+                if(chkBox && chkBox.checked) {
+                    savedAddons.push({
+                        name: chkBox.getAttribute('data-name'),
+                        qty: document.getElementById(`val_addon_qty_${idx}`).value,
+                        price: document.getElementById(`val_addon_price_${idx}`).value
+                    });
+                }
+            });
+
+            const log = {
+                id: Date.now(),
+                dateSaved: new Date().toLocaleDateString('vi-VN') + " - " + new Date().toLocaleTimeString('vi-VN'),
+                confNo: confNo,
+                guestName: guestName,
+                companyId: cId,
+                companyName: compName,
+                total: total,
+                details: { adults, children, arrivalDate, departureDate, bookingComments, savedRooms, savedAddons }
+            };
+
+            db.bookingHistory.unshift(log);
+            if(db.bookingHistory.length > 100) db.bookingHistory.pop();
+
+            saveData();
+            showToast("Đã lưu Booking vào Tab Lịch Sử!");
+        }
+
+        function renderHistoryLog() {
+            const tbody = document.getElementById('historyTableBody');
+            const emptyMsg = document.getElementById('emptyHistoryMsg');
+            if(!tbody) return;
+            
+            tbody.innerHTML = '';
+            if(db.bookingHistory.length === 0) {
+                emptyMsg.style.display = "block";
+            } else {
+                emptyMsg.style.display = "none";
+                db.bookingHistory.forEach((log, i) => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="color:#666;">${log.dateSaved}</td>
+                            <td><span style="background:var(--primary); color:white; padding:4px 8px; border-radius:4px; font-weight:bold;">${log.confNo}</span></td>
+                            <td><b>${log.guestName}</b></td>
+                            <td>${log.companyName}</td>
+                            <td style="text-align: right; color: var(--danger); font-weight: bold;">${log.total}</td>
+                            <td style="text-align: right;">
+                                <div class="action-group" style="justify-content: flex-end;">
+                                    <button class="btn btn-info" onclick="loadBookingFromHistory(${i})" title="Nhân bản (Copy) booking này" style="padding: 6px 10px; background: #2980b9;"><i class="fa-solid fa-copy"></i> Copy</button>
+                                    <button class="btn btn-danger" onclick="deleteHistoryLog(${i})" title="Xóa lịch sử này" style="padding: 6px 10px;"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // Hàm Tải Dữ liệu từ Lịch sử sang Form
+        function loadBookingFromHistory(index) {
+            const log = db.bookingHistory[index];
+            if(!log || !log.details) {
+                return alert("Bản lưu này quá cũ, không chứa dữ liệu chi tiết để copy!");
+            }
+
+            // Điền thông tin cơ bản
+            document.getElementById('confNo').value = log.confNo === "Bản nháp" ? "" : log.confNo + " (Copy)";
+            document.getElementById('guestName').value = log.guestName;
+            
+            // Xử lý Công ty (render lại đầy đủ phòng khi đang bị filter)
+            renderCompanyDropdown();
+            document.getElementById('selectCompany').value = log.companyId || "";
+            
+            document.getElementById('adults').value = log.details.adults || 2;
+            document.getElementById('children').value = log.details.children || 0;
+            document.getElementById('arrivalDate').value = log.details.arrivalDate || "";
+            document.getElementById('departureDate').value = log.details.departureDate || "";
+            document.getElementById('bookingComments').value = log.details.bookingComments || "";
+
+            // Phục hồi Addons
+            document.querySelectorAll('.chk-addon').forEach(chk => chk.checked = false); // Reset
+            if (log.details.savedAddons) {
+                log.details.savedAddons.forEach(sa => {
+                    document.querySelectorAll('.addon-item').forEach((row, idx) => {
+                        const chkBox = document.getElementById(`chk_addon_${idx}`);
+                        if(chkBox && chkBox.getAttribute('data-name') === sa.name) {
+                            chkBox.checked = true;
+                            document.getElementById(`val_addon_qty_${idx}`).value = sa.qty;
+                            document.getElementById(`val_addon_price_${idx}`).value = sa.price;
+                        }
+                    });
+                });
+            }
+
+            // Phục hồi Rooms
+            const roomsContainer = document.getElementById('bookingRoomsList');
+            roomsContainer.innerHTML = ''; // Xóa sạch list hiện tại
+            if (log.details.savedRooms && log.details.savedRooms.length > 0) {
+                log.details.savedRooms.forEach(sr => {
+                    addBookingRoomRow(); 
+                    const rows = document.querySelectorAll('.room-row');
+                    const lastRow = rows[rows.length - 1];
+                    lastRow.querySelector('.room-select').value = sr.type;
+                    lastRow.querySelector('.room-qty').value = sr.qty;
+                });
+            } else {
+                addBookingRoomRow(); // Tạo 1 dòng trắng nếu trống
+            }
+
+            calcTotal();
+            switchTab('booking-b2b');
+            showToast("Đã tải dữ liệu thành công! Hãy chỉnh sửa theo ý muốn.");
+        }
+
+        function deleteHistoryLog(index) {
+            if(confirm("Bạn có chắc muốn xóa lịch sử booking này?")) {
+                db.bookingHistory.splice(index, 1);
+                saveData();
+                showToast("Đã xóa booking khỏi lịch sử!");
+            }
+        }
+
+        // --- IMPORT / EXPORT DÀNH CHO ONEDRIVE ---
+        function triggerImportFromMenu() { document.getElementById('hiddenImportFile').click(); }
         function handleHiddenImport(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
+            const file = event.target.files[0]; if(!file) return; const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const importedDB = JSON.parse(e.target.result);
@@ -414,150 +638,64 @@
                         db = importedDB;
                         if(!db.pdfSettings) db.pdfSettings = { logoBase64: "", title: "Reservation Confirmation", color: "#8B5A2B", fontSize: 14, logoHeight: 60, address: "Marina Hạ Long", email: "contact@citadines.com" };
                         if(!db.users) db.users = [{ id: 'u1', user: 'admin', pass: 'trunglavi.qn@gmail.com', role: 'admin' }];
+                        if(!db.bookingHistory) db.bookingHistory = [];
                         
-                        saveData(); 
-                        showToast("Đã cập nhật dữ liệu thành công! Hệ thống sẽ tải lại...");
-                        document.getElementById('hiddenImportFile').value = ""; 
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        alert("File không hợp lệ hoặc cấu trúc bị hỏng!");
-                    }
+                        saveData(); showToast("Đã cập nhật dữ liệu thành công! Hệ thống sẽ tải lại...");
+                        document.getElementById('hiddenImportFile').value = ""; setTimeout(() => location.reload(), 1500);
+                    } else { alert("File không hợp lệ hoặc cấu trúc bị hỏng!"); }
                 } catch (err) { alert("Lỗi đọc file: " + err); }
-            };
-            reader.readAsText(file);
+            }; reader.readAsText(file);
         }
-
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const downloadAnchorNode = document.createElement('a'); 
-            downloadAnchorNode.setAttribute("href", dataStr); 
+            const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); 
             downloadAnchorNode.setAttribute("download", "Henry_Master_DB_" + new Date().toLocaleDateString('vi-VN').replace(/\//g,'-') + ".json");
-            document.body.appendChild(downloadAnchorNode); 
-            downloadAnchorNode.click(); 
-            downloadAnchorNode.remove(); 
+            document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); 
             showToast("Đã xuất file thành công! Hãy upload lên OneDrive.");
         }
 
-        // --- 4. QUẢN LÝ USER ---
+        // --- QUẢN LÝ USER ---
         function renderUserList() {
-            const list = document.getElementById('userList');
-            if(!list) return;
-            list.innerHTML = '';
+            const list = document.getElementById('userList'); if(!list) return; list.innerHTML = '';
             db.users.forEach((u, i) => {
                 let rName = u.role === 'admin' ? "Quản trị" : (u.role === 'sales' ? "Sales" : "Lễ tân");
                 let badgeColor = u.role === 'admin' ? "var(--danger)" : "var(--primary)";
-                let delBtn = u.role === 'admin' && db.users.filter(x=>x.role==='admin').length === 1 ? 
-                    '' : `<button class="btn btn-danger" onclick="deleteUser(${i})"><i class="fa-solid fa-trash"></i></button>`;
-                
-                list.innerHTML += `<li>
-                    <span><b>${u.user}</b> <span style="font-size:10px; background:${badgeColor}; color:white; padding:2px 5px; border-radius:4px; margin-left:5px;">${rName}</span></span>
-                    <div>
-                        <button class="btn btn-secondary" onclick="changePass(${i})">Đổi Pass</button>
-                        ${delBtn}
-                    </div>
-                </li>`;
+                let delBtn = u.role === 'admin' && db.users.filter(x=>x.role==='admin').length === 1 ? '' : `<button class="btn btn-danger" onclick="deleteUser(${i})"><i class="fa-solid fa-trash"></i></button>`;
+                list.innerHTML += `<li><span><b>${u.user}</b> <span style="font-size:10px; background:${badgeColor}; color:white; padding:2px 5px; border-radius:4px; margin-left:5px;">${rName}</span></span><div><button class="btn btn-secondary" onclick="changePass(${i})">Đổi Pass</button>${delBtn}</div></li>`;
             });
         }
-
         function createUser() {
-            const u = document.getElementById('newUser').value.trim();
-            const p = document.getElementById('newPass').value;
-            const r = document.getElementById('newRole').value;
-            if(!u || !p) return alert("Nhập đủ tên và pass!");
-            if(db.users.find(x => x.user === u)) return alert("Tên đăng nhập đã tồn tại!");
-            
+            const u = document.getElementById('newUser').value.trim(); const p = document.getElementById('newPass').value; const r = document.getElementById('newRole').value;
+            if(!u || !p) return alert("Nhập đủ tên và pass!"); if(db.users.find(x => x.user === u)) return alert("Tên đăng nhập đã tồn tại!");
             db.users.push({ id: 'u'+Date.now(), user: u, pass: p, role: r });
-            document.getElementById('newUser').value = ''; document.getElementById('newPass').value = '';
-            saveData(); showToast("Đã tạo User mới! Hãy XUẤT FILE để cập nhật lên OneDrive.");
+            document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; saveData(); showToast("Đã tạo User mới! Hãy XUẤT FILE để cập nhật lên OneDrive.");
         }
+        function deleteUser(i) { if(confirm("Xóa nhân sự này khỏi hệ thống? Nhớ xuất file mới lên OneDrive nhé!")) { db.users.splice(i, 1); saveData(); showToast("Đã xóa User!"); } }
+        function changePass(i) { const np = prompt(`Nhập mật khẩu mới cho user ${db.users[i].user}:`); if(np) { db.users[i].pass = np; saveData(); showToast("Đổi pass thành công! Đừng quên xuất file mới."); } }
 
-        function deleteUser(i) {
-            if(confirm("Xóa nhân sự này khỏi hệ thống? Nhớ xuất file mới lên OneDrive nhé!")) {
-                db.users.splice(i, 1); saveData(); showToast("Đã xóa User!");
-            }
-        }
-
-        function changePass(i) {
-            const np = prompt(`Nhập mật khẩu mới cho user ${db.users[i].user}:`);
-            if(np) { db.users[i].pass = np; saveData(); showToast("Đổi pass thành công! Đừng quên xuất file mới."); }
-        }
-
-        // --- 5. HÀM QUẢN TRỊ DỮ LIỆU KHÁC ---
-        function showToast(msg) {
-            const toast = document.getElementById("toast"); toast.innerText = msg; toast.className = "show";
-            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
-        }
+        // --- HÀM QUẢN TRỊ DỮ LIỆU KHÁC ---
+        function showToast(msg) { const toast = document.getElementById("toast"); toast.innerText = msg; toast.className = "show"; setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000); }
 
         function renderSettings() {
-            const rList = document.getElementById('roomList'); rList.innerHTML = '';
-            db.rooms.forEach((r, i) => rList.innerHTML += `<li>${r} <button class="btn btn-danger" onclick="delRoom(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
-
-            const aList = document.getElementById('addonList'); aList.innerHTML = '';
-            db.addons.forEach((a, i) => aList.innerHTML += `<li>${a.name} (${formatMoney(a.price)}) <button class="btn btn-danger" onclick="delAddon(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
-
-            const cList = document.getElementById('companyList'); const sComp = document.getElementById('selectCompany');
-            cList.innerHTML = ''; const prevComp = sComp.value; sComp.innerHTML = '<option value="">-- Chọn Công ty --</option>';
+            const rList = document.getElementById('roomList'); rList.innerHTML = ''; db.rooms.forEach((r, i) => rList.innerHTML += `<li>${r} <button class="btn btn-danger" onclick="delRoom(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
+            const aList = document.getElementById('addonList'); aList.innerHTML = ''; db.addons.forEach((a, i) => aList.innerHTML += `<li>${a.name} (${formatMoney(a.price)}) <button class="btn btn-danger" onclick="delAddon(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
             
-            db.companies.forEach((c, i) => {
-                cList.innerHTML += `<li>
-                    <span class="clickable" onclick="openCompanyModal('${c.id}')"><i class="fa-solid fa-pen-to-square"></i> ${c.name}</span>
-                    <div class="action-group">
-                        <button class="btn btn-info" onclick="renameCompany(${i})" title="Đổi tên Công ty"><i class="fa-solid fa-pen"></i></button>
-                        <button class="btn btn-secondary" onclick="copyCompany(${i})" title="Nhân bản Công ty (Copy)"><i class="fa-solid fa-copy"></i></button>
-                        <button class="btn btn-danger" onclick="delCompany(${i})" title="Xóa Công ty"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </li>`;
-                sComp.innerHTML += `<option value="${c.id}">${c.name}</option>`;
-            });
-            if(prevComp) sComp.value = prevComp;
+            if(document.getElementById('searchCompDropdown') && document.getElementById('searchCompDropdown').value === "") renderCompanyDropdown();
+            if(document.getElementById('searchCompanySetting') && document.getElementById('searchCompanySetting').value === "") renderCompanyList();
 
-            document.getElementById('pdfSetTitle').value = db.pdfSettings.title;
-            document.getElementById('pdfSetColor').value = db.pdfSettings.color;
-            document.getElementById('pdfSetFontSize').value = db.pdfSettings.fontSize;
-            document.getElementById('pdfSetLogoHeight').value = db.pdfSettings.logoHeight;
-            document.getElementById('pdfSetAddress').value = db.pdfSettings.address;
-            document.getElementById('pdfSetEmail').value = db.pdfSettings.email;
+            document.getElementById('pdfSetTitle').value = db.pdfSettings.title; document.getElementById('pdfSetColor').value = db.pdfSettings.color;
+            document.getElementById('pdfSetFontSize').value = db.pdfSettings.fontSize; document.getElementById('pdfSetLogoHeight').value = db.pdfSettings.logoHeight;
+            document.getElementById('pdfSetAddress').value = db.pdfSettings.address; document.getElementById('pdfSetEmail').value = db.pdfSettings.email;
         }
 
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) { db.pdfSettings.logoBase64 = e.target.result; saveData(); showToast("Đã cập nhật Logo thành công!"); };
-            reader.readAsDataURL(file);
-        }
-
-        function savePdfSettings() {
-            db.pdfSettings.title = document.getElementById('pdfSetTitle').value; db.pdfSettings.color = document.getElementById('pdfSetColor').value;
-            db.pdfSettings.fontSize = parseInt(document.getElementById('pdfSetFontSize').value) || 14; db.pdfSettings.logoHeight = parseInt(document.getElementById('pdfSetLogoHeight').value) || 60;
-            db.pdfSettings.address = document.getElementById('pdfSetAddress').value; db.pdfSettings.email = document.getElementById('pdfSetEmail').value;
-            saveData(); showToast("Đã lưu cấu hình thiết kế!");
-        }
+        function handleLogoUpload(event) { const file = event.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = function(e) { db.pdfSettings.logoBase64 = e.target.result; saveData(); showToast("Đã cập nhật Logo thành công!"); }; reader.readAsDataURL(file); }
+        function savePdfSettings() { db.pdfSettings.title = document.getElementById('pdfSetTitle').value; db.pdfSettings.color = document.getElementById('pdfSetColor').value; db.pdfSettings.fontSize = parseInt(document.getElementById('pdfSetFontSize').value) || 14; db.pdfSettings.logoHeight = parseInt(document.getElementById('pdfSetLogoHeight').value) || 60; db.pdfSettings.address = document.getElementById('pdfSetAddress').value; db.pdfSettings.email = document.getElementById('pdfSetEmail').value; saveData(); showToast("Đã lưu cấu hình thiết kế!"); }
 
         function renderBookingAddons() {
             const container = document.getElementById('bookingAddonsList'); container.innerHTML = '';
-            db.addons.forEach((a, i) => {
-                container.innerHTML += `
-                    <div class="addon-item">
-                        <input type="checkbox" class="chk-addon" id="chk_addon_${i}" data-name="${a.name}" onchange="calcTotal()">
-                        <label for="chk_addon_${i}" style="width: 170px; font-weight:bold;">${a.name}</label>
-                        <input type="number" class="val-addon-price" id="val_addon_price_${i}" value="${a.price}" oninput="calcTotal()" title="Giá VND">
-                        <label>SL:</label>
-                        <input type="number" class="val-addon-qty" id="val_addon_qty_${i}" value="1" min="1" oninput="calcTotal()" style="width: 50px;">
-                        <div style="margin-left: auto; border-left: 1px solid #ddd; padding-left: 15px;">
-                            <label style="cursor: pointer; color: var(--secondary);" title="In lên hóa đơn PDF"><input type="checkbox" id="show_pdf_addon_${i}" checked> <i class="fa-solid fa-eye"></i> In lên PDF</label>
-                        </div>
-                    </div>`;
-            });
+            db.addons.forEach((a, i) => { container.innerHTML += `<div class="addon-item"><input type="checkbox" class="chk-addon" id="chk_addon_${i}" data-name="${a.name}" onchange="calcTotal()"><label for="chk_addon_${i}" style="width: 170px; font-weight:bold;">${a.name}</label><input type="number" class="val-addon-price" id="val_addon_price_${i}" value="${a.price}" oninput="calcTotal()" title="Giá VND"><label>SL:</label><input type="number" class="val-addon-qty" id="val_addon_qty_${i}" value="1" min="1" oninput="calcTotal()" style="width: 50px;"><div style="margin-left: auto; border-left: 1px solid #ddd; padding-left: 15px;"><label style="cursor: pointer; color: var(--secondary);" title="In lên hóa đơn PDF"><input type="checkbox" id="show_pdf_addon_${i}" checked> <i class="fa-solid fa-eye"></i> In lên PDF</label></div></div>`; });
         }
-
-        function addBookingRoomRow() {
-            const container = document.getElementById('bookingRoomsList');
-            const row = document.createElement('div'); row.className = 'dynamic-row room-row';
-            let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`);
-            row.innerHTML = `<select class="room-select" onchange="calcTotal()" style="flex: 2;">${options}</select><label>SL:</label><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" style="width: 60px;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền..." style="flex: 1.5; background:#eee; font-weight:bold;"><button class="btn btn-danger" onclick="this.parentElement.remove(); calcTotal();"><i class="fa-solid fa-xmark"></i></button>`;
-            container.appendChild(row);
-        }
+        function addBookingRoomRow() { const container = document.getElementById('bookingRoomsList'); const row = document.createElement('div'); row.className = 'dynamic-row room-row'; let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); row.innerHTML = `<select class="room-select" onchange="calcTotal()" style="flex: 2;">${options}</select><label>SL:</label><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" style="width: 60px;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền..." style="flex: 1.5; background:#eee; font-weight:bold;"><button class="btn btn-danger" onclick="this.parentElement.remove(); calcTotal();"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); }
 
         // CRUD
         function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); } }
@@ -571,20 +709,11 @@
 
         // Modal Company
         let curCompId = null;
-        function openCompanyModal(id) { 
-            curCompId = id; const comp = db.companies.find(c => c.id === id); document.getElementById('modalCompanyName').innerText = comp.name; 
-            document.getElementById('companyPolicy').innerHTML = comp.policy || ''; document.getElementById('companyModal').style.display = "block"; renderSeasons(); 
-        }
+        function openCompanyModal(id) { curCompId = id; const comp = db.companies.find(c => c.id === id); document.getElementById('modalCompanyName').innerText = comp.name; document.getElementById('companyPolicy').innerHTML = comp.policy || ''; document.getElementById('companyModal').style.display = "block"; renderSeasons(); }
         function updateCompanyPolicy() { db.companies.find(c => c.id === curCompId).policy = document.getElementById('companyPolicy').innerHTML; saveData(); }
         function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; curCompId = null; calcTotal(); }
         
-        function addSeason() {
-            const n = document.getElementById('seasonName').value, s = document.getElementById('seasonStart').value, e = document.getElementById('seasonEnd').value;
-            const wkE = document.getElementById('seasonWkndEnable').checked, wkF = parseInt(document.getElementById('seasonWkndFri').value)||0, wkS = parseInt(document.getElementById('seasonWkndSat').value)||0;
-            if(!n || !s || !e) return alert("Nhập đủ thông tin!");
-            const comp = db.companies.find(c => c.id === curCompId); let rates = {}; db.rooms.forEach(r => rates[r] = 0);
-            comp.seasons.push({ id: 's'+Date.now(), name: n, start: s, end: e, rates, surcharge: { enabled: wkE, fri: wkF, sat: wkS } }); saveData(); renderSeasons();
-        }
+        function addSeason() { const n = document.getElementById('seasonName').value, s = document.getElementById('seasonStart').value, e = document.getElementById('seasonEnd').value; const wkE = document.getElementById('seasonWkndEnable').checked, wkF = parseInt(document.getElementById('seasonWkndFri').value)||0, wkS = parseInt(document.getElementById('seasonWkndSat').value)||0; if(!n || !s || !e) return alert("Nhập đủ thông tin!"); const comp = db.companies.find(c => c.id === curCompId); let rates = {}; db.rooms.forEach(r => rates[r] = 0); comp.seasons.push({ id: 's'+Date.now(), name: n, start: s, end: e, rates, surcharge: { enabled: wkE, fri: wkF, sat: wkS } }); saveData(); renderSeasons(); }
         function delSeason(sId) { const comp = db.companies.find(c => c.id === curCompId); comp.seasons = comp.seasons.filter(s => s.id !== sId); saveData(); renderSeasons(); }
         function updateSeasonField(sId, field, value) { db.companies.find(c => c.id === curCompId).seasons.find(s => s.id === sId)[field] = value; saveData(); }
         function copySeason(sId) { const comp = db.companies.find(c => c.id === curCompId); const org = comp.seasons.find(s => s.id === sId); const c = JSON.parse(JSON.stringify(org)); c.id = 's' + Date.now() + Math.random().toString(36).substr(2, 5); c.name = org.name + " (Copy)"; comp.seasons.splice(comp.seasons.findIndex(s => s.id === sId) + 1, 0, c); saveData(); renderSeasons(); showToast("Đã nhân bản giai đoạn!"); }
@@ -594,23 +723,8 @@
         function renderSeasons() {
             const comp = db.companies.find(c => c.id === curCompId); const container = document.getElementById('seasonsContainer'); container.innerHTML = '';
             comp.seasons.forEach(s => {
-                let rHTML = ''; db.rooms.forEach(r => rHTML += `<div class="form-group"><label>${r}</label><input type="number" value="${s.rates[r]||0}" onchange="updateRate('${s.id}', '${r}', this.value)"></div>`);
-                const chk = s.surcharge.enabled ? 'checked' : '';
-                container.innerHTML += `
-                <div class="season-card">
-                    <div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <div style="display: flex; gap: 10px; align-items: center;"><b><i class="fa-regular fa-calendar"></i></b>
-                        <input type="text" value="${s.name}" onchange="updateSeasonField('${s.id}', 'name', this.value)" style="width: 130px; font-weight: bold; padding: 6px;">
-                        <input type="date" value="${s.start}" onchange="updateSeasonField('${s.id}', 'start', this.value)" style="padding: 6px;">
-                        <span>-></span><input type="date" value="${s.end}" onchange="updateSeasonField('${s.id}', 'end', this.value)" style="padding: 6px;"></div>
-                        <div class="action-group"><button class="btn btn-secondary" onclick="copySeason('${s.id}')"><i class="fa-solid fa-copy"></i> Copy</button><button class="btn btn-danger" onclick="delSeason('${s.id}')"><i class="fa-solid fa-trash"></i></button></div>
-                    </div>
-                    <div class="weekend-box" style="margin-top:15px; background:#f5f5f5; border:1px solid #ddd;">
-                        <label><input type="checkbox" ${chk} onchange="updateSurcharge('${s.id}', 'enabled', this.checked)"> Phụ thu Cuối tuần</label>
-                        <div style="margin-left: 20px;">T6: <input type="number" value="${s.surcharge.fri}" onchange="updateSurcharge('${s.id}', 'fri', this.value)" style="width:70px;"> | T7: <input type="number" value="${s.surcharge.sat}" onchange="updateSurcharge('${s.id}', 'sat', this.value)" style="width:70px;"></div>
-                    </div>
-                    <div class="rates-grid">${rHTML}</div>
-                </div>`;
+                let rHTML = ''; db.rooms.forEach(r => rHTML += `<div class="form-group"><label>${r}</label><input type="number" value="${s.rates[r]||0}" onchange="updateRate('${s.id}', '${r}', this.value)"></div>`); const chk = s.surcharge.enabled ? 'checked' : '';
+                container.innerHTML += `<div class="season-card"><div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;"><div style="display: flex; gap: 10px; align-items: center;"><b><i class="fa-regular fa-calendar"></i></b><input type="text" value="${s.name}" onchange="updateSeasonField('${s.id}', 'name', this.value)" style="width: 130px; font-weight: bold; padding: 6px;"><input type="date" value="${s.start}" onchange="updateSeasonField('${s.id}', 'start', this.value)" style="padding: 6px;"><span>-></span><input type="date" value="${s.end}" onchange="updateSeasonField('${s.id}', 'end', this.value)" style="padding: 6px;"></div><div class="action-group"><button class="btn btn-secondary" onclick="copySeason('${s.id}')"><i class="fa-solid fa-copy"></i> Copy</button><button class="btn btn-danger" onclick="delSeason('${s.id}')"><i class="fa-solid fa-trash"></i></button></div></div><div class="weekend-box" style="margin-top:15px; background:#f5f5f5; border:1px solid #ddd;"><label><input type="checkbox" ${chk} onchange="updateSurcharge('${s.id}', 'enabled', this.checked)"> Phụ thu Cuối tuần</label><div style="margin-left: 20px;">T6: <input type="number" value="${s.surcharge.fri}" onchange="updateSurcharge('${s.id}', 'fri', this.value)" style="width:70px;"> | T7: <input type="number" value="${s.surcharge.sat}" onchange="updateSurcharge('${s.id}', 'sat', this.value)" style="width:70px;"></div></div><div class="rates-grid">${rHTML}</div></div>`;
             });
         }
 
@@ -620,80 +734,35 @@
         function getWeekendCounts(arrStr, depStr) {
             let start = new Date(arrStr); let end = new Date(depStr); let fri = 0, sat = 0;
             if(isNaN(start) || isNaN(end) || end <= start) return { fri, sat, totalNights: 0 };
-            let current = new Date(start); let totalNights = 0;
-            while(current < end) { if(current.getDay() === 5) fri++; if(current.getDay() === 6) sat++; current.setDate(current.getDate() + 1); totalNights++; }
-            return { fri, sat, totalNights };
+            let current = new Date(start); let totalNights = 0; while(current < end) { if(current.getDay() === 5) fri++; if(current.getDay() === 6) sat++; current.setDate(current.getDate() + 1); totalNights++; } return { fri, sat, totalNights };
         }
 
         function calcTotal() {
-            const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value;
-            const { fri, sat, totalNights } = getWeekendCounts(arr, dep); const cId = document.getElementById('selectCompany').value;
-            let grandTotal = 0; const comp = db.companies.find(c => c.id === cId);
-            const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
-            let friSur = 0, satSur = 0, wkndMsg = "";
-            if (season && season.surcharge && season.surcharge.enabled) {
-                friSur = season.surcharge.fri || 0; satSur = season.surcharge.sat || 0;
-                if(fri > 0 || sat > 0) wkndMsg = `<i class="fa-solid fa-circle-info"></i> Booking có ${fri} đêm T6 (+${formatMoney(friSur)}) và ${sat} đêm T7 (+${formatMoney(satSur)}) / phòng.`;
-            }
-            document.getElementById('weekendNotice').innerHTML = wkndMsg;
-
-            document.querySelectorAll('.room-row').forEach(row => {
-                const roomType = row.querySelector('.room-select').value; const qty = parseInt(row.querySelector('.room-qty').value) || 1;
-                let price = 0; if(season && roomType) price = season.rates[roomType] || 0;
-                const subtotal = ((price * totalNights) + (fri * friSur) + (sat * satSur)) * qty;
-                row.querySelector('.room-subtotal').value = roomType ? (formatMoney(subtotal) + " đ") : ""; grandTotal += subtotal;
-            });
-
-            document.querySelectorAll('.addon-item').forEach((row, i) => {
-                const isChecked = document.getElementById(`chk_addon_${i}`).checked; const price = parseInt(document.getElementById(`val_addon_price_${i}`).value) || 0;
-                const qty = parseInt(document.getElementById(`val_addon_qty_${i}`).value) || 1;
-                if(isChecked) grandTotal += (price * totalNights * qty);
-            });
+            const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value; const { fri, sat, totalNights } = getWeekendCounts(arr, dep); const cId = document.getElementById('selectCompany').value; let grandTotal = 0; const comp = db.companies.find(c => c.id === cId); const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
+            let friSur = 0, satSur = 0, wkndMsg = ""; if (season && season.surcharge && season.surcharge.enabled) { friSur = season.surcharge.fri || 0; satSur = season.surcharge.sat || 0; if(fri > 0 || sat > 0) wkndMsg = `<i class="fa-solid fa-circle-info"></i> Booking có ${fri} đêm T6 (+${formatMoney(friSur)}) và ${sat} đêm T7 (+${formatMoney(satSur)}) / phòng.`; } document.getElementById('weekendNotice').innerHTML = wkndMsg;
+            document.querySelectorAll('.room-row').forEach(row => { const roomType = row.querySelector('.room-select').value; const qty = parseInt(row.querySelector('.room-qty').value) || 1; let price = 0; if(season && roomType) price = season.rates[roomType] || 0; const subtotal = ((price * totalNights) + (fri * friSur) + (sat * satSur)) * qty; row.querySelector('.room-subtotal').value = roomType ? (formatMoney(subtotal) + " đ") : ""; grandTotal += subtotal; });
+            document.querySelectorAll('.addon-item').forEach((row, i) => { const isChecked = document.getElementById(`chk_addon_${i}`).checked; const price = parseInt(document.getElementById(`val_addon_price_${i}`).value) || 0; const qty = parseInt(document.getElementById(`val_addon_qty_${i}`).value) || 1; if(isChecked) grandTotal += (price * totalNights * qty); });
             document.getElementById('finalTotalRate').value = formatMoney(grandTotal);
         }
 
         function getBookingData() {
-            const data = { rooms: [], addons: [], wkndMsg: '' };
-            const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value;
-            const { fri, sat, totalNights } = getWeekendCounts(arr, dep); const comp = db.companies.find(c => c.id === document.getElementById('selectCompany').value);
-            const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
+            const data = { rooms: [], addons: [], wkndMsg: '' }; const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value; const { fri, sat, totalNights } = getWeekendCounts(arr, dep); const comp = db.companies.find(c => c.id === document.getElementById('selectCompany').value); const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
             let friSur = 0, satSur = 0; if (season && season.surcharge && season.surcharge.enabled) { friSur = season.surcharge.fri || 0; satSur = season.surcharge.sat || 0; }
-
-            document.querySelectorAll('.room-row').forEach(row => {
-                const type = row.querySelector('.room-select').value, qty = row.querySelector('.room-qty').value, sub = row.querySelector('.room-subtotal').value;
-                if(type) { let desc = type; if(fri > 0 && friSur > 0) desc += ` (+T6)`; if(sat > 0 && satSur > 0) desc += ` (+T7)`; data.rooms.push({ type: desc, qty, sub }); }
-            });
-            document.querySelectorAll('.addon-item').forEach((row, i) => {
-                if(document.getElementById(`chk_addon_${i}`).checked) { data.addons.push({ name: document.getElementById(`chk_addon_${i}`).getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${i}`).value, price: document.getElementById(`val_addon_price_${i}`).value, showOnPdf: document.getElementById(`show_pdf_addon_${i}`).checked }); }
-            });
-            data.totalNights = totalNights; return data;
+            document.querySelectorAll('.room-row').forEach(row => { const type = row.querySelector('.room-select').value, qty = row.querySelector('.room-qty').value, sub = row.querySelector('.room-subtotal').value; if(type) { let desc = type; if(fri > 0 && friSur > 0) desc += ` (+T6)`; if(sat > 0 && satSur > 0) desc += ` (+T7)`; data.rooms.push({ type: desc, qty, sub }); } });
+            document.querySelectorAll('.addon-item').forEach((row, i) => { if(document.getElementById(`chk_addon_${i}`).checked) { data.addons.push({ name: document.getElementById(`chk_addon_${i}`).getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${i}`).value, price: document.getElementById(`val_addon_price_${i}`).value, showOnPdf: document.getElementById(`show_pdf_addon_${i}`).checked }); } }); data.totalNights = totalNights; return data;
         }
 
         function mapDataToTemplate(templateElement) {
-            templateElement.style.setProperty('--pdf-theme-color', db.pdfSettings.color); templateElement.style.setProperty('--pdf-font-size', db.pdfSettings.fontSize + "px");
-            templateElement.querySelector('.ph-main-title').innerText = db.pdfSettings.title;
-            const txtLogo = templateElement.querySelector('.ph-logo-text'), imgLogo = templateElement.querySelector('.ph-logo-img');
-            if(db.pdfSettings.logoBase64) { txtLogo.style.display = 'none'; imgLogo.src = db.pdfSettings.logoBase64; imgLogo.style.maxHeight = db.pdfSettings.logoHeight + "px"; imgLogo.style.display = 'block'; } 
-            else { txtLogo.style.display = 'block'; imgLogo.style.display = 'none'; }
-
+            templateElement.style.setProperty('--pdf-theme-color', db.pdfSettings.color); templateElement.style.setProperty('--pdf-font-size', db.pdfSettings.fontSize + "px"); templateElement.querySelector('.ph-main-title').innerText = db.pdfSettings.title;
+            const txtLogo = templateElement.querySelector('.ph-logo-text'), imgLogo = templateElement.querySelector('.ph-logo-img'); if(db.pdfSettings.logoBase64) { txtLogo.style.display = 'none'; imgLogo.src = db.pdfSettings.logoBase64; imgLogo.style.maxHeight = db.pdfSettings.logoHeight + "px"; imgLogo.style.display = 'block'; } else { txtLogo.style.display = 'block'; imgLogo.style.display = 'none'; }
             templateElement.querySelector('.ph-address').innerText = db.pdfSettings.address; templateElement.querySelector('.ph-email').innerText = db.pdfSettings.email;
             templateElement.querySelector('.ph-confNo').innerText = document.getElementById('confNo').value || "N/A"; templateElement.querySelector('.ph-guestName').innerText = document.getElementById('guestName').value || "N/A";
             const compSelect = document.getElementById('selectCompany'); const cId = compSelect.value; templateElement.querySelector('.ph-company').innerText = compSelect.options[compSelect.selectedIndex]?.text || "";
-            
-            let adultCount = document.getElementById('adults').value, childCount = document.getElementById('children').value;
-            let personStr = adultCount + " Adult(s)"; if (parseInt(childCount) > 0) personStr += ", " + childCount + " Child(ren)";
-            templateElement.querySelector('.ph-persons').innerText = personStr;
+            let adultCount = document.getElementById('adults').value, childCount = document.getElementById('children').value; let personStr = adultCount + " Adult(s)"; if (parseInt(childCount) > 0) personStr += ", " + childCount + " Child(ren)"; templateElement.querySelector('.ph-persons').innerText = personStr;
             templateElement.querySelector('.ph-arrival').innerText = formatDateVN(document.getElementById('arrivalDate').value); templateElement.querySelector('.ph-departure').innerText = formatDateVN(document.getElementById('departureDate').value);
-            
             const bData = getBookingData(); templateElement.querySelector('.ph-nights').innerText = bData.totalNights; templateElement.querySelector('.ph-grandTotal').innerText = document.getElementById('finalTotalRate').value + " nett";
-
-            let comments = document.getElementById('bookingComments').value.trim(); let commentSection = templateElement.querySelector('.ph-comment-section');
-            if(comments !== "") { commentSection.style.display = 'block'; templateElement.querySelector('.ph-comments-text').innerText = comments; } else { commentSection.style.display = 'none'; }
-
-            const comp = db.companies.find(c => c.id === cId); let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : DEFAULT_POLICY.replace(/\n/g, '<br>');
-            templateElement.querySelector('.ph-policy-text').innerHTML = policyText;
-            const tbody = templateElement.querySelector('.ph-table-body'); tbody.innerHTML = '';
-            
+            let comments = document.getElementById('bookingComments').value.trim(); let commentSection = templateElement.querySelector('.ph-comment-section'); if(comments !== "") { commentSection.style.display = 'block'; templateElement.querySelector('.ph-comments-text').innerText = comments; } else { commentSection.style.display = 'none'; }
+            const comp = db.companies.find(c => c.id === cId); let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : DEFAULT_POLICY.replace(/\n/g, '<br>'); templateElement.querySelector('.ph-policy-text').innerHTML = policyText; const tbody = templateElement.querySelector('.ph-table-body'); tbody.innerHTML = '';
             bData.rooms.forEach(r => { tbody.innerHTML += `<tr><td><b>Room:</b> ${r.type}</td><td style="text-align: center;">${r.qty}</td><td style="text-align: right;">${r.sub}</td></tr>`; });
             bData.addons.forEach(a => { if(a.showOnPdf) { const sub = formatMoney(a.price * a.qty * bData.totalNights) + " đ"; tbody.innerHTML += `<tr><td style="color:#666;"><b>Add-on:</b> ${a.name}</td><td style="text-align: center; color:#666;">${a.qty}</td><td style="text-align: right; color:#666;">${sub}</td></tr>`; } });
         }
@@ -719,26 +788,17 @@
         }
 
         function copyImageToClipboard() {
-            const element = document.getElementById('pdf-template'); mapDataToTemplate(element); element.parentElement.style.position = 'relative'; element.parentElement.style.left = '0px';
-            showToast("Đang tạo ảnh, vui lòng chờ...");
-            html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
-                canvas.toBlob(blob => {
-                    try { navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => { showToast("Đã Copy Hình Ảnh! Bạn có thể nhấn Ctrl+V dán vào Zalo/Viber."); }).catch(err => { alert("Trình duyệt chặn Copy Ảnh trực tiếp. Vui lòng dùng nút 'Xuất Ảnh'."); }); } 
-                    catch(e) { alert("Trình duyệt không hỗ trợ. Vui lòng tải xuống."); }
-                    element.parentElement.style.position = 'absolute'; element.parentElement.style.left = '-9999px';
-                });
-            });
+            const element = document.getElementById('pdf-template'); mapDataToTemplate(element); element.parentElement.style.position = 'relative'; element.parentElement.style.left = '0px'; showToast("Đang tạo ảnh, vui lòng chờ...");
+            html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => { canvas.toBlob(blob => { try { navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => { showToast("Đã Copy Hình Ảnh! Bạn có thể nhấn Ctrl+V dán vào Zalo/Viber."); }).catch(err => { alert("Trình duyệt chặn Copy Ảnh trực tiếp. Vui lòng dùng nút 'Xuất Ảnh'."); }); } catch(e) { alert("Trình duyệt không hỗ trợ. Vui lòng tải xuống."); } element.parentElement.style.position = 'absolute'; element.parentElement.style.left = '-9999px'; }); });
         }
 
         function generatePDF() {
             const element = document.getElementById('pdf-template'); mapDataToTemplate(element); element.parentElement.style.position = 'relative'; element.parentElement.style.left = '0px';
-            html2pdf().set({ margin: 0, filename: 'Confirmation_' + document.getElementById('confNo').value + '.pdf', image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(element).save().then(() => {
-                element.parentElement.style.position = 'absolute'; element.parentElement.style.left = '-9999px'; document.getElementById('previewModal').style.display = 'none';
-            });
+            html2pdf().set({ margin: 0, filename: 'Confirmation_' + document.getElementById('confNo').value + '.pdf', image: { type: 'jpeg', quality: 1 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(element).save().then(() => { element.parentElement.style.position = 'absolute'; element.parentElement.style.left = '-9999px'; document.getElementById('previewModal').style.display = 'none'; });
         }
 
         document.getElementById("loginPass").addEventListener("keyup", function(event) { if (event.key === "Enter") attemptLogin(); });
-        renderSettings(); renderUserList(); addBookingRoomRow();
+        renderSettings(); renderUserList(); renderHistoryLog(); addBookingRoomRow(); renderCompanyDropdown();
     </script>
 </body>
 </html>
