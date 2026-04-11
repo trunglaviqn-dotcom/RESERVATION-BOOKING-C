@@ -222,3 +222,356 @@
                     <h1>CITADINES</h1>
                 </div>
                 <div class="pdf-header-right">
+                    <p>Marina Hạ Long</p>
+                    <p>contact@citadines.com</p>
+                </div>
+            </div>
+            
+            <div class="pdf-body">
+                <h3 class="pdf-title">Reservation Confirmation</h3>
+                <div class="pdf-meta-grid">
+                    <div>
+                        <div class="pdf-meta-item"><strong>Confirmation No:</strong> <span class="ph-confNo"></span></div>
+                        <div class="pdf-meta-item"><strong>Guest Name(s):</strong> <span class="ph-guestName"></span></div>
+                        <div class="pdf-meta-item"><strong>Company:</strong> <span class="ph-company"></span></div>
+                        <div class="pdf-meta-item"><strong>Person(s):</strong> <span class="ph-persons"></span></div>
+                    </div>
+                    <div>
+                        <div class="pdf-meta-item"><strong>Arrival Date:</strong> <span class="ph-arrival"></span></div>
+                        <div class="pdf-meta-item"><strong>Departure Date:</strong> <span class="ph-departure"></span></div>
+                        <div class="pdf-meta-item"><strong>Total Night(s):</strong> <span class="ph-nights"></span></div>
+                    </div>
+                </div>
+
+                <table class="pdf-table">
+                    <thead>
+                        <tr>
+                            <th>Description (Loại Dịch Vụ)</th>
+                            <th style="text-align: center;">Qty (SL)</th>
+                            <th style="text-align: right;">Amount (Thành Tiền)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="ph-table-body"></tbody>
+                    <tfoot>
+                        <tr class="pdf-total-row">
+                            <td colspan="2" style="text-align: right; padding: 15px;">GRAND TOTAL (VND)</td>
+                            <td class="ph-grandTotal" style="text-align: right; padding: 15px;">0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <div class="pdf-notes">
+                    <h4>Terms & Policies</h4>
+                    <div class="ph-policy-text"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. DATA INITIALIZATION ---
+        const DEFAULT_POLICY = `- Rates are NETT, inclusive of 5% Service Charge and 8% VAT.
+- Standard Check-in: 03:00 PM | Standard Check-out: 11:00 AM.
+- Advanced payment will be required 3 days before arrival.
+- Cancellation within 7 days or non-arrival will be subjected to penalty charge.`;
+
+        let db = JSON.parse(localStorage.getItem('henryProDB4')) || {
+            rooms: ['Studio Deluxe', '1 Bedroom Executive', '2 Bedroom Deluxe'],
+            addons: [{ id: 1, name: 'Phụ thu người lớn thứ 3', price: 600000 }, { id: 2, name: 'Giường phụ', price: 500000 }],
+            companies: [{ id: 'c1', name: 'CÔNG TY CỔ PHẦN VINTRAVEL', policy: '', seasons: [] }]
+        };
+
+        // Migrate older versions gracefully
+        db.companies.forEach(c => {
+            c.seasons.forEach(s => {
+                if(!s.surcharge) s.surcharge = { enabled: false, fri: 100000, sat: 500000 };
+            });
+        });
+
+        function saveData() { localStorage.setItem('henryProDB4', JSON.stringify(db)); renderSettings(); }
+
+        // --- 2. RENDER UI ---
+        function renderSettings() {
+            const rList = document.getElementById('roomList'); rList.innerHTML = '';
+            db.rooms.forEach((r, i) => rList.innerHTML += `<li>${r} <button class="btn btn-danger" onclick="delRoom(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
+
+            const aList = document.getElementById('addonList'); aList.innerHTML = '';
+            db.addons.forEach((a, i) => aList.innerHTML += `<li>${a.name} (${formatMoney(a.price)}) <button class="btn btn-danger" onclick="delAddon(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
+
+            const cList = document.getElementById('companyList');
+            const sComp = document.getElementById('selectCompany');
+            cList.innerHTML = ''; const prevComp = sComp.value; sComp.innerHTML = '<option value="">-- Chọn Công ty --</option>';
+            db.companies.forEach((c, i) => {
+                cList.innerHTML += `<li><span class="clickable" onclick="openCompanyModal('${c.id}')"><i class="fa-solid fa-pen-to-square"></i> ${c.name}</span> <button class="btn btn-danger" onclick="delCompany(${i})"><i class="fa-solid fa-trash"></i></button></li>`;
+                sComp.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+            if(prevComp) sComp.value = prevComp;
+        }
+
+        function renderBookingAddons() {
+            const container = document.getElementById('bookingAddonsList'); container.innerHTML = '';
+            db.addons.forEach((a, i) => {
+                container.innerHTML += `
+                    <div class="addon-item">
+                        <input type="checkbox" class="chk-addon" id="chk_addon_${i}" data-name="${a.name}" onchange="calcTotal()">
+                        <label for="chk_addon_${i}" style="width: 170px; font-weight:bold;">${a.name}</label>
+                        <input type="number" class="val-addon-price" id="val_addon_price_${i}" value="${a.price}" oninput="calcTotal()" title="Giá VND">
+                        <label>SL:</label>
+                        <input type="number" class="val-addon-qty" id="val_addon_qty_${i}" value="1" min="1" oninput="calcTotal()" style="width: 50px;">
+                        <div style="margin-left: auto; border-left: 1px solid #ddd; padding-left: 15px;">
+                            <label style="cursor: pointer; color: var(--secondary);" title="In lên hóa đơn PDF">
+                                <input type="checkbox" id="show_pdf_addon_${i}" checked> <i class="fa-solid fa-eye"></i> In lên PDF
+                            </label>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function addBookingRoomRow() {
+            const container = document.getElementById('bookingRoomsList');
+            const row = document.createElement('div'); row.className = 'dynamic-row room-row';
+            let options = '<option value="">-- Chọn Hạng phòng --</option>';
+            db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`);
+            row.innerHTML = `<select class="room-select" onchange="calcTotal()" style="flex: 2;">${options}</select><label>SL:</label><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" style="width: 60px;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền..." style="flex: 1.5; background:#eee; font-weight:bold;"><button class="btn btn-danger" onclick="this.parentElement.remove(); calcTotal();"><i class="fa-solid fa-xmark"></i></button>`;
+            container.appendChild(row);
+        }
+
+        // --- 3. CRUD ---
+        function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); } }
+        function delRoom(i) { db.rooms.splice(i, 1); saveData(); }
+        function addAddon() { const n = document.getElementById('newAddonName').value; const p = parseInt(document.getElementById('newAddonPrice').value)||0; if(n) { db.addons.push({id: Date.now(), name: n, price: p}); document.getElementById('newAddonName').value=''; document.getElementById('newAddonPrice').value=''; saveData(); renderBookingAddons(); } }
+        function delAddon(i) { db.addons.splice(i, 1); saveData(); renderBookingAddons(); }
+        function addCompany() { const v = document.getElementById('newCompany').value; if(v) { db.companies.push({id: 'c'+Date.now(), name: v, policy: '', seasons: []}); document.getElementById('newCompany').value=''; saveData(); } }
+        function delCompany(i) { db.companies.splice(i, 1); saveData(); }
+
+        // --- 4. COMPANY MODAL ---
+        let curCompId = null;
+        function openCompanyModal(id) { 
+            curCompId = id; const comp = db.companies.find(c => c.id === id);
+            document.getElementById('modalCompanyName').innerText = comp.name; 
+            document.getElementById('companyPolicy').value = comp.policy || '';
+            document.getElementById('companyModal').style.display = "block"; renderSeasons(); 
+        }
+        function updateCompanyPolicy() { db.companies.find(c => c.id === curCompId).policy = document.getElementById('companyPolicy').value; saveData(); }
+        function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; curCompId = null; calcTotal(); }
+        
+        function addSeason() {
+            const n = document.getElementById('seasonName').value, s = document.getElementById('seasonStart').value, e = document.getElementById('seasonEnd').value;
+            const wkE = document.getElementById('seasonWkndEnable').checked;
+            const wkF = parseInt(document.getElementById('seasonWkndFri').value)||0;
+            const wkS = parseInt(document.getElementById('seasonWkndSat').value)||0;
+            if(!n || !s || !e) return alert("Nhập đủ thông tin!");
+            
+            const comp = db.companies.find(c => c.id === curCompId);
+            let rates = {}; db.rooms.forEach(r => rates[r] = 0);
+            comp.seasons.push({ id: 's'+Date.now(), name: n, start: s, end: e, rates, surcharge: { enabled: wkE, fri: wkF, sat: wkS } });
+            saveData(); renderSeasons();
+        }
+        function delSeason(sId) { const comp = db.companies.find(c => c.id === curCompId); comp.seasons = comp.seasons.filter(s => s.id !== sId); saveData(); renderSeasons(); }
+        function updateRate(sId, roomName, val) { const comp = db.companies.find(c => c.id === curCompId); comp.seasons.find(s => s.id === sId).rates[roomName] = parseInt(val) || 0; saveData(); }
+        function updateSurcharge(sId, field, val) {
+            const comp = db.companies.find(c => c.id === curCompId);
+            const season = comp.seasons.find(s => s.id === sId);
+            if(field === 'enabled') season.surcharge.enabled = val;
+            else season.surcharge[field] = parseInt(val) || 0;
+            saveData();
+        }
+
+        function renderSeasons() {
+            const comp = db.companies.find(c => c.id === curCompId);
+            const container = document.getElementById('seasonsContainer'); container.innerHTML = '';
+            comp.seasons.forEach(s => {
+                let rHTML = ''; db.rooms.forEach(r => rHTML += `<div class="form-group"><label>${r}</label><input type="number" value="${s.rates[r]||0}" onchange="updateRate('${s.id}', '${r}', this.value)"></div>`);
+                const chk = s.surcharge.enabled ? 'checked' : '';
+                container.innerHTML += `
+                <div class="season-card">
+                    <div style="display:flex; justify-content: space-between;">
+                        <b><i class="fa-regular fa-calendar"></i> ${s.name} (${formatDateVN(s.start)} -> ${formatDateVN(s.end)})</b>
+                        <button class="btn btn-danger" onclick="delSeason('${s.id}')">Xóa</button>
+                    </div>
+                    <div class="weekend-box" style="margin-top:10px; background:#f5f5f5; border:1px solid #ddd;">
+                        <label><input type="checkbox" ${chk} onchange="updateSurcharge('${s.id}', 'enabled', this.checked)"> Phụ thu Cuối tuần</label>
+                        <div style="margin-left: 20px;">
+                            T6: <input type="number" value="${s.surcharge.fri}" onchange="updateSurcharge('${s.id}', 'fri', this.value)" style="width:70px;">
+                            <span style="margin: 0 5px;">|</span>
+                            T7: <input type="number" value="${s.surcharge.sat}" onchange="updateSurcharge('${s.id}', 'sat', this.value)" style="width:70px;">
+                        </div>
+                    </div>
+                    <div class="rates-grid">${rHTML}</div>
+                </div>`;
+            });
+        }
+
+        // --- 5. CALCULATION & WEEKEND LOGIC ---
+        function switchTab(tabId) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
+        function formatMoney(num) { return new Intl.NumberFormat('vi-VN').format(num); }
+        function formatDateVN(dateStr) { if (!dateStr) return ""; const parts = dateStr.split('-'); return parts.length===3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr; }
+        
+        function getWeekendCounts(arrStr, depStr) {
+            let start = new Date(arrStr); let end = new Date(depStr);
+            let fri = 0, sat = 0;
+            if(isNaN(start) || isNaN(end) || end <= start) return { fri, sat, totalNights: 0 };
+            
+            let current = new Date(start);
+            let totalNights = 0;
+            while(current < end) {
+                if(current.getDay() === 5) fri++;
+                if(current.getDay() === 6) sat++;
+                current.setDate(current.getDate() + 1);
+                totalNights++;
+            }
+            return { fri, sat, totalNights };
+        }
+
+        function calcTotal() {
+            const arr = document.getElementById('arrivalDate').value;
+            const dep = document.getElementById('departureDate').value;
+            const { fri, sat, totalNights } = getWeekendCounts(arr, dep);
+            const cId = document.getElementById('selectCompany').value;
+            let grandTotal = 0;
+
+            const comp = db.companies.find(c => c.id === cId);
+            const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
+            
+            let friSur = 0, satSur = 0;
+            let wkndMsg = "";
+            if (season && season.surcharge && season.surcharge.enabled) {
+                friSur = season.surcharge.fri || 0;
+                satSur = season.surcharge.sat || 0;
+                if(fri > 0 || sat > 0) wkndMsg = `<i class="fa-solid fa-circle-info"></i> Booking có ${fri} đêm Thứ 6 (+${formatMoney(friSur)}) và ${sat} đêm Thứ 7 (+${formatMoney(satSur)}) / phòng.`;
+            }
+            document.getElementById('weekendNotice').innerHTML = wkndMsg;
+
+            // Tính tiền phòng (Giá cơ bản + Phụ thu cuối tuần) x Số lượng
+            document.querySelectorAll('.room-row').forEach(row => {
+                const roomType = row.querySelector('.room-select').value;
+                const qty = parseInt(row.querySelector('.room-qty').value) || 1;
+                let price = 0;
+                if(season && roomType) price = season.rates[roomType] || 0;
+                
+                const roomBaseTotal = price * totalNights;
+                const roomWkndTotal = (fri * friSur) + (sat * satSur);
+                const subtotal = (roomBaseTotal + roomWkndTotal) * qty;
+                
+                row.querySelector('.room-subtotal').value = roomType ? (formatMoney(subtotal) + " đ") : "";
+                grandTotal += subtotal;
+            });
+
+            // Tính tiền Addons
+            document.querySelectorAll('.addon-item').forEach((row, i) => {
+                const isChecked = document.getElementById(`chk_addon_${i}`).checked;
+                const price = parseInt(document.getElementById(`val_addon_price_${i}`).value) || 0;
+                const qty = parseInt(document.getElementById(`val_addon_qty_${i}`).value) || 1;
+                if(isChecked) grandTotal += (price * totalNights * qty);
+            });
+
+            document.getElementById('finalTotalRate').value = formatMoney(grandTotal);
+        }
+
+        // --- 6. MAPPING DATA ---
+        function getBookingData() {
+            const data = { rooms: [], addons: [], wkndMsg: '' };
+            const arr = document.getElementById('arrivalDate').value;
+            const dep = document.getElementById('departureDate').value;
+            const { fri, sat, totalNights } = getWeekendCounts(arr, dep);
+            const comp = db.companies.find(c => c.id === document.getElementById('selectCompany').value);
+            const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
+            
+            let friSur = 0, satSur = 0;
+            if (season && season.surcharge && season.surcharge.enabled) {
+                friSur = season.surcharge.fri || 0; satSur = season.surcharge.sat || 0;
+            }
+
+            document.querySelectorAll('.room-row').forEach(row => {
+                const type = row.querySelector('.room-select').value;
+                const qty = row.querySelector('.room-qty').value;
+                const sub = row.querySelector('.room-subtotal').value;
+                if(type) {
+                    let desc = type;
+                    if(fri > 0 && friSur > 0) desc += ` (+T6)`;
+                    if(sat > 0 && satSur > 0) desc += ` (+T7)`;
+                    data.rooms.push({ type: desc, qty, sub });
+                }
+            });
+
+            document.querySelectorAll('.addon-item').forEach((row, i) => {
+                if(document.getElementById(`chk_addon_${i}`).checked) {
+                    data.addons.push({
+                        name: document.getElementById(`chk_addon_${i}`).getAttribute('data-name'),
+                        qty: document.getElementById(`val_addon_qty_${i}`).value,
+                        price: document.getElementById(`val_addon_price_${i}`).value,
+                        showOnPdf: document.getElementById(`show_pdf_addon_${i}`).checked
+                    });
+                }
+            });
+            data.totalNights = totalNights;
+            return data;
+        }
+
+        function mapDataToTemplate(templateElement) {
+            templateElement.querySelector('.ph-confNo').innerText = document.getElementById('confNo').value || "N/A";
+            templateElement.querySelector('.ph-guestName').innerText = document.getElementById('guestName').value || "N/A";
+            
+            const compSelect = document.getElementById('selectCompany');
+            const cId = compSelect.value;
+            templateElement.querySelector('.ph-company').innerText = compSelect.options[compSelect.selectedIndex]?.text || "";
+            templateElement.querySelector('.ph-persons').innerText = document.getElementById('persons').value;
+            templateElement.querySelector('.ph-arrival').innerText = formatDateVN(document.getElementById('arrivalDate').value);
+            templateElement.querySelector('.ph-departure').innerText = formatDateVN(document.getElementById('departureDate').value);
+            
+            const bData = getBookingData();
+            templateElement.querySelector('.ph-nights').innerText = bData.totalNights;
+            templateElement.querySelector('.ph-grandTotal').innerText = document.getElementById('finalTotalRate').value + " nett";
+
+            const comp = db.companies.find(c => c.id === cId);
+            let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : DEFAULT_POLICY;
+            templateElement.querySelector('.ph-policy-text').innerHTML = policyText.replace(/\n/g, '<br>');
+
+            const tbody = templateElement.querySelector('.ph-table-body'); tbody.innerHTML = '';
+            
+            bData.rooms.forEach(r => {
+                tbody.innerHTML += `<tr><td><b>Room:</b> ${r.type}</td><td style="text-align: center;">${r.qty}</td><td style="text-align: right;">${r.sub}</td></tr>`;
+            });
+            
+            bData.addons.forEach(a => {
+                if(a.showOnPdf) {
+                    const sub = formatMoney(a.price * a.qty * bData.totalNights) + " đ";
+                    tbody.innerHTML += `<tr><td style="color:#666;"><b>Add-on:</b> ${a.name}</td><td style="text-align: center; color:#666;">${a.qty}</td><td style="text-align: right; color:#666;">${sub}</td></tr>`;
+                }
+            });
+        }
+
+        // --- 7. ACTIONS ---
+        function openPreview() {
+            const hiddenTemplate = document.getElementById('pdf-template');
+            mapDataToTemplate(hiddenTemplate);
+            document.getElementById('previewPaper').innerHTML = hiddenTemplate.innerHTML;
+            document.getElementById('previewModal').style.display = 'block';
+        }
+
+        function copyEmail() {
+            const bData = getBookingData();
+            let roomsStr = bData.rooms.map(r => `- ${r.type} x ${r.qty} (Thành tiền: ${r.sub})`).join('\n');
+            let addonsStr = bData.addons.filter(a => a.showOnPdf).map(a => `- ${a.name} x ${a.qty} (${formatMoney(a.price)} đ/đêm)`).join('\n');
+            
+            const content = `Dear Quý Công Ty,\n\nKhách sạn xin xác nhận đặt phòng:\nMã đặt phòng: ${document.getElementById('confNo').value}\nKhách hàng: ${document.getElementById('guestName').value}\nNgày đến: ${formatDateVN(document.getElementById('arrivalDate').value)}\nNgày đi: ${formatDateVN(document.getElementById('departureDate').value)}\nSố đêm: ${bData.totalNights}\n\nCHI TIẾT PHÒNG:\n${roomsStr || '- Không có'}\n\nDỊCH VỤ PHÁT SINH:\n${addonsStr || '- Không có'}\n\nTỔNG THANH TOÁN: ${document.getElementById('finalTotalRate').value} nett\n\nTrân trọng.`;
+            navigator.clipboard.writeText(content);
+            alert("Đã copy nội dung Email!");
+        }
+
+        function generatePDF() {
+            const element = document.getElementById('pdf-template');
+            mapDataToTemplate(element);
+            element.parentElement.style.left = '0px'; element.parentElement.style.position = 'relative';
+            html2pdf().set({ margin: 0, filename: 'Confirmation.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).from(element).save().then(() => {
+                element.parentElement.style.position = 'absolute'; element.parentElement.style.left = '-9999px';
+                document.getElementById('previewModal').style.display = 'none';
+            });
+        }
+
+        renderSettings();
+        renderBookingAddons();
+        addBookingRoomRow();
+    </script>
+</body>
+</html>
