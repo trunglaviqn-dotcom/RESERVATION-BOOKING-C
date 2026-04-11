@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Quotation Pro | Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root { --primary: #00a896; --secondary: #028090; --dark: #2c3e50; --light: #f8f9fa; --danger: #e63946; }
+        body { font-family: 'Inter', sans-serif; background-color: #eef2f5; margin: 0; color: #333; display: flex; height: 100vh; overflow: hidden; }
+        
+        /* Sidebar layout */
+        .sidebar { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; }
+        .sidebar-brand { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 30px; letter-spacing: 1px; color: var(--primary); }
+        .nav-item { padding: 15px 25px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
+        .nav-item:hover, .nav-item.active { background: rgba(255,255,255,0.1); border-left: 4px solid var(--primary); }
+        
+        /* Main Content layout */
+        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; background: white; padding: 15px 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header h1 { margin: 0; font-size: 24px; color: var(--dark); }
+        
+        /* Cards */
+        .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card-title { font-size: 18px; font-weight: 600; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; color: var(--secondary); }
+        
+        /* Forms */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group.full-width { grid-column: span 2; }
+        label { font-size: 14px; font-weight: 600; color: #555; }
+        input, select { padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Inter', sans-serif; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
+        
+        /* Buttons */
+        .btn { padding: 12px 20px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.3s; font-family: 'Inter', sans-serif; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--secondary); }
+        .btn-danger { background: var(--danger); color: white; padding: 6px 12px; font-size: 12px;}
+        
+        /* Lists */
+        .list-group { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+        .list-group li { padding: 10px 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .list-group li:last-child { border-bottom: none; }
+        
+        /* Tab Control */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mẫu PDF Ẩn */
+        #pdf-container { position: absolute; left: -9999px; top: 0; }
+        #pdf-template { width: 800px; padding: 40px; background: white; font-family: Arial, sans-serif; color: #333; }
+        .pdf-header { background: #00a896; color: white; padding: 30px 20px; text-align: right; font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+        .pdf-title { font-size: 20px; font-weight: bold; margin: 20px 0; color: #333; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; }
+        .pdf-table td { border: 1px solid #ddd; padding: 10px; vertical-align: top; }
+        .pdf-table td:first-child { width: 40%; font-weight: bold; background-color: #f9f9f9; }
+        .pdf-notes { font-size: 12px; color: #555; line-height: 1.6; }
+        .pdf-notes h4 { margin: 15px 0 5px 0; color: #222; font-size: 14px; }
+        .pdf-notes ul { margin: 0; padding-left: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-brand"><i class="fa-solid fa-hotel"></i> Lioro System</div>
+        <div class="nav-item active" onclick="switchTab('booking')"><i class="fa-solid fa-file-invoice"></i> Tạo Báo Giá / Xác Nhận</div>
+        <div class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-database"></i> Quản Lý Dữ Liệu</div>
+    </div>
+
+    <div class="main-content">
+        
+        <div id="booking" class="tab-content active">
+            <div class="header">
+                <h1>Tạo Xác Nhận Đặt Phòng (Confirmation)</h1>
+                <button class="btn btn-primary" onclick="generatePDF()"><i class="fa-solid fa-print"></i> Xuất File PDF</button>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Thông tin khách hàng & Dịch vụ</h2>
+                <form id="bookingForm" class="form-grid">
+                    <div class="form-group">
+                        <label>Mã Xác Nhận (Conf No.)</label>
+                        <input type="text" id="confNo" placeholder="VD: 20921184" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tên Khách Hàng</label>
+                        <input type="text" id="guestName" placeholder="Tên khách lưu trú" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Công Ty / Đại Lý</label>
+                        <select id="selectCompany"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hạng Phòng</label>
+                        <select id="selectRoom"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày Đến (Check-in 15:00)</label>
+                        <input type="date" id="arrivalDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày Đi (Check-out 11:00)</label>
+                        <input type="date" id="departureDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Số lượng khách</label>
+                        <input type="text" id="persons" placeholder="VD: 2 Adult(s) 0 Child(ren)" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Tổng Giá (VND)</label>
+                        <input type="text" id="totalRate" placeholder="VD: 2,500,000 ++" required>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="header">
+                <h1>Thiết Lập Dữ Liệu Nền</h1>
+            </div>
+
+            <div class="form-grid">
+                <div class="card">
+                    <h2 class="card-title">Danh sách Hạng Phòng</h2>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input type="text" id="newRoom" placeholder="Nhập tên hạng phòng mới..." style="flex: 1;">
+                        <button class="btn btn-primary" onclick="addRoom()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <ul id="roomList" class="list-group"></ul>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Danh sách Công ty / Lữ hành</h2>
+                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                        <input type="text" id="newCompany" placeholder="Nhập tên công ty mới..." style="flex: 1;">
+                        <button class="btn btn-primary" onclick="addCompany()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <ul id="companyList" class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="pdf-container">
+        <div id="pdf-template">
+            <div class="pdf-header">Stay your way<br><span style="font-size: 14px; font-weight: normal;">citadines</span></div>
+            <h3 class="pdf-title">Reservation Confirmation</h3>
+            <table class="pdf-table">
+                <tr><td>Confirmation No.:</td><td id="pdf-confNo"></td></tr>
+                <tr><td>Guest Name(s):</td><td id="pdf-guestName"></td></tr>
+                <tr><td>Company:</td><td id="pdf-company"></td></tr>
+                <tr><td>Arrival:<br><small>Standard Check-in:</small></td><td id="pdf-arrival"></td></tr>
+                <tr><td>Departure:<br><small>Standard Check-out:</small></td><td id="pdf-departure"></td></tr>
+                <tr><td>Apartment Type:</td><td id="pdf-room"></td></tr>
+                <tr><td>Person(s):</td><td id="pdf-persons"></td></tr>
+                <tr><td>Total Rate:</td><td><b id="pdf-rate"></b></td></tr>
+            </table>
+            <div class="pdf-notes">
+                <p>++ Rates are subject to 5% Service Charge and 10% VAT*.<br>* For stays 1 month and above, 10% VAT shall apply.</p>
+                <h4>Rate Details:</h4>
+                <ul>
+                    <li>Daily complimentary breakfasts & housekeeping service</li>
+                    <li>Complimentary WIFI access & bicycle rental</li>
+                    <li>Advanced payment will be required 3 days before arrival</li>
+                    <li>Cancellation and non-arrival will be subjected to a charge amounting to 1 night rental fee.</li>
+                </ul>
+                <h4>Payment Method:</h4>
+                <p>Charge to Travel Agent - Room & Bfast</p>
+                <h4>Cancellation Policy:</h4>
+                <p><b>7-day cancellation policy.</b> Full rental charges shall apply for non-cancellable reservations.<br>
+                - 1 night rental for stays less than 30 nights<br>
+                - 3 nights rental for stays of 30 nights and above</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Chuyển Tab Menu
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        // 2. Quản lý Dữ liệu bằng Local Storage
+        let rooms = JSON.parse(localStorage.getItem('hotelRooms')) || ['1 Bedroom Executive', 'Studio Premier'];
+        let companies = JSON.parse(localStorage.getItem('hotelCompanies')) || ['CÔNG TY CỔ PHẦN VINTRAVEL'];
+
+        function renderData() {
+            const rList = document.getElementById('roomList');
+            const sRoom = document.getElementById('selectRoom');
+            rList.innerHTML = ''; sRoom.innerHTML = '';
+            rooms.forEach((r, i) => {
+                rList.innerHTML += `<li>${r} <button class="btn btn-danger" onclick="delRoom(${i})"><i class="fa-solid fa-trash"></i></button></li>`;
+                sRoom.innerHTML += `<option value="${r}">${r}</option>`;
+            });
+
+            const cList = document.getElementById('companyList');
+            const sComp = document.getElementById('selectCompany');
+            cList.innerHTML = ''; sComp.innerHTML = '';
+            companies.forEach((c, i) => {
+                cList.innerHTML += `<li>${c} <button class="btn btn-danger" onclick="delCompany(${i})"><i class="fa-solid fa-trash"></i></button></li>`;
+                sComp.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+        }
+
+        function addRoom() { const v = document.getElementById('newRoom').value; if(v) { rooms.push(v); localStorage.setItem('hotelRooms', JSON.stringify(rooms)); renderData(); document.getElementById('newRoom').value=''; } }
+        function delRoom(i) { rooms.splice(i, 1); localStorage.setItem('hotelRooms', JSON.stringify(rooms)); renderData(); }
+        
+        function addCompany() { const v = document.getElementById('newCompany').value; if(v) { companies.push(v); localStorage.setItem('hotelCompanies', JSON.stringify(companies)); renderData(); document.getElementById('newCompany').value=''; } }
+        function delCompany(i) { companies.splice(i, 1); localStorage.setItem('hotelCompanies', JSON.stringify(companies)); renderData(); }
+
+        // Khởi chạy data lần đầu
+        renderData();
+
+        // 3. Xử lý xuất PDF
+        function formatDate(dateStr) {
+            if (!dateStr) return "";
+            const d = new Date(dateStr);
+            return d.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function generatePDF() {
+            document.getElementById('pdf-confNo').innerText = document.getElementById('confNo').value || "N/A";
+            document.getElementById('pdf-guestName').innerText = document.getElementById('guestName').value || "N/A";
+            document.getElementById('pdf-company').innerText = document.getElementById('selectCompany').value;
+            document.getElementById('pdf-room').innerText = document.getElementById('selectRoom').value;
+            
+            const arr = document.getElementById('arrivalDate').value;
+            const dep = document.getElementById('departureDate').value;
+            document.getElementById('pdf-arrival').innerHTML = (arr ? formatDate(arr) : "TBD") + "<br>03:00 PM";
+            document.getElementById('pdf-departure').innerHTML = (dep ? formatDate(dep) : "TBD") + "<br>11:00 AM";
+            
+            document.getElementById('pdf-persons').innerText = document.getElementById('persons').value;
+            document.getElementById('pdf-rate').innerText = "VND " + document.getElementById('totalRate').value;
+
+            const element = document.getElementById('pdf-template');
+            element.parentElement.style.left = '0px'; 
+            element.parentElement.style.position = 'relative';
+
+            const opt = {
+                margin: 0.5,
+                filename: 'Reservation_Confirmation_' + (document.getElementById('confNo').value || 'Draft') + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.parentElement.style.position = 'absolute';
+                element.parentElement.style.left = '-9999px';
+            });
+        }
+    </script>
+</body>
+</html>
