@@ -88,7 +88,6 @@
         
         .pdf-header { background: var(--pdf-theme-color); color: white; padding: 40px 50px; display: flex; justify-content: space-between; align-items: center;}
         .pdf-header-left h1 { margin: 0; font-size: 2em; letter-spacing: 2px; text-transform: uppercase; font-weight: 300; }
-        /* Cập nhật giới hạn tối đa cho Logo để tránh tràn */
         .pdf-header-left img { max-width: 400px; object-fit: contain; transition: 0.3s; }
         .pdf-header-right { text-align: right; }
         .pdf-header-right p { margin: 0; font-size: 1em; color: rgba(255,255,255,0.8); }
@@ -100,7 +99,7 @@
         .pdf-meta-item { margin-bottom: 8px; }
         .pdf-meta-item strong { color: var(--pdf-theme-color); display: inline-block; width: 140px;}
         
-        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .pdf-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
         .pdf-table th { background-color: var(--pdf-theme-color); color: white; text-align: left; padding: 12px; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px;}
         .pdf-table td { border-bottom: 1px solid #eee; padding: 12px; vertical-align: middle; }
         .pdf-table tr:last-child td { border-bottom: 2px solid var(--pdf-theme-color); }
@@ -122,8 +121,10 @@
 
     <div class="sidebar">
         <div class="sidebar-brand"><i class="fa-solid fa-crown"></i> Henry (PRO)</div>
-        <div class="nav-item active" onclick="switchTab('booking')"><i class="fa-solid fa-file-invoice"></i> Tạo Xác Nhận Booking</div>
-        <div class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-database"></i> Quản Lý Dữ Liệu</div>
+        
+        <div class="nav-item active" onclick="switchTab('booking-b2b')"><i class="fa-solid fa-building"></i> Booking Công Ty (B2B)</div>
+        <div class="nav-item" onclick="switchTab('booking-b2c')"><i class="fa-solid fa-user"></i> Booking Khách Lẻ (B2C)</div>
+        <div class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-lock"></i> Quản Lý Dữ Liệu</div>
         
         <div class="sidebar-footer">
             Thiết kế và tối ưu bởi<br>
@@ -133,9 +134,9 @@
     </div>
 
     <div class="main-content">
-        <div id="booking" class="tab-content active">
+        <div id="booking-b2b" class="tab-content active">
             <div class="header">
-                <h1>Tạo Xác Nhận Đặt Phòng</h1>
+                <h1>Tạo Xác Nhận Đặt Phòng (Corporate / TA)</h1>
                 <div style="display:flex; gap:8px; flex-wrap: wrap;">
                     <button class="btn btn-info" onclick="openPreview()"><i class="fa-solid fa-eye"></i> Xem trước</button>
                     <button class="btn btn-secondary" onclick="copyEmailText()"><i class="fa-solid fa-envelope"></i> Copy Text Email</button>
@@ -151,9 +152,26 @@
                     <div class="form-group"><label>Mã Xác Nhận</label><input type="text" id="confNo" placeholder="VD: 18794869"></div>
                     <div class="form-group"><label>Tên Khách Hàng</label><input type="text" id="guestName" placeholder="Tên khách"></div>
                     <div class="form-group"><label>Công Ty / Profile</label><select id="selectCompany" onchange="calcTotal()"></select></div>
-                    <div class="form-group"><label>Số lượng khách</label><input type="text" id="persons" placeholder="VD: 04 NL + 02 TE"></div>
+                    
+                    <div class="form-group">
+                        <label>Số lượng khách</label>
+                        <div style="display:flex; gap:10px;">
+                            <div style="flex:1;"><input type="number" id="adults" value="2" min="1" title="Người lớn" style="width: 100%; box-sizing: border-box;"></div>
+                            <div style="flex:1;"><input type="number" id="children" value="0" min="0" title="Trẻ em" style="width: 100%; box-sizing: border-box;"></div>
+                        </div>
+                        <div style="display:flex; gap:10px; font-size:11px; color:#888; margin-top:-5px; margin-left: 5px;">
+                            <span style="flex:1;">Người lớn (Adults)</span>
+                            <span style="flex:1;">Trẻ em (Children)</span>
+                        </div>
+                    </div>
+
                     <div class="form-group"><label>Ngày Đến (Check-in)</label><input type="date" id="arrivalDate" onchange="calcTotal()"></div>
                     <div class="form-group"><label>Ngày Đi (Check-out)</label><input type="date" id="departureDate" onchange="calcTotal()"></div>
+                    
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>Ghi chú thêm (Comments / Special Requests - Tùy chọn)</label>
+                        <textarea id="bookingComments" rows="2" placeholder="Nhập ghi chú hoặc yêu cầu đặc biệt của khách (Sẽ hiển thị trên PDF và Email). Bỏ trống nếu không có."></textarea>
+                    </div>
                 </div>
 
                 <h2 class="card-title" style="margin-top: 30px;">2. Chi tiết Hạng phòng</h2>
@@ -171,16 +189,42 @@
             </div>
         </div>
 
+        <div id="booking-b2c" class="tab-content">
+            <div class="header">
+                <h1>Tạo Xác Nhận Booking - Khách Lẻ (F.I.T)</h1>
+            </div>
+            <div class="card" style="text-align: center; padding: 60px 20px;">
+                <i class="fa-solid fa-person-digging" style="font-size: 60px; color: var(--warning); margin-bottom: 20px;"></i>
+                <h2 style="color: var(--secondary);">Module F.I.T (Khách Lẻ) Đang Được Phát Triển</h2>
+                <p style="color: #666; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    Phân hệ này được tách biệt hoàn toàn để phục vụ cho luồng đặt phòng khách lẻ (B2C). <br><br>
+                    Khách lẻ sẽ có quy tắc định giá linh hoạt (Dynamic Pricing), chính sách phụ thu lễ tết, yêu cầu thanh toán / đặt cọc và bộ điều khoản hủy phạt hoàn toàn khác so với khách đại lý (B2B). Chức năng này sẽ được kích hoạt trong lộ trình nâng cấp tiếp theo.
+                </p>
+                <button class="btn btn-outline" style="margin-top: 30px;" onclick="switchTab('booking-b2b')"><i class="fa-solid fa-arrow-left"></i> Quay lại Khách Đoàn / Công ty</button>
+            </div>
+        </div>
+
         <div id="settings" class="tab-content">
             <div class="header"><h1>Quản Lý Dữ Liệu Nền</h1></div>
             
-            <div class="card" style="background: #e8f4f8; border: 1px solid #bce8f1;">
-                <h2 class="card-title" style="color: #31708f; border-bottom: none;"><i class="fa-solid fa-shield-halved"></i> Bảo Vệ & Phục Hồi Dữ Liệu</h2>
-                <div style="display: flex; gap: 15px; align-items: center;">
-                    <button class="btn btn-primary" onclick="exportData()"><i class="fa-solid fa-download"></i> Tải Dữ Liệu (Backup)</button>
-                    <div style="border-left: 2px solid #ccc; height: 30px; margin: 0 10px;"></div>
-                    <input type="file" id="importFile" accept=".json" style="padding: 5px; background: white; border: 1px solid #ccc; border-radius: 4px;">
-                    <button class="btn btn-danger" onclick="importData()"><i class="fa-solid fa-upload"></i> Nhập Dữ Liệu (Restore)</button>
+            <div class="form-grid">
+                <div class="card" style="background: #fff0f0; border: 1px solid #ffcccc;">
+                    <h2 class="card-title" style="color: #cc0000; border-bottom: none;"><i class="fa-solid fa-lock"></i> Bảo Mật Quản Trị</h2>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="password" id="newAdminPass" placeholder="Nhập mật khẩu mới..." style="flex: 1;">
+                        <button class="btn btn-danger" onclick="changeAdminPassword()">Đổi Mật Khẩu</button>
+                    </div>
+                    <p style="font-size: 11px; color: #888; margin-top: 8px;">* Mật khẩu mặc định là <b>admin</b>. Tính năng này ngăn đồng nghiệp (Sales, Lễ tân) vô tình sửa hoặc xóa cấu hình giá khi đang tạo Booking.</p>
+                </div>
+
+                <div class="card" style="background: #e8f4f8; border: 1px solid #bce8f1;">
+                    <h2 class="card-title" style="color: #31708f; border-bottom: none;"><i class="fa-solid fa-shield-halved"></i> Bảo Vệ & Phục Hồi Dữ Liệu</h2>
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="exportData()"><i class="fa-solid fa-download"></i> Tải Dữ Liệu</button>
+                        <div style="border-left: 2px solid #ccc; height: 30px; margin: 0 5px;"></div>
+                        <input type="file" id="importFile" accept=".json" style="padding: 5px; background: white; border: 1px solid #ccc; border-radius: 4px; max-width: 150px;">
+                        <button class="btn btn-dark" onclick="importData()"><i class="fa-solid fa-upload"></i> Nhập Dữ Liệu</button>
+                    </div>
                 </div>
             </div>
 
@@ -202,7 +246,6 @@
                     <div class="form-group">
                         <label>Màu Nền Banner / Chủ Đạo</label>
                         <input type="color" id="pdfSetColor" value="#8B5A2B" style="width: 100%; height: 40px; cursor: pointer;" onchange="savePdfSettings()">
-                        <span style="font-size: 11px; color:#888;">* Bạn có thể chọn màu trùng với màu nền của Logo để khớp 100%.</span>
                     </div>
 
                     <div class="form-group">
@@ -359,6 +402,11 @@
                     </tfoot>
                 </table>
 
+                <div class="pdf-notes ph-comment-section" style="display:none; margin-bottom: 20px; background: #fff; border-left: 4px solid var(--warning);">
+                    <h4 style="color: var(--warning);">Special Requests / Comments</h4>
+                    <div class="ph-comments-text" style="white-space: pre-line; color: #333;"></div>
+                </div>
+
                 <div class="pdf-notes">
                     <h4>Terms & Policies</h4>
                     <div class="ph-policy-text"></div>
@@ -377,6 +425,8 @@
 - Advanced payment will be required 3 days before arrival.
 - Cancellation within 7 days or non-arrival will be subjected to penalty charge.`;
 
+        let isSettingsUnlocked = false; // Biến trạng thái khóa Tab Settings
+
         function initDatabase() {
             let saved = localStorage.getItem(MASTER_DB_KEY);
             let parsed = saved ? JSON.parse(saved) : null;
@@ -389,22 +439,15 @@
                 };
             }
 
-            // Tích hợp thêm Cấu Hình Hóa Đơn PDF & Thuộc tính mới
             if(!parsed.pdfSettings) {
                 parsed.pdfSettings = { 
-                    logoBase64: "", 
-                    title: "Reservation Confirmation", 
-                    color: "#8B5A2B", 
-                    fontSize: 14,
-                    logoHeight: 60,
-                    address: "Marina Hạ Long",
-                    email: "contact@citadines.com"
+                    logoBase64: "", title: "Reservation Confirmation", color: "#8B5A2B", fontSize: 14, logoHeight: 60, address: "Marina Hạ Long", email: "contact@citadines.com"
                 };
-            } else {
-                // Di chuyển nâng cấp an toàn cho các user cũ
-                if(parsed.pdfSettings.logoHeight === undefined) parsed.pdfSettings.logoHeight = 60;
-                if(parsed.pdfSettings.address === undefined) parsed.pdfSettings.address = "Marina Hạ Long";
-                if(parsed.pdfSettings.email === undefined) parsed.pdfSettings.email = "contact@citadines.com";
+            }
+            
+            // Khởi tạo Mật khẩu Mặc định nếu chưa có
+            if(!parsed.adminPassword) {
+                parsed.adminPassword = "admin";
             }
 
             return parsed;
@@ -413,6 +456,18 @@
         let db = initDatabase();
 
         function saveData() { localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); renderSettings(); }
+
+        // --- BẢO MẬT: ĐỔI MẬT KHẨU ---
+        function changeAdminPassword() {
+            const newPass = document.getElementById('newAdminPass').value;
+            if(!newPass || newPass.trim() === "") {
+                return alert("Vui lòng nhập mật khẩu mới hợp lệ!");
+            }
+            db.adminPassword = newPass.trim();
+            saveData();
+            document.getElementById('newAdminPass').value = "";
+            showToast("Đã đổi mật khẩu Quản trị thành công!");
+        }
 
         // --- 1.5. BACKUP & RESTORE ---
         function exportData() {
@@ -433,13 +488,35 @@
                     const importedDB = JSON.parse(e.target.result);
                     if(importedDB.rooms && importedDB.companies) {
                         db = importedDB;
-                        // Phục hồi an toàn các trường cài đặt
                         if(!db.pdfSettings) db.pdfSettings = { logoBase64: "", title: "Reservation Confirmation", color: "#8B5A2B", fontSize: 14, logoHeight: 60, address: "Marina Hạ Long", email: "contact@citadines.com" };
+                        if(!db.adminPassword) db.adminPassword = "admin";
                         saveData(); showToast("Phục hồi thành công! Tải lại trang..."); setTimeout(() => location.reload(), 1500);
                     } else alert("File hỏng!");
                 } catch (err) { alert("Lỗi đọc file: " + err); }
             };
             reader.readAsText(file);
+        }
+
+        // --- TAB SWITCHING (CÓ BẢO MẬT) ---
+        function switchTab(tabId) { 
+            // Kiểm tra bảo mật nếu user muốn vào Settings
+            if (tabId === 'settings' && !isSettingsUnlocked) {
+                const pass = prompt("Đây là khu vực cấu hình hệ thống.\nVui lòng nhập Mật khẩu Quản trị để truy cập:");
+                if (pass === db.adminPassword) {
+                    isSettingsUnlocked = true;
+                    showToast("Mở khóa thành công!");
+                } else if (pass !== null) {
+                    alert("Sai mật khẩu! Bạn không có quyền truy cập khu vực này.");
+                    return; // Chặn chuyển tab
+                } else {
+                    return; // Người dùng bấm Cancel
+                }
+            }
+
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
+            document.getElementById(tabId).classList.add('active'); 
+            event.currentTarget.classList.add('active'); 
         }
 
         // --- 2. RENDER UI & SETTINGS ---
@@ -472,7 +549,6 @@
             });
             if(prevComp) sComp.value = prevComp;
 
-            // Load Cấu hình PDF lên UI
             document.getElementById('pdfSetTitle').value = db.pdfSettings.title;
             document.getElementById('pdfSetColor').value = db.pdfSettings.color;
             document.getElementById('pdfSetFontSize').value = db.pdfSettings.fontSize;
@@ -487,8 +563,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 db.pdfSettings.logoBase64 = e.target.result;
-                saveData();
-                showToast("Đã cập nhật Logo thành công!");
+                saveData(); showToast("Đã cập nhật Logo thành công!");
             };
             reader.readAsDataURL(file);
         }
@@ -605,7 +680,6 @@
         }
 
         // --- 5. CALCULATION & WEEKEND LOGIC ---
-        function switchTab(tabId) { document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); document.getElementById(tabId).classList.add('active'); event.currentTarget.classList.add('active'); }
         function formatMoney(num) { return new Intl.NumberFormat('vi-VN').format(num); }
         function formatDateVN(dateStr) { if (!dateStr) return ""; const parts = dateStr.split('-'); return parts.length===3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr; }
         
@@ -692,41 +766,52 @@
         }
 
         function mapDataToTemplate(templateElement) {
-            // Apply Tùy Chỉnh Giao Diện (Settings)
             templateElement.style.setProperty('--pdf-theme-color', db.pdfSettings.color);
             templateElement.style.setProperty('--pdf-font-size', db.pdfSettings.fontSize + "px");
             templateElement.querySelector('.ph-main-title').innerText = db.pdfSettings.title;
             
-            // Xử lý Logo và Chiều cao
             const txtLogo = templateElement.querySelector('.ph-logo-text');
             const imgLogo = templateElement.querySelector('.ph-logo-img');
             if(db.pdfSettings.logoBase64) {
                 txtLogo.style.display = 'none';
                 imgLogo.src = db.pdfSettings.logoBase64;
-                imgLogo.style.maxHeight = db.pdfSettings.logoHeight + "px"; // Áp dụng kích cỡ tự chọn
+                imgLogo.style.maxHeight = db.pdfSettings.logoHeight + "px";
                 imgLogo.style.display = 'block';
             } else {
                 txtLogo.style.display = 'block';
                 imgLogo.style.display = 'none';
             }
 
-            // Xử lý Địa chỉ & Email
             templateElement.querySelector('.ph-address').innerText = db.pdfSettings.address;
             templateElement.querySelector('.ph-email').innerText = db.pdfSettings.email;
 
-            // Map Dữ Liệu Form
             templateElement.querySelector('.ph-confNo').innerText = document.getElementById('confNo').value || "N/A";
             templateElement.querySelector('.ph-guestName').innerText = document.getElementById('guestName').value || "N/A";
             const compSelect = document.getElementById('selectCompany');
             const cId = compSelect.value;
             templateElement.querySelector('.ph-company').innerText = compSelect.options[compSelect.selectedIndex]?.text || "";
-            templateElement.querySelector('.ph-persons').innerText = document.getElementById('persons').value;
+            
+            let adultCount = document.getElementById('adults').value;
+            let childCount = document.getElementById('children').value;
+            let personStr = adultCount + " Adult(s)";
+            if (parseInt(childCount) > 0) personStr += ", " + childCount + " Child(ren)";
+            templateElement.querySelector('.ph-persons').innerText = personStr;
+
             templateElement.querySelector('.ph-arrival').innerText = formatDateVN(document.getElementById('arrivalDate').value);
             templateElement.querySelector('.ph-departure').innerText = formatDateVN(document.getElementById('departureDate').value);
             
             const bData = getBookingData();
             templateElement.querySelector('.ph-nights').innerText = bData.totalNights;
             templateElement.querySelector('.ph-grandTotal').innerText = document.getElementById('finalTotalRate').value + " nett";
+
+            let comments = document.getElementById('bookingComments').value.trim();
+            let commentSection = templateElement.querySelector('.ph-comment-section');
+            if(comments !== "") {
+                commentSection.style.display = 'block';
+                templateElement.querySelector('.ph-comments-text').innerText = comments;
+            } else {
+                commentSection.style.display = 'none';
+            }
 
             const comp = db.companies.find(c => c.id === cId);
             let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : DEFAULT_POLICY.replace(/\n/g, '<br>');
@@ -746,7 +831,7 @@
             });
         }
 
-        // --- 7. ACTIONS (PREVIEW, EMAIL, IMAGE, PDF) ---
+        // --- 7. ACTIONS ---
         function openPreview() {
             const hiddenTemplate = document.getElementById('pdf-template');
             mapDataToTemplate(hiddenTemplate);
@@ -769,14 +854,22 @@
             rawPolicy = rawPolicy.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>|<\/div>/gi, '\n');
             let cleanPolicy = stripHtml(rawPolicy).trim();
 
+            let adultCount = document.getElementById('adults').value;
+            let childCount = document.getElementById('children').value;
+            let personStr = adultCount + " Người lớn";
+            if (parseInt(childCount) > 0) personStr += ", " + childCount + " Trẻ em";
+
+            let comments = document.getElementById('bookingComments').value.trim();
+            let commentBlock = comments ? `\nGHI CHÚ (COMMENTS):\n${comments}\n` : '';
+
             let roomsStr = bData.rooms.map(r => `- ${r.type} x ${r.qty} (Thành tiền: ${r.sub})`).join('\n');
             let addonsStr = bData.addons.filter(a => a.showOnPdf).map(a => `- ${a.name} x ${a.qty} (${formatMoney(a.price)} đ/đêm)`).join('\n');
             let wkndNotice = document.getElementById('weekendNotice').innerText;
             
-            const content = `Dear Quý Công Ty,\n\nKhách sạn xin xác nhận đặt phòng:\nMã đặt phòng: ${document.getElementById('confNo').value}\nKhách hàng: ${document.getElementById('guestName').value}\nNgày đến: ${formatDateVN(document.getElementById('arrivalDate').value)}\nNgày đi: ${formatDateVN(document.getElementById('departureDate').value)}\nSố đêm: ${bData.totalNights}\n\nCHI TIẾT DỊCH VỤ:\n${roomsStr || '- Không có'}\n${addonsStr ? '\nPHỤ THU:\n' + addonsStr : ''}\n${wkndNotice ? '\n* LƯU Ý: ' + wkndNotice + '\n' : ''}\nTỔNG THANH TOÁN: ${document.getElementById('finalTotalRate').value} nett\n\nĐIỀU KHOẢN & CHÍNH SÁCH:\n${cleanPolicy}\n\nTrân trọng.`;
+            const content = `Dear Quý Công Ty,\n\nKhách sạn xin xác nhận đặt phòng:\nMã đặt phòng: ${document.getElementById('confNo').value}\nKhách hàng: ${document.getElementById('guestName').value}\nSố lượng khách: ${personStr}\nNgày đến: ${formatDateVN(document.getElementById('arrivalDate').value)}\nNgày đi: ${formatDateVN(document.getElementById('departureDate').value)}\nSố đêm: ${bData.totalNights}\n\nCHI TIẾT DỊCH VỤ:\n${roomsStr || '- Không có'}\n${addonsStr ? '\nPHỤ THU:\n' + addonsStr : ''}\n${wkndNotice ? '\n* LƯU Ý: ' + wkndNotice + '\n' : ''}${commentBlock}\nTỔNG THANH TOÁN: ${document.getElementById('finalTotalRate').value} nett\n\nĐIỀU KHOẢN & CHÍNH SÁCH:\n${cleanPolicy}\n\nTrân trọng.`;
             
             navigator.clipboard.writeText(content);
-            showToast("Đã copy nội dung chuẩn Email (Bao gồm Chính sách & Phụ thu)!");
+            showToast("Đã copy nội dung chuẩn Email!");
         }
 
         function exportImage() {
