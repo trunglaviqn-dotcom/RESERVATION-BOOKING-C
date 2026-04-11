@@ -120,7 +120,7 @@
             <input type="password" id="loginPass" class="login-input" placeholder="Mật khẩu (Password)">
             <button class="btn-login" onclick="attemptLogin()">ĐĂNG NHẬP</button>
             <div class="login-footer">
-                Tài khoản Admin mặc định:<br> User: <b>admin</b> | Pass: <b>123456</b>
+                Hệ thống quản trị nội bộ
             </div>
         </div>
     </div>
@@ -148,7 +148,7 @@
             
             <div class="sidebar-footer">
                 <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</button>
-                <br><br>Thiết kế bởi Kế Toán
+                <br><br>Copyright by Nguyễn Quang Trung- Kế toán - 2026
             </div>
         </div>
 
@@ -321,7 +321,7 @@
             }
             if(!parsed.users) {
                 parsed.users = [
-                    { id: 'u1', user: 'admin', pass: '123456', role: 'admin' },
+                    { id: 'u1', user: 'admin', pass: 'trunglavi.qn@gmail.com', role: 'admin' },
                     { id: 'u2', user: 'sale1', pass: '123456', role: 'sales' },
                     { id: 'u3', user: 'fo1', pass: '123456', role: 'fo' }
                 ];
@@ -399,12 +399,10 @@
 
         // --- 3. IMPORT / EXPORT DÀNH CHO ONEDRIVE ---
         
-        // Mở hộp thoại chọn file cho nút Import trên Menu
         function triggerImportFromMenu() {
             document.getElementById('hiddenImportFile').click();
         }
 
-        // Xử lý khi nhân viên đã chọn file từ máy/OneDrive
         function handleHiddenImport(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -412,16 +410,13 @@
             reader.onload = function(e) {
                 try {
                     const importedDB = JSON.parse(e.target.result);
-                    // Kiểm tra cấu trúc an toàn
                     if(importedDB.rooms && importedDB.companies) {
                         db = importedDB;
-                        // Phục hồi an toàn các config lỡ thiếu
                         if(!db.pdfSettings) db.pdfSettings = { logoBase64: "", title: "Reservation Confirmation", color: "#8B5A2B", fontSize: 14, logoHeight: 60, address: "Marina Hạ Long", email: "contact@citadines.com" };
-                        if(!db.users) db.users = [{ id: 'u1', user: 'admin', pass: '123456', role: 'admin' }];
+                        if(!db.users) db.users = [{ id: 'u1', user: 'admin', pass: 'trunglavi.qn@gmail.com', role: 'admin' }];
                         
                         saveData(); 
                         showToast("Đã cập nhật dữ liệu thành công! Hệ thống sẽ tải lại...");
-                        // Reset lại input file để có thể click tiếp lần sau
                         document.getElementById('hiddenImportFile').value = ""; 
                         setTimeout(() => location.reload(), 1500);
                     } else {
@@ -432,12 +427,10 @@
             reader.readAsText(file);
         }
 
-        // Export Data (Chỉ Admin mới có nút này ở trong Settings)
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
             const downloadAnchorNode = document.createElement('a'); 
             downloadAnchorNode.setAttribute("href", dataStr); 
-            // Đặt tên file gợi ý cho OneDrive
             downloadAnchorNode.setAttribute("download", "Henry_Master_DB_" + new Date().toLocaleDateString('vi-VN').replace(/\//g,'-') + ".json");
             document.body.appendChild(downloadAnchorNode); 
             downloadAnchorNode.click(); 
