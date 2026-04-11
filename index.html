@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Henry (PRO) system | Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,8 +13,8 @@
         body { font-family: 'Inter', sans-serif; background-color: #eef2f5; margin: 0; color: #333; display: flex; height: 100vh; overflow: hidden; }
         
         /* MÀN HÌNH ĐĂNG NHẬP */
-        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; transition: 0.5s;}
-        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 350px; text-align: center; }
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; transition: 0.5s; padding: 20px; box-sizing: border-box;}
+        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); width: 100%; max-width: 400px; text-align: center; box-sizing: border-box;}
         .login-box h2 { color: var(--primary); margin-top: 0; margin-bottom: 30px; font-size: 24px; text-transform: uppercase; letter-spacing: 1px;}
         .login-input { width: 100%; padding: 12px 15px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; box-sizing: border-box;}
         .btn-login { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;}
@@ -24,9 +24,9 @@
         /* MAIN APP */
         #appContainer { display: none; width: 100%; height: 100%; }
 
-        .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; z-index: 10;}
+        .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; z-index: 100; transition: transform 0.3s ease; flex-shrink: 0;}
         .sidebar-brand { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 10px; letter-spacing: 1px; color: var(--primary); text-transform: uppercase;}
-        .user-profile { text-align: center; font-size: 12px; color: #aaa; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);}
+        .user-profile { text-align: center; font-size: 12px; color: #aaa; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);}
         .user-profile span { color: var(--warning); font-weight: bold;}
         
         .nav-item { padding: 15px 25px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
@@ -35,60 +35,70 @@
         .btn-logout { margin-top: 10px; padding: 8px; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 4px; cursor: pointer; font-size: 12px; width: 80%; transition: 0.3s;}
         .btn-logout:hover { background: rgba(255,0,0,0.5); border-color: red;}
         
-        .main-content { flex: 1; padding: 30px; overflow-y: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 15px;}
-        .header h1 { margin: 0; font-size: 22px; color: var(--dark); }
+        /* OVERLAY CHO MOBILE */
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 90; }
+
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; width: 100%; box-sizing: border-box; }
         
-        .card { background: white; border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .card-title { font-size: 16px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--light); padding-bottom: 10px; color: var(--secondary); display: flex; justify-content: space-between;}
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 15px 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); flex-wrap: wrap; gap: 15px;}
+        .header-title-wrapper { display: flex; align-items: center; gap: 15px; width: 100%; }
+        .mobile-toggle { display: none; background: transparent; color: var(--dark); border: none; font-size: 24px; cursor: pointer; padding: 0; }
+        .header h1 { margin: 0; font-size: 20px; color: var(--dark); flex: 1;}
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; width: 100%;}
         
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { display: flex; flex-direction: column; gap: 8px; position: relative;}
-        label { font-size: 13px; font-weight: 600; color: #555; display: flex; justify-content: space-between; align-items: center;}
-        input, select, textarea { padding: 10px 12px; border: 1px solid #ccd1d9; border-radius: 6px; font-family: 'Inter', sans-serif; transition: 0.3s; font-size: 14px;}
+        .card { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; width: 100%; box-sizing: border-box;}
+        .card-title { font-size: 16px; font-weight: 700; margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid var(--light); padding-bottom: 10px; color: var(--secondary); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;}
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; position: relative;}
+        label { font-size: 13px; font-weight: 600; color: #555; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 5px;}
+        input, select, textarea { padding: 10px; border: 1px solid #ccd1d9; border-radius: 6px; font-family: 'Inter', sans-serif; transition: 0.3s; font-size: 14px; width: 100%; box-sizing: border-box;}
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0, 168, 150, 0.1); }
         
-        .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid #ccd1d9; border-radius: 6px; padding: 10px 12px; font-family: 'Inter', sans-serif; font-size: 13px; background: #fff;}
+        .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid #ccd1d9; border-radius: 6px; padding: 10px; font-family: 'Inter', sans-serif; font-size: 13px; background: #fff;}
         .rich-text-editor img { max-width: 100%; height: auto;}
         .rich-text-editor table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 12px;}
         .rich-text-editor td, .rich-text-editor th { border: 1px solid #ccc; padding: 6px; }
 
-        .btn { padding: 10px 15px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; transition: 0.2s;}
+        .btn { padding: 8px 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; transition: 0.2s; white-space: nowrap;}
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: var(--warning); color: white; }
-        .btn-danger { background: var(--danger); color: white; padding: 6px 10px; font-size: 12px;}
+        .btn-danger { background: var(--danger); color: white; }
         .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
         .btn-info { background: #17a2b8; color: white; }
         .btn-dark { background: #343a40; color: white; }
         .btn-success { background: #28a745; color: white; }
         
-        .action-group { display: flex; gap: 5px; }
-        .dynamic-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #fdfdfd; padding: 10px; border: 1px dashed #ccc; border-radius: 6px;}
+        .action-group { display: flex; gap: 5px; flex-wrap: wrap;}
+        .dynamic-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; background: #fdfdfd; padding: 10px; border: 1px dashed #ccc; border-radius: 6px; flex-wrap: wrap;}
+        .dynamic-row > * { flex: 1; min-width: 100px; } /* Đảm bảo các ô input co giãn */
+        
         .addon-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #f9f9f9; padding: 10px; border-radius: 6px; border: 1px solid #eee; flex-wrap: wrap;}
         
         .list-group { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; }
-        .list-group li { padding: 12px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; background: #fff;}
+        .list-group li { padding: 12px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 14px; background: #fff; flex-wrap: wrap; gap: 10px;}
         .clickable { cursor: pointer; color: var(--secondary); font-weight: 600;}
 
-        /* Bảng Lịch Sử */
-        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; }
-        .history-table th { background: var(--dark); color: white; padding: 12px; text-align: left; }
-        .history-table td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle;}
+        /* Bảng Lịch Sử & Table Responsive */
+        .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 13px; background: white; min-width: 600px; }
+        .history-table th { background: var(--dark); color: white; padding: 10px; text-align: left; white-space: nowrap;}
+        .history-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: middle;}
         .history-table tr:hover { background: #f5f5f5; }
 
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); }
-        .modal-content { background-color: #fff; margin: 3% auto; padding: 30px; width: 85%; max-width: 900px; border-radius: 10px; max-height: 85vh; overflow-y: auto; position: relative;}
-        .close-modal { color: #aaa; position: absolute; right: 20px; top: 20px; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); overflow-y: auto;}
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 20px; width: 95%; max-width: 900px; border-radius: 10px; position: relative; box-sizing: border-box;}
+        .close-modal { color: #aaa; position: absolute; right: 15px; top: 10px; font-size: 28px; font-weight: bold; cursor: pointer; }
         .season-card { border: 1px solid var(--border); padding: 15px; margin-bottom: 15px; border-radius: 8px; background: #fdfdfd;}
-        .rates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;}
-        .weekend-box { background: #fff4e6; padding: 10px; border-radius: 6px; display: flex; gap: 15px; align-items: center; margin-bottom: 10px; font-size: 13px; border: 1px solid #ffe8cc;}
+        .rates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px;}
+        .weekend-box { background: #fff4e6; padding: 10px; border-radius: 6px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; font-size: 13px; border: 1px solid #ffe8cc;}
 
-        #previewBox { background: #525659; padding: 20px; border-radius: 8px; text-align: center; overflow-y: auto; height: 60vh; }
-        #previewPaper { background: white; width: 800px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: left; }
+        #previewBox { background: #525659; padding: 10px; border-radius: 8px; text-align: center; overflow-x: auto; height: 60vh; }
+        #previewPaper { background: white; width: 800px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: left; transform-origin: top left;}
 
         /* --- PDF TEMPLATE --- */
         #pdf-container { position: absolute; left: -9999px; top: 0; }
@@ -112,10 +122,43 @@
         .pdf-notes { font-size: 0.85em; color: #555; line-height: 1.6; padding: 20px; background: #fbf9f6; border-left: 4px solid var(--pdf-theme-color); border-radius: 4px;}
         .pdf-notes h4 { margin: 0 0 10px 0; color: var(--pdf-theme-color); font-size: 1.1em; text-transform: uppercase;}
         
-        #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 16px; position: fixed; z-index: 10000; right: 30px; bottom: 30px; font-size: 15px; }
+        #toast { visibility: hidden; min-width: 200px; background-color: #333; color: #fff; text-align: center; border-radius: 5px; padding: 12px; position: fixed; z-index: 10000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; }
         #toast.show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* =========================================================
+           MOBILE RESPONSIVE RULES (MOBILE FIRST/ADJUSTMENTS)
+           ========================================================= */
+        @media (max-width: 768px) {
+            .sidebar { position: fixed; left: -260px; top: 0; height: 100vh; box-shadow: 2px 0 15px rgba(0,0,0,0.3); }
+            .sidebar.open { left: 0; transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
+
+            .mobile-toggle { display: block; }
+            
+            .header { padding: 10px 15px; }
+            .header-title-wrapper { justify-content: flex-start; margin-bottom: 10px;}
+            .header h1 { font-size: 18px; }
+            .header-actions { justify-content: flex-start; }
+            .header-actions .btn { flex: 1; text-align: center; } /* Nút dàn đều trên đt */
+
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group { grid-column: span 1 !important; } /* Bỏ span 2 */
+            
+            .dynamic-row > select, .dynamic-row > input { flex: 1 1 100%; margin-bottom: 5px;}
+            .dynamic-row > label { display: none; } /* Ẩn chữ SL cho gọn */
+            .dynamic-row > button { width: 100%; margin-top: 5px;}
+            
+            .season-card .flex-wrap { flex-direction: column; align-items: stretch !important; gap: 5px;}
+            .season-card .flex-wrap > div { width: 100%; flex-wrap: wrap;}
+            .season-card input[type="text"], .season-card input[type="date"] { width: 100% !important; margin-bottom: 5px; box-sizing: border-box;}
+            
+            #previewPaper { transform: scale(0.4); } /* Thu nhỏ PDF Preview trên đt */
+            #previewBox { padding: 0; height: 50vh;}
+            
+            .card { padding: 15px; }
+        }
     </style>
 </head>
 <body>
@@ -132,8 +175,11 @@
         </div>
     </div>
 
-    <div id="appContainer" style="display:flex;">
-        <div class="sidebar">
+    <div id="appContainer" style="display:flex; width: 100%;">
+        
+        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+        <div class="sidebar" id="sidebar">
             <div class="sidebar-brand"><i class="fa-solid fa-crown"></i> Henry (PRO)</div>
             
             <div class="user-profile">
@@ -163,13 +209,16 @@
         <div class="main-content">
             <div id="booking-b2b" class="tab-content">
                 <div class="header">
-                    <h1>Tạo Xác Nhận Đặt Phòng (Corporate / TA)</h1>
-                    <div style="display:flex; gap:8px; flex-wrap: wrap;">
-                        <button class="btn btn-dark" style="background:#8e44ad;" onclick="saveBookingLog()"><i class="fa-solid fa-floppy-disk"></i> Lưu Booking</button>
-                        <button class="btn btn-info" onclick="openPreview()"><i class="fa-solid fa-eye"></i> Xem trước</button>
-                        <button class="btn btn-secondary" onclick="copyEmailText()"><i class="fa-solid fa-envelope"></i> Copy Email</button>
-                        <button class="btn btn-success" onclick="copyImageToClipboard()"><i class="fa-solid fa-images"></i> Copy Ảnh</button>
-                        <button class="btn btn-primary" onclick="generatePDF()"><i class="fa-solid fa-file-pdf"></i> Xuất PDF</button>
+                    <div class="header-title-wrapper">
+                        <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                        <h1>Tạo Xác Nhận Đặt Phòng (Corporate / TA)</h1>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-dark" style="background:#8e44ad;" onclick="saveBookingLog()"><i class="fa-solid fa-floppy-disk"></i> Lưu</button>
+                        <button class="btn btn-info" onclick="openPreview()"><i class="fa-solid fa-eye"></i> Xem</button>
+                        <button class="btn btn-secondary" onclick="copyEmailText()"><i class="fa-solid fa-envelope"></i> Text</button>
+                        <button class="btn btn-success" onclick="copyImageToClipboard()"><i class="fa-solid fa-images"></i> Ảnh</button>
+                        <button class="btn btn-primary" onclick="generatePDF()"><i class="fa-solid fa-file-pdf"></i> PDF</button>
                     </div>
                 </div>
 
@@ -182,16 +231,16 @@
                         <div class="form-group">
                             <label>
                                 Công Ty / Profile 
-                                <input type="text" id="searchCompDropdown" placeholder="🔍 Tìm nhanh..." onkeyup="renderCompanyDropdown(this.value)" style="width: 140px; padding: 4px 8px; font-size: 11px; border-radius: 4px; border: 1px solid var(--primary);">
+                                <input type="text" id="searchCompDropdown" placeholder="🔍 Tìm nhanh..." onkeyup="renderCompanyDropdown(this.value)" style="width: 130px; padding: 4px 8px; font-size: 11px; border-radius: 4px; border: 1px solid var(--primary);">
                             </label>
                             <select id="selectCompany" onchange="calcTotal()"></select>
                         </div>
                         
                         <div class="form-group">
-                            <label>Số lượng khách</label>
+                            <label>Số lượng khách (Người lớn / Trẻ em)</label>
                             <div style="display:flex; gap:10px;">
-                                <div style="flex:1;"><input type="number" id="adults" value="2" min="1" title="Người lớn" style="width: 100%; box-sizing: border-box;"></div>
-                                <div style="flex:1;"><input type="number" id="children" value="0" min="0" title="Trẻ em" style="width: 100%; box-sizing: border-box;"></div>
+                                <div style="flex:1;"><input type="number" id="adults" value="2" min="1" title="Người lớn"></div>
+                                <div style="flex:1;"><input type="number" id="children" value="0" min="0" title="Trẻ em"></div>
                             </div>
                         </div>
 
@@ -199,7 +248,7 @@
                         <div class="form-group"><label>Ngày Đi (Check-out)</label><input type="date" id="departureDate" onchange="calcTotal()"></div>
                         
                         <div class="form-group" style="grid-column: span 2;">
-                            <label>Ghi chú thêm (Comments / Special Requests - Tùy chọn)</label>
+                            <label>Ghi chú thêm (Comments / Special Requests)</label>
                             <textarea id="bookingComments" rows="2"></textarea>
                         </div>
                     </div>
@@ -220,7 +269,12 @@
             </div>
 
             <div id="booking-b2c" class="tab-content">
-                <div class="header"><h1>Tạo Xác Nhận Booking - Khách Lẻ (F.I.T)</h1></div>
+                <div class="header">
+                    <div class="header-title-wrapper">
+                        <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                        <h1>Tạo Xác Nhận Booking - Khách Lẻ (F.I.T)</h1>
+                    </div>
+                </div>
                 <div class="card" style="text-align: center; padding: 60px 20px;">
                     <i class="fa-solid fa-person-digging" style="font-size: 60px; color: var(--warning); margin-bottom: 20px;"></i>
                     <h2 style="color: var(--secondary);">Module F.I.T Đang Được Phát Triển</h2>
@@ -229,52 +283,64 @@
             </div>
 
             <div id="history" class="tab-content">
-                <div class="header"><h1>Lịch Sử Booking (100 bản lưu gần nhất)</h1></div>
+                <div class="header">
+                    <div class="header-title-wrapper">
+                        <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                        <h1>Lịch Sử Booking (100 bản lưu)</h1>
+                    </div>
+                </div>
                 <div class="card" style="padding: 0; overflow: hidden;">
-                    <table class="history-table">
-                        <thead>
-                            <tr>
-                                <th>Thời gian lưu</th>
-                                <th>Mã Booking</th>
-                                <th>Tên Khách</th>
-                                <th>Công Ty / Đại lý</th>
-                                <th style="text-align: right;">Tổng Tiền</th>
-                                <th style="text-align: right;">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="historyTableBody">
-                            </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Thời gian</th>
+                                    <th>Mã Booking</th>
+                                    <th>Khách Hàng</th>
+                                    <th>Công Ty</th>
+                                    <th style="text-align: right;">Tổng Tiền</th>
+                                    <th style="text-align: right;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody">
+                                </tbody>
+                        </table>
+                    </div>
                     <div id="emptyHistoryMsg" style="text-align:center; padding: 30px; color:#888; display:none;">Chưa có dữ liệu lịch sử nào được lưu.</div>
                 </div>
             </div>
 
             <div id="settings" class="tab-content">
-                <div class="header"><h1>Quản Lý Dữ Liệu & Hệ Thống</h1></div>
+                <div class="header">
+                    <div class="header-title-wrapper">
+                        <button class="mobile-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                        <h1>Quản Lý Dữ Liệu & Hệ Thống</h1>
+                    </div>
+                </div>
                 
                 <div class="form-grid">
                     <div class="card" style="background: #fdf5e6; border: 1px solid #fbe3b6;">
                         <h2 class="card-title" style="color: #d35400; border-bottom: none;"><i class="fa-solid fa-users-gear"></i> Phân Quyền & Tài Khoản</h2>
-                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                            <input type="text" id="newUser" placeholder="Tên Đăng Nhập" style="flex: 1;">
-                            <input type="password" id="newPass" placeholder="Mật khẩu" style="flex: 1;">
-                            <select id="newRole" style="flex: 1;">
-                                <option value="admin">Quản trị (Full)</option>
-                                <option value="sales">Kinh Doanh (Chỉ B2B)</option>
-                                <option value="fo">Lễ Tân (Chỉ B2C)</option>
+                        <div style="display: flex; gap: 5px; margin-bottom: 15px; flex-wrap: wrap;">
+                            <input type="text" id="newUser" placeholder="Tên Đăng Nhập" style="flex: 1; min-width: 100px;">
+                            <input type="password" id="newPass" placeholder="Mật khẩu" style="flex: 1; min-width: 100px;">
+                            <select id="newRole" style="flex: 1; min-width: 100px;">
+                                <option value="admin">Quản trị</option>
+                                <option value="sales">Sales (B2B)</option>
+                                <option value="fo">Lễ Tân (B2C)</option>
                             </select>
-                            <button class="btn btn-primary" onclick="createUser()">Tạo User</button>
+                            <button class="btn btn-primary" style="width:100%; margin-top:5px;" onclick="createUser()">Tạo User</button>
                         </div>
                         <ul id="userList" class="list-group" style="max-height: 200px;"></ul>
                     </div>
 
                     <div class="card" style="background: #e8f4f8; border: 1px solid #bce8f1;">
-                        <h2 class="card-title" style="color: #31708f; border-bottom: none;"><i class="fa-solid fa-share-nodes"></i> Xuất File Chia Sẻ (Admin Only)</h2>
+                        <h2 class="card-title" style="color: #31708f; border-bottom: none;"><i class="fa-solid fa-share-nodes"></i> Xuất File Chia Sẻ</h2>
                         <p style="font-size: 13px; color:#555; line-height: 1.5;">
-                            Mỗi khi bạn tạo User mới hoặc thay đổi giá phòng, hãy bấm nút dưới đây để tải file JSON. Sau đó, **hãy lưu file này đè lên thư mục OneDrive** của công ty để nhân viên Cập nhật.
+                            Bấm nút dưới đây để tải file JSON và upload lên OneDrive của công ty.
                         </p>
                         <div style="margin-top: 15px; text-align: center;">
-                            <button class="btn btn-primary" style="padding: 12px 20px; font-size: 14px;" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Xuất File Dữ Liệu Gốc (.json)</button>
+                            <button class="btn btn-primary" style="padding: 12px 20px; font-size: 14px; width: 100%;" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Xuất File Gốc (.json)</button>
                         </div>
                     </div>
                 </div>
@@ -287,8 +353,8 @@
                             <input type="file" id="logoUpload" accept="image/*" onchange="handleLogoUpload(event)">
                         </div>
                         <div class="form-group"><label>Tiêu Đề Hóa Đơn</label><input type="text" id="pdfSetTitle" onchange="savePdfSettings()"></div>
-                        <div class="form-group"><label>Màu Nền Banner</label><input type="color" id="pdfSetColor" style="width: 100%; height: 40px;" onchange="savePdfSettings()"></div>
-                        <div class="form-group"><label>Kích Cỡ Logo (px)</label><input type="number" id="pdfSetLogoHeight" onchange="savePdfSettings()"></div>
+                        <div class="form-group"><label>Màu Nền Banner</label><input type="color" id="pdfSetColor" style="width: 100%; height: 40px; padding:0;" onchange="savePdfSettings()"></div>
+                        <div class="form-group"><label>Cỡ Logo (px)</label><input type="number" id="pdfSetLogoHeight" onchange="savePdfSettings()"></div>
                         <div class="form-group"><label>Cỡ Chữ (px)</label><input type="number" id="pdfSetFontSize" onchange="savePdfSettings()"></div>
                         <div class="form-group"><label>Địa Chỉ</label><input type="text" id="pdfSetAddress" onchange="savePdfSettings()"></div>
                         <div class="form-group"><label>Email / SĐT</label><input type="text" id="pdfSetEmail" onchange="savePdfSettings()"></div>
@@ -299,22 +365,24 @@
                     <div>
                         <div class="card">
                             <h2 class="card-title">Hạng Phòng</h2>
-                            <div style="display: flex; gap: 10px; margin-bottom: 15px;"><input type="text" id="newRoom" style="flex: 1;"><button class="btn btn-primary" onclick="addRoom()"><i class="fa-solid fa-plus"></i></button></div>
+                            <div style="display: flex; gap: 5px; margin-bottom: 15px;"><input type="text" id="newRoom" style="flex: 1;"><button class="btn btn-primary" onclick="addRoom()"><i class="fa-solid fa-plus"></i></button></div>
                             <ul id="roomList" class="list-group"></ul>
                         </div>
                         <div class="card">
                             <h2 class="card-title">Gói Phụ</h2>
-                            <div style="display: flex; gap: 10px; margin-bottom: 15px;"><input type="text" id="newAddonName" style="flex: 2;"><input type="number" id="newAddonPrice" style="flex: 1;"><button class="btn btn-primary" onclick="addAddon()"><i class="fa-solid fa-plus"></i></button></div>
+                            <div style="display: flex; gap: 5px; margin-bottom: 15px; flex-wrap:wrap;">
+                                <input type="text" id="newAddonName" placeholder="Tên" style="flex: 2; min-width: 100px;">
+                                <input type="number" id="newAddonPrice" placeholder="Giá" style="flex: 1; min-width: 80px;">
+                                <button class="btn btn-primary" onclick="addAddon()"><i class="fa-solid fa-plus"></i></button>
+                            </div>
                             <ul id="addonList" class="list-group"></ul>
                         </div>
                     </div>
                     <div>
                         <div class="card">
-                            <h2 class="card-title">
-                                Hồ Sơ Công Ty & Bảng Giá
-                            </h2>
+                            <h2 class="card-title">Hồ Sơ Công Ty & Bảng Giá</h2>
                             <input type="text" id="searchCompanySetting" placeholder="🔍 Tìm nhanh công ty..." onkeyup="renderCompanyList(this.value)" style="width: 100%; margin-bottom: 15px; border-color: var(--primary);">
-                            <div style="display: flex; gap: 10px; margin-bottom: 15px;"><input type="text" id="newCompany" style="flex: 1;"><button class="btn btn-primary" onclick="addCompany()"><i class="fa-solid fa-plus"></i> Thêm mới</button></div>
+                            <div style="display: flex; gap: 5px; margin-bottom: 15px;"><input type="text" id="newCompany" style="flex: 1;" placeholder="Tên Công Ty"><button class="btn btn-primary" onclick="addCompany()"><i class="fa-solid fa-plus"></i> Thêm</button></div>
                             <ul id="companyList" class="list-group"></ul>
                         </div>
                     </div>
@@ -323,8 +391,51 @@
         </div>
     </div>
 
-    <div id="companyModal" class="modal"><div class="modal-content"><span class="close-modal" onclick="closeModal('companyModal')">&times;</span><h2 id="modalCompanyName" style="color: var(--primary); margin-top: 0;"></h2><div class="form-group" style="margin-bottom: 20px;"><label><b>Chính sách riêng:</b></label><div id="companyPolicy" class="rich-text-editor" contenteditable="true" onblur="updateCompanyPolicy()"></div></div><hr><h3 style="font-size: 16px;">Giai Đoạn Giá</h3><div style="background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 20px;"><div style="display:flex; gap:10px; align-items:center; margin-bottom: 15px;"><input type="text" id="seasonName"><input type="date" id="seasonStart"><input type="date" id="seasonEnd"></div><div class="weekend-box"><label><input type="checkbox" id="seasonWkndEnable" checked> <b>Phụ thu cuối tuần</b></label><div style="margin-left: 20px;">T6: <input type="number" id="seasonWkndFri" value="100000" style="width: 90px;"> đ | T7: <input type="number" id="seasonWkndSat" value="500000" style="width: 90px;"> đ</div></div><button class="btn btn-primary" onclick="addSeason()">Thêm</button></div><div id="seasonsContainer"></div></div></div>
-    <div id="previewModal" class="modal"><div class="modal-content" style="background: #eef2f5; max-width: 900px;"><span class="close-modal" onclick="closeModal('previewModal')">&times;</span><h2>Xem Trước Bản In</h2><div id="previewBox"><div id="previewPaper" class="pdf-template-style"></div></div><div style="text-align: right; margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;"><button class="btn btn-success" onclick="copyImageToClipboard()"><i class="fa-solid fa-images"></i> Copy Ảnh</button><button class="btn btn-dark" onclick="exportImage()"><i class="fa-solid fa-download"></i> Xuất Ảnh</button><button class="btn btn-primary" onclick="generatePDF()"><i class="fa-solid fa-file-pdf"></i> Tải PDF</button></div></div></div>
+    <div id="companyModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('companyModal')">&times;</span>
+            <h2 id="modalCompanyName" style="color: var(--primary); margin-top: 0; padding-right: 30px;"></h2>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label><b>Chính sách riêng:</b></label>
+                <div id="companyPolicy" class="rich-text-editor" contenteditable="true" onblur="updateCompanyPolicy()"></div>
+            </div>
+            <hr>
+            <h3 style="font-size: 16px;">Giai Đoạn Giá</h3>
+            <div style="background: var(--light); padding: 15px; border-radius: 8px; margin-bottom: 20px;" class="season-card">
+                <div style="display:flex; gap:5px; align-items:center; margin-bottom: 15px; flex-wrap: wrap;" class="flex-wrap">
+                    <input type="text" id="seasonName" placeholder="Tên mùa">
+                    <div style="display:flex; width: 100%; gap: 5px;">
+                        <input type="date" id="seasonStart" style="flex:1;">
+                        <input type="date" id="seasonEnd" style="flex:1;">
+                    </div>
+                </div>
+                <div class="weekend-box">
+                    <label style="justify-content: flex-start;"><input type="checkbox" id="seasonWkndEnable" checked> <b>Phụ thu cuối tuần</b></label>
+                    <div style="display:flex; gap:10px;">
+                        T6: <input type="number" id="seasonWkndFri" value="100000" style="width: 100%;">
+                        T7: <input type="number" id="seasonWkndSat" value="500000" style="width: 100%;">
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="addSeason()">Thêm Giai Đoạn</button>
+            </div>
+            <div id="seasonsContainer"></div>
+        </div>
+    </div>
+
+    <div id="previewModal" class="modal">
+        <div class="modal-content" style="background: #eef2f5; max-width: 900px; padding: 10px;">
+            <span class="close-modal" onclick="closeModal('previewModal')" style="z-index: 100;">&times;</span>
+            <h2 style="margin: 5px 0 15px 5px; font-size: 18px;">Xem Trước Bản In</h2>
+            <div id="previewBox">
+                <div id="previewPaper" class="pdf-template-style"></div>
+            </div>
+            <div style="text-align: right; margin-top: 15px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+                <button class="btn btn-success" style="flex:1;" onclick="copyImageToClipboard()"><i class="fa-solid fa-images"></i> Copy Ảnh</button>
+                <button class="btn btn-dark" style="flex:1;" onclick="exportImage()"><i class="fa-solid fa-download"></i> Tải Ảnh</button>
+                <button class="btn btn-primary" style="flex:1;" onclick="generatePDF()"><i class="fa-solid fa-file-pdf"></i> Tải PDF</button>
+            </div>
+        </div>
+    </div>
     
     <div id="pdf-container">
         <div id="pdf-template" class="pdf-template-style">
@@ -345,6 +456,12 @@
     <div id="toast">Thông báo hệ thống</div>
 
     <script>
+        // --- 0. UI CONTROLS FOR MOBILE ---
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        }
+
         // --- 1. CORE & AUTHENTICATION ---
         const MASTER_DB_KEY = 'henryPro_Data_Master';
         let currentUser = null;
@@ -398,6 +515,9 @@
             document.getElementById('loginUser').value = ""; document.getElementById('loginPass').value = "";
             document.getElementById('appContainer').style.display = "none";
             document.getElementById('loginOverlay').style.display = "flex"; document.getElementById('loginOverlay').style.opacity = "1";
+            // Đóng menu nếu đang mở trên mobile
+            document.getElementById('sidebar').classList.remove('open');
+            document.querySelector('.sidebar-overlay').classList.remove('active');
         }
 
         // --- 2. HỆ THỐNG PHÂN QUYỀN (RBAC) ---
@@ -443,6 +563,12 @@
             if(tabId==='booking-b2c') document.getElementById('nav-b2c').classList.add('active');
             if(tabId==='history') document.getElementById('nav-history').classList.add('active');
             if(tabId==='settings') document.getElementById('nav-settings').classList.add('active');
+            
+            // Auto-close sidebar on mobile
+            if(window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+                document.querySelector('.sidebar-overlay').classList.remove('active');
+            }
         }
 
         // --- TÍNH NĂNG TÌM KIẾM CÔNG TY ---
@@ -470,9 +596,9 @@
                     cList.innerHTML += `<li>
                         <span class="clickable" onclick="openCompanyModal('${c.id}')"><i class="fa-solid fa-pen-to-square"></i> ${c.name}</span>
                         <div class="action-group">
-                            <button class="btn btn-info" onclick="renameCompany(${i})" title="Đổi tên Công ty"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn btn-secondary" onclick="copyCompany(${i})" title="Nhân bản Công ty (Copy)"><i class="fa-solid fa-copy"></i></button>
-                            <button class="btn btn-danger" onclick="delCompany(${i})" title="Xóa Công ty"><i class="fa-solid fa-trash"></i></button>
+                            <button class="btn btn-info" onclick="renameCompany(${i})" title="Đổi tên"><i class="fa-solid fa-pen"></i></button>
+                            <button class="btn btn-secondary" onclick="copyCompany(${i})" title="Copy"><i class="fa-solid fa-copy"></i></button>
+                            <button class="btn btn-danger" onclick="delCompany(${i})" title="Xóa"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </li>`;
                 }
@@ -488,7 +614,6 @@
             const compName = comp ? comp.name : "Chưa chọn";
             const total = document.getElementById('finalTotalRate').value || "0";
 
-            // Thu thập toàn bộ chi tiết để Copy
             const adults = document.getElementById('adults').value;
             const children = document.getElementById('children').value;
             const arrivalDate = document.getElementById('arrivalDate').value;
@@ -553,8 +678,8 @@
                             <td style="text-align: right; color: var(--danger); font-weight: bold;">${log.total}</td>
                             <td style="text-align: right;">
                                 <div class="action-group" style="justify-content: flex-end;">
-                                    <button class="btn btn-info" onclick="loadBookingFromHistory(${i})" title="Nhân bản (Copy) booking này" style="padding: 6px 10px; background: #2980b9;"><i class="fa-solid fa-copy"></i> Copy</button>
-                                    <button class="btn btn-danger" onclick="deleteHistoryLog(${i})" title="Xóa lịch sử này" style="padding: 6px 10px;"><i class="fa-solid fa-trash"></i></button>
+                                    <button class="btn btn-info" onclick="loadBookingFromHistory(${i})" title="Copy booking này" style="padding: 6px 10px; background: #2980b9;"><i class="fa-solid fa-copy"></i> Copy</button>
+                                    <button class="btn btn-danger" onclick="deleteHistoryLog(${i})" title="Xóa" style="padding: 6px 10px;"><i class="fa-solid fa-trash"></i></button>
                                 </div>
                             </td>
                         </tr>
@@ -563,18 +688,13 @@
             }
         }
 
-        // Hàm Tải Dữ liệu từ Lịch sử sang Form
         function loadBookingFromHistory(index) {
             const log = db.bookingHistory[index];
-            if(!log || !log.details) {
-                return alert("Bản lưu này quá cũ, không chứa dữ liệu chi tiết để copy!");
-            }
+            if(!log || !log.details) { return alert("Bản lưu này quá cũ, không chứa dữ liệu chi tiết để copy!"); }
 
-            // Điền thông tin cơ bản
             document.getElementById('confNo').value = log.confNo === "Bản nháp" ? "" : log.confNo + " (Copy)";
             document.getElementById('guestName').value = log.guestName;
             
-            // Xử lý Công ty (render lại đầy đủ phòng khi đang bị filter)
             renderCompanyDropdown();
             document.getElementById('selectCompany').value = log.companyId || "";
             
@@ -584,8 +704,7 @@
             document.getElementById('departureDate').value = log.details.departureDate || "";
             document.getElementById('bookingComments').value = log.details.bookingComments || "";
 
-            // Phục hồi Addons
-            document.querySelectorAll('.chk-addon').forEach(chk => chk.checked = false); // Reset
+            document.querySelectorAll('.chk-addon').forEach(chk => chk.checked = false);
             if (log.details.savedAddons) {
                 log.details.savedAddons.forEach(sa => {
                     document.querySelectorAll('.addon-item').forEach((row, idx) => {
@@ -599,9 +718,8 @@
                 });
             }
 
-            // Phục hồi Rooms
             const roomsContainer = document.getElementById('bookingRoomsList');
-            roomsContainer.innerHTML = ''; // Xóa sạch list hiện tại
+            roomsContainer.innerHTML = ''; 
             if (log.details.savedRooms && log.details.savedRooms.length > 0) {
                 log.details.savedRooms.forEach(sr => {
                     addBookingRoomRow(); 
@@ -610,22 +728,12 @@
                     lastRow.querySelector('.room-select').value = sr.type;
                     lastRow.querySelector('.room-qty').value = sr.qty;
                 });
-            } else {
-                addBookingRoomRow(); // Tạo 1 dòng trắng nếu trống
-            }
+            } else { addBookingRoomRow(); }
 
-            calcTotal();
-            switchTab('booking-b2b');
-            showToast("Đã tải dữ liệu thành công! Hãy chỉnh sửa theo ý muốn.");
+            calcTotal(); switchTab('booking-b2b'); showToast("Đã tải dữ liệu thành công!");
         }
 
-        function deleteHistoryLog(index) {
-            if(confirm("Bạn có chắc muốn xóa lịch sử booking này?")) {
-                db.bookingHistory.splice(index, 1);
-                saveData();
-                showToast("Đã xóa booking khỏi lịch sử!");
-            }
-        }
+        function deleteHistoryLog(index) { if(confirm("Bạn có chắc muốn xóa lịch sử booking này?")) { db.bookingHistory.splice(index, 1); saveData(); showToast("Đã xóa booking khỏi lịch sử!"); } }
 
         // --- IMPORT / EXPORT DÀNH CHO ONEDRIVE ---
         function triggerImportFromMenu() { document.getElementById('hiddenImportFile').click(); }
@@ -668,7 +776,7 @@
             const u = document.getElementById('newUser').value.trim(); const p = document.getElementById('newPass').value; const r = document.getElementById('newRole').value;
             if(!u || !p) return alert("Nhập đủ tên và pass!"); if(db.users.find(x => x.user === u)) return alert("Tên đăng nhập đã tồn tại!");
             db.users.push({ id: 'u'+Date.now(), user: u, pass: p, role: r });
-            document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; saveData(); showToast("Đã tạo User mới! Hãy XUẤT FILE để cập nhật lên OneDrive.");
+            document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; saveData(); showToast("Đã tạo User mới! Hãy XUẤT FILE để cập nhật.");
         }
         function deleteUser(i) { if(confirm("Xóa nhân sự này khỏi hệ thống? Nhớ xuất file mới lên OneDrive nhé!")) { db.users.splice(i, 1); saveData(); showToast("Đã xóa User!"); } }
         function changePass(i) { const np = prompt(`Nhập mật khẩu mới cho user ${db.users[i].user}:`); if(np) { db.users[i].pass = np; saveData(); showToast("Đổi pass thành công! Đừng quên xuất file mới."); } }
@@ -693,9 +801,9 @@
 
         function renderBookingAddons() {
             const container = document.getElementById('bookingAddonsList'); container.innerHTML = '';
-            db.addons.forEach((a, i) => { container.innerHTML += `<div class="addon-item"><input type="checkbox" class="chk-addon" id="chk_addon_${i}" data-name="${a.name}" onchange="calcTotal()"><label for="chk_addon_${i}" style="width: 170px; font-weight:bold;">${a.name}</label><input type="number" class="val-addon-price" id="val_addon_price_${i}" value="${a.price}" oninput="calcTotal()" title="Giá VND"><label>SL:</label><input type="number" class="val-addon-qty" id="val_addon_qty_${i}" value="1" min="1" oninput="calcTotal()" style="width: 50px;"><div style="margin-left: auto; border-left: 1px solid #ddd; padding-left: 15px;"><label style="cursor: pointer; color: var(--secondary);" title="In lên hóa đơn PDF"><input type="checkbox" id="show_pdf_addon_${i}" checked> <i class="fa-solid fa-eye"></i> In lên PDF</label></div></div>`; });
+            db.addons.forEach((a, i) => { container.innerHTML += `<div class="addon-item"><input type="checkbox" class="chk-addon" id="chk_addon_${i}" data-name="${a.name}" onchange="calcTotal()"><label for="chk_addon_${i}" style="width: 170px; font-weight:bold;">${a.name}</label><input type="number" class="val-addon-price" id="val_addon_price_${i}" value="${a.price}" oninput="calcTotal()" title="Giá VND"><label>SL:</label><input type="number" class="val-addon-qty" id="val_addon_qty_${i}" value="1" min="1" oninput="calcTotal()" style="width: 50px;"><div style="margin-left: auto; border-left: 1px solid #ddd; padding-left: 15px;"><label style="cursor: pointer; color: var(--secondary);" title="In lên hóa đơn PDF"><input type="checkbox" id="show_pdf_addon_${i}" checked> <i class="fa-solid fa-eye"></i> In PDF</label></div></div>`; });
         }
-        function addBookingRoomRow() { const container = document.getElementById('bookingRoomsList'); const row = document.createElement('div'); row.className = 'dynamic-row room-row'; let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); row.innerHTML = `<select class="room-select" onchange="calcTotal()" style="flex: 2;">${options}</select><label>SL:</label><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" style="width: 60px;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền..." style="flex: 1.5; background:#eee; font-weight:bold;"><button class="btn btn-danger" onclick="this.parentElement.remove(); calcTotal();"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); }
+        function addBookingRoomRow() { const container = document.getElementById('bookingRoomsList'); const row = document.createElement('div'); row.className = 'dynamic-row room-row'; let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); row.innerHTML = `<select class="room-select" onchange="calcTotal()">${options}</select><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" style="width: 60px;" title="Số lượng phòng"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền..." style="background:#eee; font-weight:bold;"><button class="btn btn-danger" onclick="this.parentElement.remove(); calcTotal();"><i class="fa-solid fa-xmark"></i></button>`; container.appendChild(row); }
 
         // CRUD
         function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); } }
@@ -724,7 +832,7 @@
             const comp = db.companies.find(c => c.id === curCompId); const container = document.getElementById('seasonsContainer'); container.innerHTML = '';
             comp.seasons.forEach(s => {
                 let rHTML = ''; db.rooms.forEach(r => rHTML += `<div class="form-group"><label>${r}</label><input type="number" value="${s.rates[r]||0}" onchange="updateRate('${s.id}', '${r}', this.value)"></div>`); const chk = s.surcharge.enabled ? 'checked' : '';
-                container.innerHTML += `<div class="season-card"><div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;"><div style="display: flex; gap: 10px; align-items: center;"><b><i class="fa-regular fa-calendar"></i></b><input type="text" value="${s.name}" onchange="updateSeasonField('${s.id}', 'name', this.value)" style="width: 130px; font-weight: bold; padding: 6px;"><input type="date" value="${s.start}" onchange="updateSeasonField('${s.id}', 'start', this.value)" style="padding: 6px;"><span>-></span><input type="date" value="${s.end}" onchange="updateSeasonField('${s.id}', 'end', this.value)" style="padding: 6px;"></div><div class="action-group"><button class="btn btn-secondary" onclick="copySeason('${s.id}')"><i class="fa-solid fa-copy"></i> Copy</button><button class="btn btn-danger" onclick="delSeason('${s.id}')"><i class="fa-solid fa-trash"></i></button></div></div><div class="weekend-box" style="margin-top:15px; background:#f5f5f5; border:1px solid #ddd;"><label><input type="checkbox" ${chk} onchange="updateSurcharge('${s.id}', 'enabled', this.checked)"> Phụ thu Cuối tuần</label><div style="margin-left: 20px;">T6: <input type="number" value="${s.surcharge.fri}" onchange="updateSurcharge('${s.id}', 'fri', this.value)" style="width:70px;"> | T7: <input type="number" value="${s.surcharge.sat}" onchange="updateSurcharge('${s.id}', 'sat', this.value)" style="width:70px;"></div></div><div class="rates-grid">${rHTML}</div></div>`;
+                container.innerHTML += `<div class="season-card"><div style="display:flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;" class="flex-wrap"><div style="display: flex; gap: 10px; align-items: center; width: 100%;"><input type="text" value="${s.name}" onchange="updateSeasonField('${s.id}', 'name', this.value)" style="flex:1; font-weight: bold; padding: 6px;"><input type="date" value="${s.start}" onchange="updateSeasonField('${s.id}', 'start', this.value)" style="flex:1; padding: 6px;"><input type="date" value="${s.end}" onchange="updateSeasonField('${s.id}', 'end', this.value)" style="flex:1; padding: 6px;"></div><div class="action-group"><button class="btn btn-secondary" onclick="copySeason('${s.id}')"><i class="fa-solid fa-copy"></i> Copy</button><button class="btn btn-danger" onclick="delSeason('${s.id}')"><i class="fa-solid fa-trash"></i></button></div></div><div class="weekend-box" style="margin-top:15px; background:#f5f5f5; border:1px solid #ddd;"><label style="justify-content:flex-start;"><input type="checkbox" ${chk} onchange="updateSurcharge('${s.id}', 'enabled', this.checked)"> Phụ thu Cuối tuần</label><div style="display:flex; gap:10px;">T6: <input type="number" value="${s.surcharge.fri}" onchange="updateSurcharge('${s.id}', 'fri', this.value)" style="width:100%;"> T7: <input type="number" value="${s.surcharge.sat}" onchange="updateSurcharge('${s.id}', 'sat', this.value)" style="width:100%;"></div></div><div class="rates-grid">${rHTML}</div></div>`;
             });
         }
 
@@ -789,7 +897,7 @@
 
         function copyImageToClipboard() {
             const element = document.getElementById('pdf-template'); mapDataToTemplate(element); element.parentElement.style.position = 'relative'; element.parentElement.style.left = '0px'; showToast("Đang tạo ảnh, vui lòng chờ...");
-            html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => { canvas.toBlob(blob => { try { navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => { showToast("Đã Copy Hình Ảnh! Bạn có thể nhấn Ctrl+V dán vào Zalo/Viber."); }).catch(err => { alert("Trình duyệt chặn Copy Ảnh trực tiếp. Vui lòng dùng nút 'Xuất Ảnh'."); }); } catch(e) { alert("Trình duyệt không hỗ trợ. Vui lòng tải xuống."); } element.parentElement.style.position = 'absolute'; element.parentElement.style.left = '-9999px'; }); });
+            html2canvas(element, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => { canvas.toBlob(blob => { try { navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]).then(() => { showToast("Đã Copy Ảnh! Có thể dán vào Zalo/Viber."); }).catch(err => { alert("Trình duyệt chặn Copy Ảnh trực tiếp. Vui lòng dùng nút 'Tải Ảnh'."); }); } catch(e) { alert("Trình duyệt không hỗ trợ. Vui lòng tải xuống."); } element.parentElement.style.position = 'absolute'; element.parentElement.style.left = '-9999px'; }); });
         }
 
         function generatePDF() {
