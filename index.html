@@ -11,16 +11,16 @@
     <style>
         /* THIẾT KẾ MỚI (MODERN SAAS UI) */
         :root { 
-            --primary: #4f46e5; /* Indigo */
+            --primary: #4f46e5; 
             --primary-hover: #4338ca;
-            --secondary: #10b981; /* Emerald */
+            --secondary: #10b981; 
             --secondary-hover: #059669;
-            --dark: #0f172a; /* Slate 900 */
+            --dark: #0f172a; 
             --dark-light: #1e293b;
             --light: #ffffff; 
             --danger: #ef4444; 
             --warning: #f59e0b; 
-            --gray-bg: #f8fafc; /* Slate 50 */
+            --gray-bg: #f8fafc; 
             --gray-border: #e2e8f0;
             --gray-text: #64748b;
             --radius: 12px;
@@ -29,7 +29,7 @@
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--gray-bg); color: #334155; display: flex; height: 100vh; overflow-x: hidden; } /* Fix cuộn ngang */
+        body { font-family: 'Inter', sans-serif; background-color: var(--gray-bg); color: #334155; display: flex; height: 100vh; overflow-x: hidden; }
         
         /* MÀN HÌNH ĐĂNG NHẬP */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--dark), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; transition: 0.5s; padding: 20px;}
@@ -80,8 +80,13 @@
         input, select, textarea { padding: 12px 14px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; transition: 0.2s; font-size: 14px; width: 100%; background: #fff;}
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
         
-        .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid var(--gray-border); border-radius: 8px; padding: 12px; font-size: 14px; }
-        
+        .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid var(--gray-border); border-radius: 8px; padding: 12px; font-size: 14px; background: #fff;}
+        /* CSS cho phép resize dễ nhận biết trong rich text */
+        .rich-text-editor img, .rich-text-editor table { cursor: pointer; outline: 2px dashed transparent; transition: 0.2s; max-width: 100%; }
+        .rich-text-editor img:hover, .rich-text-editor table:hover { outline: 2px dashed var(--primary); }
+        .rich-text-editor table { border-collapse: collapse; width: 100%; }
+        .rich-text-editor td, .rich-text-editor th { border: 1px solid #ccc; padding: 5px; }
+
         /* NÚT BẤM (BUTTONS) */
         .btn { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; white-space: nowrap;}
         .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
@@ -95,7 +100,7 @@
         .btn-outline:hover { background: var(--gray-bg); }
         .btn-dark { background: var(--dark-light); color: white; }
         
-        /* BOTTOM ACTION BAR (MỚI) */
+        /* BOTTOM ACTION BAR */
         .bottom-action-bar { display: flex; justify-content: flex-end; gap: 10px; padding: 20px; background: white; border-radius: var(--radius); border: 1px solid var(--gray-border); box-shadow: var(--shadow); margin-top: 20px; flex-wrap: wrap; }
         
         /* TẠO DÒNG & LIST */
@@ -155,13 +160,11 @@
             .sidebar-overlay.active { display: block; }
 
             .main-content { padding: 12px; }
-            
-            .header { padding: 15px; justify-content: center; margin-bottom: 12px; display: none;} /* Ẩn header chữ to trên Mobile cho gọn */
+            .header { padding: 15px; justify-content: center; margin-bottom: 12px; display: none;} 
             
             .form-grid { grid-template-columns: 1fr; gap: 15px;}
             .form-group { grid-column: span 1 !important; }
             
-            /* Căn chỉnh lại Form trên Mobile */
             .dynamic-row { flex-wrap: wrap; padding: 15px; gap: 10px;}
             .dynamic-row .room-select { flex: 1 1 100%;}
             .dynamic-row .room-qty { flex: 1 1 30%; }
@@ -183,13 +186,13 @@
                 border: 1px solid var(--gray-border);
             }
             .bottom-action-bar .btn { flex: 1; padding: 10px 5px; font-size: 12px;}
-            .bottom-action-bar .btn-dark { display: none; } /* Giấu bớt nút Lưu trên thanh nổi để đỡ rối, nút lưu giữ ở trong thẻ card */
+            .bottom-action-bar .btn-dark { display: none; } 
 
             #previewPaper { transform: scale(0.35); margin-bottom: -60%;} 
             #previewBox { padding: 0; height: 50vh; overflow: hidden; border-radius: 8px;}
         }
 
-        /* --- PDF TEMPLATE (Đã sửa lỗi Mobile Clipping) --- */
+        /* --- PDF TEMPLATE --- */
         #pdf-container { position: absolute; top: 0; left: 0; width: 800px; z-index: -9999; opacity: 0; pointer-events: none; }
         .pdf-template-style { width: 800px; padding: 0; background: white; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; }
         .pdf-template-style { --pdf-theme-color: #0f172a; --pdf-font-size: 14px; font-size: var(--pdf-font-size); }
@@ -210,6 +213,10 @@
         .pdf-total-row { font-weight: bold; font-size: 1.15em; color: var(--dark); background: #f8fafc; }
         .pdf-notes { font-size: 0.85em; color: #475569; line-height: 1.6; padding: 20px; background: #f8fafc; border-left: 4px solid var(--pdf-theme-color); border-radius: 4px;}
         .pdf-notes h4 { margin: 0 0 10px 0; color: var(--dark); font-size: 1.1em; text-transform: uppercase; font-weight: 700;}
+        /* Tối ưu ảnh và bảng trong bản in PDF */
+        .pdf-notes img, .pdf-notes table { max-width: 100%; height: auto; }
+        .pdf-notes table { border-collapse: collapse; width: 100%; margin-top: 10px;}
+        .pdf-notes td, .pdf-notes th { border: 1px solid #ccc; padding: 6px; }
     </style>
 </head>
 <body>
@@ -221,7 +228,7 @@
             <input type="password" id="loginPass" class="login-input" placeholder="Mật khẩu">
             <button class="btn-login" onclick="attemptLogin()">Đăng Nhập Hệ Thống</button>
             <div class="login-footer">
-                Secured Internal System v2.0
+                Secured Internal System v2.1
             </div>
         </div>
     </div>
@@ -309,7 +316,7 @@
                 </div>
 
                 <div class="card">
-                    <h2 class="card-title"><i class="fa-solid fa-mug-hot"></i> 3. Các Gói Phụ Thu</h2>
+                    <h2 class="card-title"><i class="fa-solid fa-mug-hot"></i> 3. Các Gói Phụ Thu / Add-on</h2>
                     <div id="bookingAddonsList" style="margin-bottom: 20px;"></div>
 
                     <div class="form-group" style="background: #f0fdf4; padding: 25px; border-radius: var(--radius); border: 1px solid #bbf7d0; text-align: center;">
@@ -446,10 +453,15 @@
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('companyModal')">&times;</span>
             <h2 id="modalCompanyName" style="color: var(--dark); margin-top: 0; padding-right: 30px; font-weight: 700;"></h2>
+            
             <div class="form-group" style="margin-bottom: 25px;">
-                <label>Chính sách riêng biệt (Tùy chọn):</label>
+                <label style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:5px;">
+                    <span>Chính sách riêng biệt (Copy từ Excel/Word dán vào đây):</span>
+                    <span style="font-size: 11px; color: var(--primary); font-weight: normal; background: #e0e7ff; padding: 4px 8px; border-radius: 4px;"><i class="fa-solid fa-circle-info"></i> Mẹo: Click đúp 2 lần vào Ảnh/Bảng để chỉnh kích thước</span>
+                </label>
                 <div id="companyPolicy" class="rich-text-editor" contenteditable="true" onblur="updateCompanyPolicy()"></div>
             </div>
+            
             <h3 style="font-size: 16px; margin-bottom: 15px; color: var(--dark-light); border-bottom: 1px solid var(--gray-border); padding-bottom: 10px;">Cài Đặt Giai Đoạn Giá</h3>
             
             <div style="background: var(--gray-bg); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--gray-border);" class="season-card">
@@ -625,7 +637,7 @@
             let savedAddons = []; document.querySelectorAll('.addon-item').forEach((row, idx) => { const chkBox = document.getElementById(`chk_addon_${idx}`); if(chkBox && chkBox.checked) { savedAddons.push({ name: chkBox.getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${idx}`).value, price: document.getElementById(`val_addon_price_${idx}`).value }); } });
 
             const log = { id: Date.now(), dateSaved: new Date().toLocaleDateString('vi-VN') + " " + new Date().toLocaleTimeString('vi-VN'), confNo: confNo, guestName: guestName, companyId: cId, companyName: compName, total: total, details: { adults, children, arrivalDate, departureDate, bookingComments, savedRooms, savedAddons } };
-            db.bookingHistory.unshift(log); if(db.bookingHistory.length > 100) db.bookingHistory.pop(); saveData(); showToast("Đã lưu vào Tab Lịch Sử Booking!");
+            db.bookingHistory.unshift(log); if(db.bookingHistory.length > 100) db.bookingHistory.pop(); saveData(); showToast("Đã lưu vào Tab Lịch Sử Booking!"); renderHistoryLog();
         }
 
         function renderHistoryLog() {
@@ -648,7 +660,7 @@
             calcTotal(); switchTab('booking-b2b'); showToast("Đã lấy lại dữ liệu thành công!");
         }
 
-        function deleteHistoryLog(index) { if(confirm("Xóa lịch sử booking này?")) { db.bookingHistory.splice(index, 1); saveData(); showToast("Đã xóa!"); } }
+        function deleteHistoryLog(index) { if(confirm("Xóa lịch sử booking này?")) { db.bookingHistory.splice(index, 1); saveData(); showToast("Đã xóa!"); renderHistoryLog(); } }
 
         // --- IMPORT / EXPORT DÀNH CHO ONEDRIVE ---
         function triggerImportFromMenu() { document.getElementById('hiddenImportFile').click(); }
@@ -714,7 +726,7 @@
             const container = document.getElementById('bookingAddonsList'); container.innerHTML = '';
             db.addons.forEach((a, i) => { container.innerHTML += `<div class="addon-item"><div style="display:flex; align-items:center; gap: 10px; width: 100%;"><input type="checkbox" class="chk-addon" id="chk_addon_${i}" data-name="${a.name}" onchange="calcTotal()" style="width: 20px; height: 20px;"><label for="chk_addon_${i}" style="flex:1; font-weight:700; color:var(--dark); font-size:14px;">${a.name}</label></div><div style="display:flex; gap:10px; width:100%; margin-top:5px;"><input type="number" class="val-addon-price" id="val_addon_price_${i}" value="${a.price}" oninput="calcTotal()" placeholder="Giá VND" style="flex:2;"><input type="number" class="val-addon-qty" id="val_addon_qty_${i}" value="1" min="1" oninput="calcTotal()" style="flex:1;" placeholder="SL"></div><div class="border-t" style="width: 100%; display:flex; align-items:center; margin-top:5px;"><label style="cursor: pointer; color: var(--gray-text);" title="In lên hóa đơn PDF"><input type="checkbox" id="show_pdf_addon_${i}" checked style="width: auto;"> In dòng này lên PDF</label></div></div>`; });
         }
-        function addBookingRoomRow() { const container = document.getElementById('bookingRoomsList'); const row = document.createElement('div'); row.className = 'dynamic-row room-row'; let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); row.innerHTML = `<select class="room-select" onchange="calcTotal()">${options}</select><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" placeholder="SL Phòng" style="font-weight:bold;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền đ" style="background:#f8fafc; font-weight:700; color:var(--primary);"><button class="btn btn-outline" onclick="this.parentElement.remove(); calcTotal();" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-xmark"></i> Bỏ</button>`; container.appendChild(row); }
+        function addBookingRoomRow() { const container = document.getElementById('bookingRoomsList'); const row = document.createElement('div'); row.className = 'dynamic-row room-row'; let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); row.innerHTML = `<select class="room-select" onchange="calcTotal()">${options}</select><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" placeholder="SL Phòng" style="font-weight:bold;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền đ" style="background:#f8fafc; font-weight:700; color:var(--primary);"><button class="btn btn-outline" onclick="this.parentElement.remove(); calcTotal();" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-xmark"></i> Xóa</button>`; container.appendChild(row); }
 
         // CRUD
         function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); } }
@@ -732,6 +744,24 @@
         function updateCompanyPolicy() { db.companies.find(c => c.id === curCompId).policy = document.getElementById('companyPolicy').innerHTML; saveData(); }
         function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; curCompId = null; calcTotal(); }
         
+        // Sự kiện Click đúp để chỉnh sửa ảnh/bảng trong Editor
+        document.getElementById('companyPolicy').addEventListener('dblclick', function(e) {
+            let target = e.target;
+            // Nếu click vào một ô trong bảng, tìm thẻ <table> cha
+            if(target.closest('table')) { target = target.closest('table'); }
+            
+            if(target.tagName === 'IMG' || target.tagName === 'TABLE') {
+                let currentWidth = target.style.width || target.getAttribute('width') || '100%';
+                let newWidth = prompt('Nhập chiều rộng bạn muốn (VD: 100%, 50%, 300px):', currentWidth);
+                if(newWidth) {
+                    target.style.width = newWidth;
+                    if(target.tagName === 'IMG') target.style.height = 'auto'; // Giữ nguyên tỷ lệ ảnh
+                    updateCompanyPolicy();
+                    showToast('Đã đổi kích thước thành ' + newWidth);
+                }
+            }
+        });
+
         function addSeason() { const n = document.getElementById('seasonName').value, s = document.getElementById('seasonStart').value, e = document.getElementById('seasonEnd').value; const wkE = document.getElementById('seasonWkndEnable').checked, wkF = parseInt(document.getElementById('seasonWkndFri').value)||0, wkS = parseInt(document.getElementById('seasonWkndSat').value)||0; if(!n || !s || !e) return alert("Nhập đủ thông tin!"); const comp = db.companies.find(c => c.id === curCompId); let rates = {}; db.rooms.forEach(r => rates[r] = 0); comp.seasons.push({ id: 's'+Date.now(), name: n, start: s, end: e, rates, surcharge: { enabled: wkE, fri: wkF, sat: wkS } }); saveData(); renderSeasons(); }
         function delSeason(sId) { const comp = db.companies.find(c => c.id === curCompId); comp.seasons = comp.seasons.filter(s => s.id !== sId); saveData(); renderSeasons(); }
         function updateSeasonField(sId, field, value) { db.companies.find(c => c.id === curCompId).seasons.find(s => s.id === sId)[field] = value; saveData(); }
@@ -849,7 +879,14 @@
         }
 
         document.getElementById("loginPass").addEventListener("keyup", function(event) { if (event.key === "Enter") attemptLogin(); });
-        renderSettings(); renderUserList(); renderHistoryLog(); addBookingRoomRow(); renderCompanyDropdown();
+        
+        // --- GỌI CÁC HÀM KHỞI TẠO DỮ LIỆU KHI VỪA MỞ TRANG ---
+        renderSettings(); 
+        renderUserList(); 
+        renderHistoryLog(); 
+        addBookingRoomRow(); 
+        renderCompanyDropdown();
+        renderBookingAddons(); // <-- Đã fix: Gọi lệnh in dữ liệu Add-on ra màn hình ngay khi load web.
     </script>
 </body>
 </html>
