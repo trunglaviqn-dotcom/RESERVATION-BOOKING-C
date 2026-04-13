@@ -80,14 +80,21 @@
         input, select, textarea { padding: 12px 14px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; transition: 0.2s; font-size: 14px; width: 100%; background: #fff;}
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
         
+        /* CHUYÊN MÔN: CHECKBOX PHÂN QUYỀN */
+        .perm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; padding: 15px; background: var(--gray-bg); border-radius: 8px; border: 1px dashed #cbd5e1; }
+        .perm-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--dark-light); }
+        .perm-label input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+        .badge-perm { font-size: 11px; background: #e0e7ff; color: var(--primary); padding: 3px 6px; border-radius: 4px; margin-right: 4px; display: inline-block; margin-top: 5px; font-weight: 600; border: 1px solid #c7d2fe;}
+        .badge-perm.bg-warn { background: #fef3c7; color: #b45309; border-color: #fde68a;}
+        .badge-perm.bg-danger { background: #fee2e2; color: #b91c1c; border-color: #fecaca;}
+
         .rich-text-editor { width: 100%; min-height: 120px; max-height: 300px; overflow-y: auto; border: 1px solid var(--gray-border); border-radius: 8px; padding: 12px; font-size: 14px; background: #fff;}
-        /* CSS cho phép resize dễ nhận biết trong rich text */
         .rich-text-editor img, .rich-text-editor table { cursor: pointer; outline: 2px dashed transparent; transition: 0.2s; max-width: 100%; }
         .rich-text-editor img:hover, .rich-text-editor table:hover { outline: 2px dashed var(--primary); }
         .rich-text-editor table { border-collapse: collapse; width: 100%; }
         .rich-text-editor td, .rich-text-editor th { border: 1px solid #ccc; padding: 5px; }
 
-        /* NÚT BẤM (BUTTONS) */
+        /* NÚT BẤM */
         .btn { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; white-space: nowrap;}
         .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .btn:active { transform: translateY(0); }
@@ -100,10 +107,8 @@
         .btn-outline:hover { background: var(--gray-bg); }
         .btn-dark { background: var(--dark-light); color: white; }
         
-        /* BOTTOM ACTION BAR */
         .bottom-action-bar { display: flex; justify-content: flex-end; gap: 10px; padding: 20px; background: white; border-radius: var(--radius); border: 1px solid var(--gray-border); box-shadow: var(--shadow); margin-top: 20px; flex-wrap: wrap; }
         
-        /* TẠO DÒNG & LIST */
         .action-group { display: flex; gap: 5px; flex-wrap: wrap;}
         .dynamic-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; background: var(--gray-bg); padding: 12px; border-radius: 8px; flex-wrap: wrap;}
         .addon-item { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--gray-border); flex-wrap: wrap;}
@@ -114,7 +119,6 @@
         .clickable { cursor: pointer; color: var(--primary); font-weight: 600; transition: 0.2s;}
         .clickable:hover { color: var(--primary-hover); }
 
-        /* BẢNG BIỂU */
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; border: 1px solid var(--gray-border);}
         .history-table { width: 100%; border-collapse: collapse; font-size: 14px; background: white; min-width: 700px; }
         .history-table th { background: var(--gray-bg); color: var(--gray-text); padding: 15px; text-align: left; white-space: nowrap; font-weight: 600;}
@@ -141,17 +145,10 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* =========================================================
-           TỐI ƯU HÓA MOBILE 100% KHÔNG LỆCH KHUNG
-           ========================================================= */
+        /* TỐI ƯU MOBILE */
         @media (max-width: 768px) {
             #appContainer { flex-direction: column; }
-            
-            .mobile-topbar {
-                display: flex; background: white; color: var(--dark); padding: 15px 20px;
-                align-items: center; justify-content: space-between; flex-shrink: 0;
-                box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 900;
-            }
+            .mobile-topbar { display: flex; background: white; color: var(--dark); padding: 15px 20px; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 900; }
             .mobile-topbar button { background: transparent; border: none; color: var(--dark); font-size: 24px; cursor: pointer; padding: 0; }
             .mobile-topbar .brand { font-size: 16px; font-weight: 800; color: var(--primary); letter-spacing: 1px;}
             
@@ -177,14 +174,7 @@
             
             .card { padding: 15px; border-radius: 12px; margin-bottom: 15px;}
             
-            /* Sticky Bottom Action Bar trên Mobile */
-            .bottom-action-bar { 
-                position: sticky; bottom: 10px; z-index: 90; 
-                background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
-                padding: 12px; gap: 8px; flex-direction: row; justify-content: space-between;
-                box-shadow: 0 -4px 15px rgba(0,0,0,0.1); margin-top: 10px;
-                border: 1px solid var(--gray-border);
-            }
+            .bottom-action-bar { position: sticky; bottom: 10px; z-index: 90; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); padding: 12px; gap: 8px; flex-direction: row; justify-content: space-between; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); margin-top: 10px; border: 1px solid var(--gray-border); }
             .bottom-action-bar .btn { flex: 1; padding: 10px 5px; font-size: 12px;}
             .bottom-action-bar .btn-dark { display: none; } 
 
@@ -192,7 +182,7 @@
             #previewBox { padding: 0; height: 50vh; overflow: hidden; border-radius: 8px;}
         }
 
-        /* --- PDF TEMPLATE --- */
+        /* PDF TEMPLATE */
         #pdf-container { position: absolute; top: 0; left: 0; width: 800px; z-index: -9999; opacity: 0; pointer-events: none; }
         .pdf-template-style { width: 800px; padding: 0; background: white; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; }
         .pdf-template-style { --pdf-theme-color: #0f172a; --pdf-font-size: 14px; font-size: var(--pdf-font-size); }
@@ -213,7 +203,6 @@
         .pdf-total-row { font-weight: bold; font-size: 1.15em; color: var(--dark); background: #f8fafc; }
         .pdf-notes { font-size: 0.85em; color: #475569; line-height: 1.6; padding: 20px; background: #f8fafc; border-left: 4px solid var(--pdf-theme-color); border-radius: 4px;}
         .pdf-notes h4 { margin: 0 0 10px 0; color: var(--dark); font-size: 1.1em; text-transform: uppercase; font-weight: 700;}
-        /* Tối ưu ảnh và bảng trong bản in PDF */
         .pdf-notes img, .pdf-notes table { max-width: 100%; height: auto; }
         .pdf-notes table { border-collapse: collapse; width: 100%; margin-top: 10px;}
         .pdf-notes td, .pdf-notes th { border: 1px solid #ccc; padding: 6px; }
@@ -228,7 +217,7 @@
             <input type="password" id="loginPass" class="login-input" placeholder="Mật khẩu">
             <button class="btn-login" onclick="attemptLogin()">Đăng Nhập Hệ Thống</button>
             <div class="login-footer">
-                Secured Internal System v2.1
+                Secured Internal System v3.0 (RBAC)
             </div>
         </div>
     </div>
@@ -240,29 +229,26 @@
             <div class="brand"><i class="fa-solid fa-cube"></i> HENRY</div>
             <div style="width: 24px;"></div>
         </div>
-
         <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
         <div class="sidebar" id="sidebar">
             <div class="sidebar-brand"><i class="fa-solid fa-cube"></i> Henry PRO</div>
-            
             <div class="user-profile">
                 <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;"><i class="fa-regular fa-user"></i></div>
-                <span id="displayUsername" style="font-size: 14px; color: white;">Admin</span><br>
-                <span id="displayRole" style="color:#94a3b8; font-weight:normal; font-size: 12px;">Administrator</span>
+                <span id="displayUsername" style="font-size: 14px; color: white;">...</span><br>
+                <span id="displayRole" style="color:#94a3b8; font-weight:normal; font-size: 11px;">...</span>
             </div>
 
             <div id="nav-import" class="nav-item" onclick="triggerImportFromMenu()" style="background: rgba(245, 158, 11, 0.15); border-left: 4px solid var(--warning); color: #fbbf24;">
                 <i class="fa-solid fa-cloud-arrow-down"></i> Nhận Dữ Liệu
             </div>
             <input type="file" id="hiddenImportFile" accept=".json" style="display: none;" onchange="handleHiddenImport(event)">
-            
             <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.05); margin: 10px 20px;">
 
             <div id="nav-b2b" class="nav-item" onclick="switchTab('booking-b2b')"><i class="fa-solid fa-briefcase"></i> Booking B2B</div>
             <div id="nav-b2c" class="nav-item" onclick="switchTab('booking-b2c')"><i class="fa-solid fa-user-tag"></i> Khách Lẻ (FIT)</div>
             <div id="nav-history" class="nav-item" onclick="switchTab('history')"><i class="fa-solid fa-clock-rotate-left"></i> Lịch Sử Đặt</div>
-            <div id="nav-settings" class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i> Quản Trị Dữ Liệu</div>
+            <div id="nav-settings" class="nav-item" onclick="switchTab('settings')"><i class="fa-solid fa-sliders"></i> Quản Lý Dữ Liệu</div>
             
             <div class="sidebar-footer">
                 <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
@@ -272,24 +258,17 @@
 
         <div class="main-content">
             <div id="booking-b2b" class="tab-content">
-                <div class="header">
-                    <h1>Xác Nhận Đặt Phòng Công Ty / Đại Lý</h1>
-                </div>
+                <div class="header"><h1>Xác Nhận Đặt Phòng Công Ty / Đại Lý</h1></div>
 
                 <div class="card">
                     <h2 class="card-title"><i class="fa-regular fa-id-card"></i> 1. Thông Tin Chung</h2>
                     <div class="form-grid">
                         <div class="form-group"><label>Mã Xác Nhận (Conf No)</label><input type="text" id="confNo" placeholder="VD: 18794869"></div>
                         <div class="form-group"><label>Tên Khách (Guest Name)</label><input type="text" id="guestName" placeholder="Tên khách"></div>
-                        
                         <div class="form-group">
-                            <label>
-                                Profile Công Ty 
-                                <input type="text" id="searchCompDropdown" placeholder="🔍 Tìm nhanh..." onkeyup="renderCompanyDropdown(this.value)" style="width: 120px; padding: 4px 8px; font-size: 11px; border-radius: 4px; border: 1px solid var(--primary); background: #f0f9ff; color: var(--primary);">
-                            </label>
+                            <label>Profile Công Ty <input type="text" id="searchCompDropdown" placeholder="🔍 Tìm nhanh..." onkeyup="renderCompanyDropdown(this.value)" style="width: 120px; padding: 4px 8px; font-size: 11px; border-radius: 4px; border: 1px solid var(--primary); background: #f0f9ff; color: var(--primary);"></label>
                             <select id="selectCompany" onchange="calcTotal()"></select>
                         </div>
-                        
                         <div class="form-group">
                             <label>Số lượng khách</label>
                             <div style="display:flex; gap:10px;">
@@ -297,10 +276,8 @@
                                 <div style="flex:1;"><input type="number" id="children" value="0" min="0" placeholder="Trẻ em"></div>
                             </div>
                         </div>
-
                         <div class="form-group"><label>Ngày Đến (Arrival)</label><input type="date" id="arrivalDate" onchange="calcTotal()"></div>
                         <div class="form-group"><label>Ngày Đi (Departure)</label><input type="date" id="departureDate" onchange="calcTotal()"></div>
-                        
                         <div class="form-group" style="grid-column: span 2;">
                             <label>Ghi chú (Comments / Special Requests)</label>
                             <textarea id="bookingComments" rows="2" placeholder="Ghi chú thêm cho khách hàng..."></textarea>
@@ -318,7 +295,6 @@
                 <div class="card">
                     <h2 class="card-title"><i class="fa-solid fa-mug-hot"></i> 3. Các Gói Phụ Thu / Add-on</h2>
                     <div id="bookingAddonsList" style="margin-bottom: 20px;"></div>
-
                     <div class="form-group" style="background: #f0fdf4; padding: 25px; border-radius: var(--radius); border: 1px solid #bbf7d0; text-align: center;">
                         <label style="font-size: 15px; color: var(--secondary); justify-content: center; margin-bottom: 10px; font-weight: 700;">TỔNG CỘNG NETT (VND)</label>
                         <input type="text" id="finalTotalRate" placeholder="0" readonly style="font-size: 32px; font-weight: 800; color: var(--secondary); padding: 15px; border: none; background: transparent; text-align: center; box-shadow: none;">
@@ -327,7 +303,6 @@
 
                 <div class="card" style="background: transparent; box-shadow: none; border: none; padding: 0;">
                     <button class="btn btn-dark" style="width: 100%; padding: 15px; margin-bottom: 20px; font-size: 16px; background: #334155;" onclick="saveBookingLog()"><i class="fa-solid fa-floppy-disk"></i> Lưu Lịch Sử Booking</button>
-                    
                     <div class="bottom-action-bar">
                         <button class="btn btn-outline" onclick="openPreview()"><i class="fa-solid fa-eye"></i> Xem Trước</button>
                         <button class="btn btn-warning" onclick="copyEmailText()"><i class="fa-solid fa-envelope"></i> Copy Text</button>
@@ -344,7 +319,6 @@
                         <i class="fa-solid fa-person-digging" style="font-size: 40px; color: var(--primary);"></i>
                     </div>
                     <h2 style="color: var(--dark); font-weight: 700;">Module F.I.T Đang Xây Dựng</h2>
-                    <p style="color: var(--gray-text); max-width: 500px; margin: 10px auto 0;">Chức năng này sẽ sớm ra mắt với cấu trúc giá linh hoạt và quản lý cọc/hủy dành riêng cho khách lẻ.</p>
                 </div>
             </div>
 
@@ -354,14 +328,7 @@
                     <div class="table-responsive">
                         <table class="history-table">
                             <thead>
-                                <tr>
-                                    <th>Thời gian</th>
-                                    <th>Mã Booking</th>
-                                    <th>Khách Hàng</th>
-                                    <th>Công Ty</th>
-                                    <th style="text-align: right;">Tổng Tiền</th>
-                                    <th style="text-align: center;">Thao tác</th>
-                                </tr>
+                                <tr><th>Thời gian</th><th>Mã Booking</th><th>Khách Hàng</th><th>Công Ty</th><th style="text-align: right;">Tổng Tiền</th><th style="text-align: center;">Thao tác</th></tr>
                             </thead>
                             <tbody id="historyTableBody"></tbody>
                         </table>
@@ -371,36 +338,39 @@
             </div>
 
             <div id="settings" class="tab-content">
-                <div class="header"><h1>Quản Trị Hệ Thống & Dữ Liệu</h1></div>
+                <div class="header"><h1>Quản Lý Dữ Liệu</h1></div>
                 
-                <div class="form-grid">
-                    <div class="card" style="border-top: 4px solid var(--warning);">
-                        <h2 class="card-title"><i class="fa-solid fa-users-gear"></i> Phân Quyền</h2>
-                        <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                            <input type="text" id="newUser" placeholder="Username" style="flex: 1; min-width: 100px;">
-                            <input type="password" id="newPass" placeholder="Password" style="flex: 1; min-width: 100px;">
-                            <select id="newRole" style="flex: 1; min-width: 100px;">
-                                <option value="admin">Quản trị</option>
-                                <option value="sales">Sales (B2B)</option>
-                                <option value="fo">Lễ Tân (B2C)</option>
-                            </select>
-                            <button class="btn btn-dark" style="width: 100%;" onclick="createUser()">Tạo User</button>
+                <div class="form-grid" id="block-admin-tools">
+                    <div class="card" id="card-users" style="border-top: 4px solid var(--danger);">
+                        <h2 class="card-title"><i class="fa-solid fa-shield-halved"></i> Phân Quyền Hệ Thống</h2>
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+                            <input type="text" id="newUser" placeholder="Tên đăng nhập" style="flex: 1; min-width: 100px;">
+                            <input type="password" id="newPass" placeholder="Mật khẩu" style="flex: 1; min-width: 100px;">
                         </div>
-                        <ul id="userList" class="list-group" style="max-height: 200px; border: 1px solid var(--gray-border); border-radius: 8px;"></ul>
+                        <div class="perm-grid">
+                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="b2b" checked> Cấp quyền Tạo B2B</label>
+                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="b2c"> Cấp quyền Khách lẻ</label>
+                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="history" checked> Xem Lịch sử Booking</label>
+                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="companies"> Quản lý Hồ sơ Công ty</label>
+                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="settings"> Cài đặt Hệ thống & Giá</label>
+                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="users"> Phân quyền Admin</label>
+                        </div>
+                        <button class="btn btn-dark" style="width: 100%; margin-bottom: 15px;" onclick="createUser()"><i class="fa-solid fa-user-plus"></i> Tạo Tài Khoản Mới</button>
+                        <ul id="userList" class="list-group" style="max-height: 250px; border: 1px solid var(--gray-border); border-radius: 8px;"></ul>
                     </div>
 
-                    <div class="card" style="border-top: 4px solid var(--primary); background: #f8fafc;">
-                        <h2 class="card-title"><i class="fa-solid fa-cloud-arrow-up"></i> Xuất File Chia Sẻ</h2>
+                    <div class="card" id="card-export" style="border-top: 4px solid var(--primary); background: #f8fafc;">
+                        <h2 class="card-title"><i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Chia Sẻ Dữ Liệu</h2>
                         <p style="font-size: 13px; color:var(--gray-text); line-height: 1.6;">
-                            Khi thay đổi Bảng Giá, Tạo User... Dữ liệu chỉ lưu tạm trên trình duyệt này. <br><b>Hãy ấn XUẤT FILE và lưu đè lên OneDrive chung của bộ phận.</b>
+                            Các thay đổi về dữ liệu trên máy tính này chỉ lưu cục bộ.<br><b>Hãy ấn XUẤT FILE và up file json lên OneDrive chung để mọi người đồng bộ.</b>
                         </p>
                         <div style="margin-top: 20px;">
-                            <button class="btn btn-primary" style="padding: 14px; font-size: 15px; width: 100%;" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Xuất File Cập Nhật (.json)</button>
+                            <button class="btn btn-primary" style="padding: 14px; font-size: 15px; width: 100%;" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Xuất File Đồng Bộ Mới (.json)</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card" id="card-pdf">
                     <h2 class="card-title"><i class="fa-solid fa-palette"></i> Cấu Hình Giao Diện Hóa Đơn PDF</h2>
                     <div class="form-grid">
                         <div class="form-group" style="grid-column: span 2;">
@@ -416,15 +386,15 @@
                     </div>
                 </div>
 
-                <div class="form-grid">
-                    <div>
+                <div class="form-grid" id="settings-bottom-grid">
+                    <div id="col-rooms-addons">
                         <div class="card">
-                            <h2 class="card-title">Hạng Phòng</h2>
+                            <h2 class="card-title">Thiết Lập Hạng Phòng</h2>
                             <div style="display: flex; gap: 8px; margin-bottom: 15px;"><input type="text" id="newRoom" style="flex: 1;"><button class="btn btn-secondary" onclick="addRoom()"><i class="fa-solid fa-plus"></i></button></div>
                             <ul id="roomList" class="list-group" style="border: 1px solid var(--gray-border); border-radius: 8px;"></ul>
                         </div>
-                        <div class="card">
-                            <h2 class="card-title">Gói Phụ Thu / Add-on</h2>
+                        <div class="card" style="margin-top: 20px;">
+                            <h2 class="card-title">Thiết Lập Gói Phụ Thu / Add-on</h2>
                             <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
                                 <input type="text" id="newAddonName" placeholder="Tên dịch vụ" style="flex: 1; min-width: 100px;">
                                 <input type="number" id="newAddonPrice" placeholder="Giá tiền" style="flex: 1; min-width: 80px;">
@@ -433,15 +403,16 @@
                             <ul id="addonList" class="list-group" style="border: 1px solid var(--gray-border); border-radius: 8px;"></ul>
                         </div>
                     </div>
-                    <div>
-                        <div class="card" style="border-top: 4px solid var(--secondary);">
-                            <h2 class="card-title">Hồ Sơ Cty & Bảng Giá (Corp)</h2>
+                    
+                    <div id="col-companies">
+                        <div class="card" style="border-top: 4px solid var(--secondary); height: 100%;">
+                            <h2 class="card-title"><i class="fa-regular fa-building"></i> Hồ Sơ Công Ty & Bảng Giá</h2>
                             <input type="text" id="searchCompanySetting" placeholder="🔍 Tìm công ty để sửa giá..." onkeyup="renderCompanyList(this.value)" style="width: 100%; margin-bottom: 15px; background: #f8fafc;">
                             <div style="display: flex; gap: 8px; margin-bottom: 15px;">
                                 <input type="text" id="newCompany" style="flex: 1;" placeholder="Nhập tên Công ty mới...">
-                                <button class="btn btn-secondary" onclick="addCompany()"><i class="fa-solid fa-plus"></i> Thêm</button>
+                                <button class="btn btn-secondary" onclick="addCompany()"><i class="fa-solid fa-plus"></i> Tạo Mới</button>
                             </div>
-                            <ul id="companyList" class="list-group" style="border: 1px solid var(--gray-border); border-radius: 8px;"></ul>
+                            <ul id="companyList" class="list-group" style="border: 1px solid var(--gray-border); border-radius: 8px; max-height: 600px;"></ul>
                         </div>
                     </div>
                 </div>
@@ -457,7 +428,7 @@
             <div class="form-group" style="margin-bottom: 25px;">
                 <label style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:5px;">
                     <span>Chính sách riêng biệt (Copy từ Excel/Word dán vào đây):</span>
-                    <span style="font-size: 11px; color: var(--primary); font-weight: normal; background: #e0e7ff; padding: 4px 8px; border-radius: 4px;"><i class="fa-solid fa-circle-info"></i> Mẹo: Click đúp 2 lần vào Ảnh/Bảng để chỉnh kích thước</span>
+                    <span style="font-size: 11px; color: var(--primary); font-weight: normal; background: #e0e7ff; padding: 4px 8px; border-radius: 4px;"><i class="fa-solid fa-circle-info"></i> Click đúp 2 lần vào Ảnh/Bảng để chỉnh kích thước</span>
                 </label>
                 <div id="companyPolicy" class="rich-text-editor" contenteditable="true" onblur="updateCompanyPolicy()"></div>
             </div>
@@ -466,7 +437,7 @@
             
             <div style="background: var(--gray-bg); padding: 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--gray-border);" class="season-card">
                 <div style="display:flex; gap:10px; align-items:center; margin-bottom: 15px; flex-wrap: wrap;">
-                    <input type="text" id="seasonName" placeholder="Tên Giai đoạn (Vd: Mùa thấp điểm)" style="flex: 1; min-width: 150px;">
+                    <input type="text" id="seasonName" placeholder="Tên Giai đoạn" style="flex: 1; min-width: 150px;">
                     <div style="display: flex; gap: 8px; flex: 2; min-width: 250px;">
                         <input type="date" id="seasonStart" style="flex: 1;">
                         <input type="date" id="seasonEnd" style="flex: 1;">
@@ -489,9 +460,7 @@
         <div class="modal-content" style="background: var(--gray-bg); max-width: 850px; padding: 20px;">
             <span class="close-modal" onclick="closeModal('previewModal')" style="z-index: 2001; right: 15px; top: 10px;">&times;</span>
             <h2 style="margin: 0 0 15px 0; font-size: 18px; color: var(--dark);">Xem Trước Bản In</h2>
-            <div id="previewBox">
-                <div id="previewPaper" class="pdf-template-style"></div>
-            </div>
+            <div id="previewBox"><div id="previewPaper" class="pdf-template-style"></div></div>
             <div style="text-align: right; margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
                 <button class="btn btn-secondary" style="flex:1; min-width: 120px;" onclick="copyImageToClipboard()"><i class="fa-solid fa-images"></i> Copy Ảnh</button>
                 <button class="btn btn-dark" style="flex:1; min-width: 120px;" onclick="exportImage()"><i class="fa-solid fa-download"></i> Tải Ảnh</button>
@@ -525,9 +494,14 @@
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        // --- 1. CORE & AUTHENTICATION ---
+        // --- 1. CORE, AUTHENTICATION & DATA MIGRATION ---
         const MASTER_DB_KEY = 'henryPro_Data_Master';
         let currentUser = null;
+
+        const ALL_PERMS = {
+            'b2b': 'Tạo B2B', 'b2c': 'Tạo Khách Lẻ', 'history': 'Xem Lịch Sử', 
+            'companies': 'Quản Lý Công Ty', 'settings': 'Cấu Hình Hệ Thống', 'users': 'Quản Trị Admin'
+        };
 
         function initDatabase() {
             let saved = localStorage.getItem(MASTER_DB_KEY);
@@ -536,10 +510,22 @@
                 parsed = {
                     rooms: ['Studio Deluxe', '1-Bedroom Executive'], addons: [], companies: [{ id: 'c1', name: 'DEMO COMPANY', policy: '', seasons: [] }],
                     pdfSettings: { logoBase64: "", title: "Reservation Confirmation", color: "#0f172a", fontSize: 14, logoHeight: 60, address: "Hạ Long, Quảng Ninh", email: "contact@hotel.com" },
-                    bookingHistory: []
+                    bookingHistory: [], users: []
                 };
             }
-            if(!parsed.users) parsed.users = [{ id: 'u1', user: 'admin', pass: 'admin', role: 'admin' }];
+            
+            // TỰ ĐỘNG CHUYỂN ĐỔI (MIGRATE) DỮ LIỆU CŨ SANG CHUẨN MỚI
+            if(!parsed.users || parsed.users.length === 0) {
+                parsed.users = [{ id: 'u1', user: 'admin', pass: 'admin', permissions: ['b2b', 'b2c', 'history', 'companies', 'settings', 'users'] }];
+            } else {
+                parsed.users.forEach(u => {
+                    if (!u.permissions) {
+                        if (u.role === 'admin') u.permissions = ['b2b', 'b2c', 'history', 'companies', 'settings', 'users'];
+                        else if (u.role === 'sales') u.permissions = ['b2b', 'history', 'companies'];
+                        else u.permissions = ['b2c']; // role 'fo'
+                    }
+                });
+            }
             if(!parsed.bookingHistory) parsed.bookingHistory = [];
             return parsed;
         }
@@ -574,28 +560,50 @@
             document.querySelector('.sidebar-overlay').classList.remove('active');
         }
 
-        // --- 2. HỆ THỐNG PHÂN QUYỀN (RBAC) ---
+        // --- 2. HỆ THỐNG PHÂN QUYỀN MỚI (PERMISSION-BASED RBAC) ---
         function applyRolePermissions() {
             document.getElementById('displayUsername').innerText = currentUser.user;
-            let roleText = "";
+            const p = currentUser.permissions || [];
             
-            document.getElementById('nav-b2b').style.display = "none"; document.getElementById('nav-b2c').style.display = "none";
-            document.getElementById('nav-settings').style.display = "none"; document.getElementById('nav-history').style.display = "none";
-
-            if(currentUser.role === 'admin') {
-                roleText = "Administrator";
-                document.getElementById('nav-b2b').style.display = "flex"; document.getElementById('nav-b2c').style.display = "flex";
-                document.getElementById('nav-history').style.display = "flex"; document.getElementById('nav-settings').style.display = "flex";
-                switchTab('booking-b2b');
-            } else if (currentUser.role === 'sales') {
-                roleText = "Sales Department";
-                document.getElementById('nav-b2b').style.display = "flex"; document.getElementById('nav-history').style.display = "flex";
-                switchTab('booking-b2b');
-            } else if (currentUser.role === 'fo') {
-                roleText = "Front Office";
-                document.getElementById('nav-b2c').style.display = "flex"; switchTab('booking-b2c');
-            }
+            // Gán chức danh ảo dựa trên số quyền để hiển thị cho đẹp
+            let roleText = "Nhân viên";
+            if (p.includes('users') && p.includes('settings')) roleText = "Administrator";
+            else if (p.includes('b2b')) roleText = "Sales Department";
+            else if (p.includes('b2c')) roleText = "Front Office";
             document.getElementById('displayRole').innerText = roleText;
+            
+            // Xử lý hiển thị Menu dọc (Sidebar)
+            document.getElementById('nav-b2b').style.display = p.includes('b2b') ? 'flex' : 'none';
+            document.getElementById('nav-b2c').style.display = p.includes('b2c') ? 'flex' : 'none';
+            document.getElementById('nav-history').style.display = p.includes('history') ? 'flex' : 'none';
+            
+            const hasSettingsData = p.includes('users') || p.includes('settings') || p.includes('companies');
+            document.getElementById('nav-settings').style.display = hasSettingsData ? 'flex' : 'none';
+
+            // Xử lý hiển thị từng Block trong khu vực Quản Lý Dữ Liệu
+            document.getElementById('card-users').style.display = p.includes('users') ? 'block' : 'none';
+            document.getElementById('card-export').style.display = p.includes('settings') || p.includes('users') ? 'block' : 'none'; // Cho phép người có quyền User cũng đc xuất file
+            
+            // Check nếu cả cục users + export bị ẩn thì ẩn luôn lưới đó
+            document.getElementById('block-admin-tools').style.display = (p.includes('users') || p.includes('settings')) ? 'grid' : 'none';
+
+            document.getElementById('card-pdf').style.display = p.includes('settings') ? 'block' : 'none';
+            document.getElementById('col-rooms-addons').style.display = p.includes('settings') ? 'block' : 'none';
+            document.getElementById('col-companies').style.display = p.includes('companies') ? 'block' : 'none';
+
+            // Sắp xếp lại Grid layout cho đẹp nếu 1 trong 2 cột bị mất
+            const bottomGrid = document.getElementById('settings-bottom-grid');
+            if (p.includes('settings') && p.includes('companies')) {
+                bottomGrid.style.gridTemplateColumns = "1fr 1fr";
+            } else {
+                bottomGrid.style.gridTemplateColumns = "1fr"; // Nếu chỉ có quyền xem Cty, mở rộng full màn hình
+            }
+
+            // Tự động nhảy Tab khi đăng nhập
+            if (p.includes('b2b')) switchTab('booking-b2b');
+            else if (p.includes('b2c')) switchTab('booking-b2c');
+            else if (p.includes('history')) switchTab('history');
+            else if (hasSettingsData) switchTab('settings');
         }
 
         function switchTab(tabId) { 
@@ -670,10 +678,17 @@
                 try {
                     const importedDB = JSON.parse(e.target.result);
                     if(importedDB.rooms && importedDB.companies) {
+                        // Migrate before importing just in case older file format
+                        if(importedDB.users) {
+                            importedDB.users.forEach(u => {
+                                if (!u.permissions) {
+                                    if (u.role === 'admin') u.permissions = ['b2b', 'b2c', 'history', 'companies', 'settings', 'users'];
+                                    else if (u.role === 'sales') u.permissions = ['b2b', 'history', 'companies'];
+                                    else u.permissions = ['b2c'];
+                                }
+                            });
+                        }
                         db = importedDB;
-                        if(!db.pdfSettings) db.pdfSettings = { logoBase64: "", title: "Reservation Confirmation", color: "#0f172a", fontSize: 14, logoHeight: 60, address: "...", email: "..." };
-                        if(!db.users) db.users = [{ id: 'u1', user: 'admin', pass: 'admin', role: 'admin' }];
-                        if(!db.bookingHistory) db.bookingHistory = [];
                         saveData(); showToast("Đã nạp dữ liệu! Đang tải lại...");
                         document.getElementById('hiddenImportFile').value = ""; setTimeout(() => location.reload(), 1500);
                     } else { alert("File không hợp lệ!"); }
@@ -687,20 +702,42 @@
             document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); showToast("Đã xuất file thành công! Nhớ Upload OneDrive.");
         }
 
-        // --- QUẢN LÝ USER ---
+        // --- QUẢN LÝ USER VÀ PHÂN QUYỀN MỚI ---
         function renderUserList() {
             const list = document.getElementById('userList'); if(!list) return; list.innerHTML = '';
             db.users.forEach((u, i) => {
-                let rName = u.role === 'admin' ? "Quản trị" : (u.role === 'sales' ? "Sales" : "Lễ tân"); let badgeColor = u.role === 'admin' ? "var(--danger)" : "var(--primary)";
-                let delBtn = u.role === 'admin' && db.users.filter(x=>x.role==='admin').length === 1 ? '' : `<button class="btn btn-danger" onclick="deleteUser(${i})"><i class="fa-solid fa-trash"></i></button>`;
-                list.innerHTML += `<li><span><b style="color:var(--dark);">${u.user}</b> <span style="font-size:10px; background:${badgeColor}; color:white; padding:3px 6px; border-radius:6px; margin-left:8px;">${rName}</span></span><div class="action-group"><button class="btn btn-outline" onclick="changePass(${i})">Đổi Pass</button>${delBtn}</div></li>`;
+                let permHTML = '';
+                if(u.permissions && u.permissions.length > 0) {
+                    u.permissions.forEach(p => {
+                        let cls = 'badge-perm';
+                        if(p === 'users' || p === 'settings') cls += ' bg-danger';
+                        else if(p === 'companies') cls += ' bg-warn';
+                        permHTML += `<span class="${cls}">${ALL_PERMS[p]}</span>`;
+                    });
+                } else { permHTML = '<span style="font-size:11px; color:gray;">Không có quyền</span>'; }
+
+                // Chặn việc xóa chính mình hoặc xóa Admin cuối cùng
+                let isMe = (currentUser && currentUser.id === u.id);
+                let delBtn = (u.permissions.includes('users') && db.users.filter(x=>x.permissions && x.permissions.includes('users')).length === 1) || isMe ? '' : `<button class="btn btn-outline" onclick="deleteUser(${i})" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-trash"></i></button>`;
+                
+                list.innerHTML += `<li><div style="flex:1;"><div><b style="color:var(--dark); font-size:15px;">${u.user}</b></div><div style="margin-top:4px;">${permHTML}</div></div><div class="action-group"><button class="btn btn-outline" onclick="changePass(${i})">Đổi Pass</button>${delBtn}</div></li>`;
             });
         }
         function createUser() {
-            const u = document.getElementById('newUser').value.trim(); const p = document.getElementById('newPass').value; const r = document.getElementById('newRole').value;
+            const u = document.getElementById('newUser').value.trim(); const p = document.getElementById('newPass').value; 
             if(!u || !p) return alert("Nhập đủ tên và pass!"); if(db.users.find(x => x.user === u)) return alert("Tên đăng nhập đã tồn tại!");
-            db.users.push({ id: 'u'+Date.now(), user: u, pass: p, role: r });
-            document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; saveData(); showToast("Đã tạo User!");
+            
+            // Lấy danh sách các quyền được tích
+            let selectedPerms = [];
+            document.querySelectorAll('.cb-perm:checked').forEach(cb => selectedPerms.push(cb.value));
+
+            db.users.push({ id: 'u'+Date.now(), user: u, pass: p, role: 'custom', permissions: selectedPerms });
+            document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; 
+            
+            // Reset checkbox
+            document.querySelectorAll('.cb-perm').forEach(cb => cb.checked = false);
+            
+            saveData(); showToast("Đã tạo User!");
         }
         function deleteUser(i) { if(confirm("Xóa User này?")) { db.users.splice(i, 1); saveData(); showToast("Đã xóa User!"); } }
         function changePass(i) { const np = prompt(`Nhập mật khẩu mới cho ${db.users[i].user}:`); if(np) { db.users[i].pass = np; saveData(); showToast("Đổi pass thành công!"); } }
@@ -728,7 +765,6 @@
         }
         function addBookingRoomRow() { const container = document.getElementById('bookingRoomsList'); const row = document.createElement('div'); row.className = 'dynamic-row room-row'; let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); row.innerHTML = `<select class="room-select" onchange="calcTotal()">${options}</select><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" placeholder="SL Phòng" style="font-weight:bold;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền đ" style="background:#f8fafc; font-weight:700; color:var(--primary);"><button class="btn btn-outline" onclick="this.parentElement.remove(); calcTotal();" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-xmark"></i> Xóa</button>`; container.appendChild(row); }
 
-        // CRUD
         function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); } }
         function delRoom(i) { db.rooms.splice(i, 1); saveData(); }
         function addAddon() { const n = document.getElementById('newAddonName').value; const p = parseInt(document.getElementById('newAddonPrice').value)||0; if(n) { db.addons.push({id: Date.now(), name: n, price: p}); document.getElementById('newAddonName').value=''; document.getElementById('newAddonPrice').value=''; saveData(); renderBookingAddons(); } }
@@ -738,26 +774,21 @@
         function renameCompany(index) { const newName = prompt("Nhập tên mới:", db.companies[index].name); if(newName) { db.companies[index].name = newName.trim(); saveData(); showToast("Đã cập nhật!"); } }
         function copyCompany(index) { const o = db.companies[index]; const c = JSON.parse(JSON.stringify(o)); c.id = 'c' + Date.now(); c.name = o.name + " (Copy)"; c.seasons.forEach(s => s.id = 's' + Math.random().toString(36).substr(2, 9)); db.companies.splice(index + 1, 0, c); saveData(); showToast("Đã nhân bản công ty!"); }
 
-        // Modal Company
         let curCompId = null;
         function openCompanyModal(id) { curCompId = id; const comp = db.companies.find(c => c.id === id); document.getElementById('modalCompanyName').innerText = comp.name; document.getElementById('companyPolicy').innerHTML = comp.policy || ''; document.getElementById('companyModal').style.display = "block"; renderSeasons(); }
         function updateCompanyPolicy() { db.companies.find(c => c.id === curCompId).policy = document.getElementById('companyPolicy').innerHTML; saveData(); }
         function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; curCompId = null; calcTotal(); }
         
-        // Sự kiện Click đúp để chỉnh sửa ảnh/bảng trong Editor
         document.getElementById('companyPolicy').addEventListener('dblclick', function(e) {
             let target = e.target;
-            // Nếu click vào một ô trong bảng, tìm thẻ <table> cha
             if(target.closest('table')) { target = target.closest('table'); }
-            
             if(target.tagName === 'IMG' || target.tagName === 'TABLE') {
                 let currentWidth = target.style.width || target.getAttribute('width') || '100%';
                 let newWidth = prompt('Nhập chiều rộng bạn muốn (VD: 100%, 50%, 300px):', currentWidth);
                 if(newWidth) {
                     target.style.width = newWidth;
-                    if(target.tagName === 'IMG') target.style.height = 'auto'; // Giữ nguyên tỷ lệ ảnh
-                    updateCompanyPolicy();
-                    showToast('Đã đổi kích thước thành ' + newWidth);
+                    if(target.tagName === 'IMG') target.style.height = 'auto';
+                    updateCompanyPolicy(); showToast('Đã đổi kích thước thành ' + newWidth);
                 }
             }
         });
@@ -816,8 +847,6 @@
             bData.addons.forEach(a => { if(a.showOnPdf) { const sub = formatMoney(a.price * a.qty * bData.totalNights) + " đ"; tbody.innerHTML += `<tr><td style="color:var(--gray-text);"><b>Add-on:</b> ${a.name}</td><td style="text-align: center; color:var(--gray-text);">${a.qty}</td><td style="text-align: right; color:var(--gray-text);">${sub}</td></tr>`; } });
         }
 
-        // --- CÁC HÀM XUẤT ĐỒ HỌA ĐƯỢC TỐI ƯU CHO MOBILE ---
-        
         function getExportOptions() { return { scale: 2, useCORS: true, backgroundColor: "#ffffff", windowWidth: 800, width: 800 }; }
 
         function openPreview() { 
@@ -880,13 +909,12 @@
 
         document.getElementById("loginPass").addEventListener("keyup", function(event) { if (event.key === "Enter") attemptLogin(); });
         
-        // --- GỌI CÁC HÀM KHỞI TẠO DỮ LIỆU KHI VỪA MỞ TRANG ---
         renderSettings(); 
         renderUserList(); 
         renderHistoryLog(); 
         addBookingRoomRow(); 
         renderCompanyDropdown();
-        renderBookingAddons(); // <-- Đã fix: Gọi lệnh in dữ liệu Add-on ra màn hình ngay khi load web.
+        renderBookingAddons(); 
     </script>
 </body>
 </html>
