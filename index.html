@@ -9,20 +9,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* THIẾT KẾ MỚI (MODERN SAAS UI) */
         :root { 
-            --primary: #4f46e5; 
-            --primary-hover: #4338ca;
-            --secondary: #10b981; 
-            --secondary-hover: #059669;
-            --dark: #0f172a; 
-            --dark-light: #1e293b;
-            --light: #ffffff; 
-            --danger: #ef4444; 
-            --warning: #f59e0b; 
-            --gray-bg: #f8fafc; 
-            --gray-border: #e2e8f0;
-            --gray-text: #64748b;
+            --primary: #4f46e5; --primary-hover: #4338ca;
+            --secondary: #10b981; --secondary-hover: #059669;
+            --dark: #0f172a; --dark-light: #1e293b;
+            --light: #ffffff; --danger: #ef4444; --warning: #f59e0b; 
+            --gray-bg: #f8fafc; --gray-border: #e2e8f0; --gray-text: #64748b;
             --radius: 12px;
             --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
             --shadow-float: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
@@ -31,7 +23,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background-color: var(--gray-bg); color: #334155; display: flex; height: 100vh; overflow-x: hidden; }
         
-        /* MÀN HÌNH ĐĂNG NHẬP */
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--dark), var(--primary)); display: flex; justify-content: center; align-items: center; z-index: 9999; flex-direction: column; transition: 0.5s; padding: 20px;}
         .login-box { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 40px 30px; border-radius: var(--radius); box-shadow: var(--shadow-float); width: 100%; max-width: 380px; text-align: center; }
         .login-box h2 { color: var(--dark); margin-bottom: 30px; font-size: 24px; font-weight: 700; letter-spacing: 1px;}
@@ -42,12 +33,10 @@
         .btn-login:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .login-footer { margin-top: 20px; font-size: 13px; color: var(--gray-text);}
 
-        /* BỐ CỤC CHUNG */
         #appContainer { display: none; width: 100%; height: 100%; flex-direction: row; }
         .mobile-topbar { display: none; }
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); z-index: 999; }
 
-        /* SIDEBAR */
         .sidebar { width: 260px; background: var(--dark); color: white; display: flex; flex-direction: column; padding: 20px 0; z-index: 1000; flex-shrink: 0; overflow-y: auto;}
         .sidebar-brand { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 10px; color: white; letter-spacing: 1px;}
         .sidebar-brand i { color: var(--primary); margin-right: 5px; }
@@ -63,24 +52,20 @@
         .btn-logout { margin-top: 10px; padding: 10px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; width: 80%; transition: 0.3s;}
         .btn-logout:hover { background: #ef4444; color: white; }
         
-        /* MAIN CONTENT */
         .main-content { flex: 1; padding: 20px; overflow-y: auto; width: 100%; position: relative;}
         
-        /* HEADER & CARD */
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: white; padding: 20px 25px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid var(--gray-border);}
         .header h1 { margin: 0; font-size: 20px; font-weight: 700; color: var(--dark); }
         
         .card { background: white; border-radius: var(--radius); padding: 25px; box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid var(--gray-border); width: 100%;}
         .card-title { font-size: 16px; font-weight: 700; margin-top: 0; margin-bottom: 20px; border-bottom: 1px solid var(--gray-border); padding-bottom: 12px; color: var(--dark-light); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
         
-        /* FORMS */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group { display: flex; flex-direction: column; gap: 8px;}
         label { font-size: 13px; font-weight: 600; color: var(--gray-text); }
         input, select, textarea { padding: 12px 14px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; transition: 0.2s; font-size: 14px; width: 100%; background: #fff;}
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
         
-        /* CHUYÊN MÔN: CHECKBOX PHÂN QUYỀN */
         .perm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; padding: 15px; background: var(--gray-bg); border-radius: 8px; border: 1px dashed #cbd5e1; }
         .perm-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--dark-light); }
         .perm-label input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
@@ -94,11 +79,9 @@
         .rich-text-editor table { border-collapse: collapse; width: 100%; }
         .rich-text-editor td, .rich-text-editor th { border: 1px solid #ccc; padding: 5px; }
 
-        /* NÚT BẤM */
         .btn { padding: 10px 18px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; transition: all 0.2s; white-space: nowrap;}
         .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .btn:active { transform: translateY(0); }
-        
         .btn-primary { background: var(--primary); color: white; }
         .btn-secondary { background: var(--secondary); color: white; }
         .btn-danger { background: var(--danger); color: white; }
@@ -128,7 +111,6 @@
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* MODAL */
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); overflow-y: auto;}
         .modal-content { background-color: #fff; margin: 4% auto; padding: 30px; width: 92%; max-width: 900px; border-radius: 16px; position: relative; box-shadow: var(--shadow-float);}
         .close-modal { color: #94a3b8; position: absolute; right: 20px; top: 15px; font-size: 28px; font-weight: bold; cursor: pointer; transition: 0.2s;}
@@ -145,7 +127,6 @@
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
 
-        /* TỐI ƯU MOBILE */
         @media (max-width: 768px) {
             #appContainer { flex-direction: column; }
             .mobile-topbar { display: flex; background: white; color: var(--dark); padding: 15px 20px; align-items: center; justify-content: space-between; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 900; }
@@ -182,7 +163,6 @@
             #previewBox { padding: 0; height: 50vh; overflow: hidden; border-radius: 8px;}
         }
 
-        /* PDF TEMPLATE */
         #pdf-container { position: absolute; top: 0; left: 0; width: 800px; z-index: -9999; opacity: 0; pointer-events: none; }
         .pdf-template-style { width: 800px; padding: 0; background: white; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; }
         .pdf-template-style { --pdf-theme-color: #0f172a; --pdf-font-size: 14px; font-size: var(--pdf-font-size); }
@@ -217,7 +197,7 @@
             <input type="password" id="loginPass" class="login-input" placeholder="Mật khẩu">
             <button class="btn-login" onclick="attemptLogin()">Đăng Nhập Hệ Thống</button>
             <div class="login-footer">
-                Secured Internal System v3.0 (RBAC)
+                Secured Internal System v3.2 (Cross-season Fixed)
             </div>
         </div>
     </div>
@@ -252,7 +232,7 @@
             
             <div class="sidebar-footer">
                 <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</button>
-                <br><br>Made by Kế Toán - 2026
+                <br><br>Copyright by Nguyễn Quang Trung - Kế Toán - 2026
             </div>
         </div>
 
@@ -289,7 +269,7 @@
                     <h2 class="card-title"><i class="fa-solid fa-bed"></i> 2. Chi Tiết Hạng Phòng</h2>
                     <div id="bookingRoomsList"></div>
                     <button class="btn btn-outline" onclick="addBookingRoomRow()" style="margin-bottom: 10px;"><i class="fa-solid fa-plus"></i> Thêm Hạng Phòng</button>
-                    <div id="weekendNotice" style="color: var(--danger); font-size: 13px; font-weight: 600; margin-top: 10px;"></div>
+                    <div id="weekendNotice" style="color: var(--warning); font-size: 13px; font-weight: 600; margin-top: 10px;"></div>
                 </div>
 
                 <div class="card">
@@ -362,7 +342,7 @@
                     <div class="card" id="card-export" style="border-top: 4px solid var(--primary); background: #f8fafc;">
                         <h2 class="card-title"><i class="fa-solid fa-cloud-arrow-up"></i> Lưu & Chia Sẻ Dữ Liệu</h2>
                         <p style="font-size: 13px; color:var(--gray-text); line-height: 1.6;">
-                            Các thay đổi về dữ liệu trên máy tính này chỉ lưu cục bộ.<br><b>Hãy ấn XUẤT FILE và up file json lên OneDrive chung để mọi người đồng bộ.</b>
+                            Các thay đổi về dữ liệu trên máy tính này chỉ lưu cục bộ.<br><b>Hãy ấn XUẤT FILE và up file json lên OneDrive/Google Drive chung để mọi người đồng bộ.</b>
                         </p>
                         <div style="margin-top: 20px;">
                             <button class="btn btn-primary" style="padding: 14px; font-size: 15px; width: 100%;" onclick="exportData()"><i class="fa-solid fa-file-export"></i> Xuất File Đồng Bộ Mới (.json)</button>
@@ -479,7 +459,7 @@
                     <div><div class="pdf-meta-item"><strong>Arrival Date:</strong> <span class="ph-arrival"></span></div><div class="pdf-meta-item"><strong>Departure Date:</strong> <span class="ph-departure"></span></div><div class="pdf-meta-item"><strong>Total Night(s):</strong> <span class="ph-nights"></span></div></div>
                 </div>
                 <table class="pdf-table"><thead><tr><th>Description</th><th style="text-align: center;">Qty</th><th style="text-align: right;">Amount</th></tr></thead><tbody class="ph-table-body"></tbody><tfoot><tr class="pdf-total-row"><td colspan="2" style="text-align: right; padding: 15px;">GRAND TOTAL (VND)</td><td class="ph-grandTotal" style="text-align: right; padding: 15px;">0</td></tr></tfoot></table>
-                <div class="pdf-notes ph-comment-section" style="display:none; margin-bottom: 20px;"><h4 style="color: var(--pdf-theme-color);">Special Requests</h4><div class="ph-comments-text" style="white-space: pre-line;"></div></div>
+                <div class="pdf-notes ph-comment-section" style="display:none; margin-bottom: 20px;"><h4 style="color: var(--pdf-theme-color);">Special Requests / Notes</h4><div class="ph-comments-text" style="white-space: pre-line;"></div></div>
                 <div class="pdf-notes"><h4>Terms & Policies</h4><div class="ph-policy-text"></div></div>
             </div>
         </div>
@@ -488,13 +468,13 @@
     <div id="toast">Thông báo hệ thống</div>
 
     <script>
-        // --- 0. UI CONTROLS FOR MOBILE ---
+        // --- 0. UI CONTROLS ---
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        // --- 1. CORE, AUTHENTICATION & DATA MIGRATION ---
+        // --- 1. CORE & DATA ---
         const MASTER_DB_KEY = 'henryPro_Data_Master';
         let currentUser = null;
 
@@ -513,8 +493,6 @@
                     bookingHistory: [], users: []
                 };
             }
-            
-            // TỰ ĐỘNG CHUYỂN ĐỔI (MIGRATE) DỮ LIỆU CŨ SANG CHUẨN MỚI
             if(!parsed.users || parsed.users.length === 0) {
                 parsed.users = [{ id: 'u1', user: 'admin', pass: 'admin', permissions: ['b2b', 'b2c', 'history', 'companies', 'settings', 'users'] }];
             } else {
@@ -522,7 +500,7 @@
                     if (!u.permissions) {
                         if (u.role === 'admin') u.permissions = ['b2b', 'b2c', 'history', 'companies', 'settings', 'users'];
                         else if (u.role === 'sales') u.permissions = ['b2b', 'history', 'companies'];
-                        else u.permissions = ['b2c']; // role 'fo'
+                        else u.permissions = ['b2c'];
                     }
                 });
             }
@@ -560,19 +538,16 @@
             document.querySelector('.sidebar-overlay').classList.remove('active');
         }
 
-        // --- 2. HỆ THỐNG PHÂN QUYỀN MỚI (PERMISSION-BASED RBAC) ---
         function applyRolePermissions() {
             document.getElementById('displayUsername').innerText = currentUser.user;
             const p = currentUser.permissions || [];
             
-            // Gán chức danh ảo dựa trên số quyền để hiển thị cho đẹp
             let roleText = "Nhân viên";
             if (p.includes('users') && p.includes('settings')) roleText = "Administrator";
             else if (p.includes('b2b')) roleText = "Sales Department";
             else if (p.includes('b2c')) roleText = "Front Office";
             document.getElementById('displayRole').innerText = roleText;
             
-            // Xử lý hiển thị Menu dọc (Sidebar)
             document.getElementById('nav-b2b').style.display = p.includes('b2b') ? 'flex' : 'none';
             document.getElementById('nav-b2c').style.display = p.includes('b2c') ? 'flex' : 'none';
             document.getElementById('nav-history').style.display = p.includes('history') ? 'flex' : 'none';
@@ -580,26 +555,20 @@
             const hasSettingsData = p.includes('users') || p.includes('settings') || p.includes('companies');
             document.getElementById('nav-settings').style.display = hasSettingsData ? 'flex' : 'none';
 
-            // Xử lý hiển thị từng Block trong khu vực Quản Lý Dữ Liệu
             document.getElementById('card-users').style.display = p.includes('users') ? 'block' : 'none';
-            document.getElementById('card-export').style.display = p.includes('settings') || p.includes('users') ? 'block' : 'none'; // Cho phép người có quyền User cũng đc xuất file
-            
-            // Check nếu cả cục users + export bị ẩn thì ẩn luôn lưới đó
+            document.getElementById('card-export').style.display = p.includes('settings') || p.includes('users') ? 'block' : 'none'; 
             document.getElementById('block-admin-tools').style.display = (p.includes('users') || p.includes('settings')) ? 'grid' : 'none';
-
             document.getElementById('card-pdf').style.display = p.includes('settings') ? 'block' : 'none';
             document.getElementById('col-rooms-addons').style.display = p.includes('settings') ? 'block' : 'none';
             document.getElementById('col-companies').style.display = p.includes('companies') ? 'block' : 'none';
 
-            // Sắp xếp lại Grid layout cho đẹp nếu 1 trong 2 cột bị mất
             const bottomGrid = document.getElementById('settings-bottom-grid');
             if (p.includes('settings') && p.includes('companies')) {
                 bottomGrid.style.gridTemplateColumns = "1fr 1fr";
             } else {
-                bottomGrid.style.gridTemplateColumns = "1fr"; // Nếu chỉ có quyền xem Cty, mở rộng full màn hình
+                bottomGrid.style.gridTemplateColumns = "1fr"; 
             }
 
-            // Tự động nhảy Tab khi đăng nhập
             if (p.includes('b2b')) switchTab('booking-b2b');
             else if (p.includes('b2c')) switchTab('booking-b2c');
             else if (p.includes('history')) switchTab('history');
@@ -619,7 +588,6 @@
             if(window.innerWidth <= 768) { document.getElementById('sidebar').classList.remove('open'); document.querySelector('.sidebar-overlay').classList.remove('active'); }
         }
 
-        // --- TÍNH NĂNG TÌM KIẾM CÔNG TY ---
         function renderCompanyDropdown(filterText = "") {
             const sComp = document.getElementById('selectCompany'); const prevComp = sComp.value;
             sComp.innerHTML = '<option value="">-- Chọn Công ty --</option>';
@@ -636,13 +604,23 @@
             });
         }
 
-        // --- TÍNH NĂNG LỊCH SỬ & COPY BOOKING ---
         function saveBookingLog() {
             const confNo = document.getElementById('confNo').value || "Draft"; const guestName = document.getElementById('guestName').value || "Un-named"; const cId = document.getElementById('selectCompany').value; const comp = db.companies.find(c => c.id === cId); const compName = comp ? comp.name : "N/A"; const total = document.getElementById('finalTotalRate').value || "0";
             const adults = document.getElementById('adults').value; const children = document.getElementById('children').value; const arrivalDate = document.getElementById('arrivalDate').value; const departureDate = document.getElementById('departureDate').value; const bookingComments = document.getElementById('bookingComments').value;
 
-            let savedRooms = []; document.querySelectorAll('.room-row').forEach(row => { savedRooms.push({ type: row.querySelector('.room-select').value, qty: row.querySelector('.room-qty').value }); });
-            let savedAddons = []; document.querySelectorAll('.addon-item').forEach((row, idx) => { const chkBox = document.getElementById(`chk_addon_${idx}`); if(chkBox && chkBox.checked) { savedAddons.push({ name: chkBox.getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${idx}`).value, price: document.getElementById(`val_addon_price_${idx}`).value }); } });
+            let savedRooms = []; 
+            document.querySelectorAll('.room-row').forEach(row => { 
+                savedRooms.push({ 
+                    type: row.querySelector('.room-select').value, 
+                    qty: row.querySelector('.room-qty').value,
+                    noBf: row.querySelector('.room-no-bf') ? row.querySelector('.room-no-bf').checked : false
+                }); 
+            });
+            let savedAddons = []; 
+            document.querySelectorAll('.addon-item').forEach((row, idx) => { 
+                const chkBox = document.getElementById(`chk_addon_${idx}`); 
+                if(chkBox && chkBox.checked) { savedAddons.push({ name: chkBox.getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${idx}`).value, price: document.getElementById(`val_addon_price_${idx}`).value }); } 
+            });
 
             const log = { id: Date.now(), dateSaved: new Date().toLocaleDateString('vi-VN') + " " + new Date().toLocaleTimeString('vi-VN'), confNo: confNo, guestName: guestName, companyId: cId, companyName: compName, total: total, details: { adults, children, arrivalDate, departureDate, bookingComments, savedRooms, savedAddons } };
             db.bookingHistory.unshift(log); if(db.bookingHistory.length > 100) db.bookingHistory.pop(); saveData(); showToast("Đã lưu vào Tab Lịch Sử Booking!"); renderHistoryLog();
@@ -664,13 +642,21 @@
             if (log.details.savedAddons) { log.details.savedAddons.forEach(sa => { document.querySelectorAll('.addon-item').forEach((row, idx) => { const chkBox = document.getElementById(`chk_addon_${idx}`); if(chkBox && chkBox.getAttribute('data-name') === sa.name) { chkBox.checked = true; document.getElementById(`val_addon_qty_${idx}`).value = sa.qty; document.getElementById(`val_addon_price_${idx}`).value = sa.price; } }); }); }
 
             const roomsContainer = document.getElementById('bookingRoomsList'); roomsContainer.innerHTML = ''; 
-            if (log.details.savedRooms && log.details.savedRooms.length > 0) { log.details.savedRooms.forEach(sr => { addBookingRoomRow(); const rows = document.querySelectorAll('.room-row'); const lastRow = rows[rows.length - 1]; lastRow.querySelector('.room-select').value = sr.type; lastRow.querySelector('.room-qty').value = sr.qty; }); } else { addBookingRoomRow(); }
+            if (log.details.savedRooms && log.details.savedRooms.length > 0) { 
+                log.details.savedRooms.forEach(sr => { 
+                    addBookingRoomRow(); 
+                    const rows = document.querySelectorAll('.room-row'); 
+                    const lastRow = rows[rows.length - 1]; 
+                    lastRow.querySelector('.room-select').value = sr.type; 
+                    lastRow.querySelector('.room-qty').value = sr.qty; 
+                    if(sr.noBf) lastRow.querySelector('.room-no-bf').checked = true;
+                }); 
+            } else { addBookingRoomRow(); }
             calcTotal(); switchTab('booking-b2b'); showToast("Đã lấy lại dữ liệu thành công!");
         }
 
         function deleteHistoryLog(index) { if(confirm("Xóa lịch sử booking này?")) { db.bookingHistory.splice(index, 1); saveData(); showToast("Đã xóa!"); renderHistoryLog(); } }
 
-        // --- IMPORT / EXPORT DÀNH CHO ONEDRIVE ---
         function triggerImportFromMenu() { document.getElementById('hiddenImportFile').click(); }
         function handleHiddenImport(event) {
             const file = event.target.files[0]; if(!file) return; const reader = new FileReader();
@@ -678,7 +664,6 @@
                 try {
                     const importedDB = JSON.parse(e.target.result);
                     if(importedDB.rooms && importedDB.companies) {
-                        // Migrate before importing just in case older file format
                         if(importedDB.users) {
                             importedDB.users.forEach(u => {
                                 if (!u.permissions) {
@@ -695,14 +680,14 @@
                 } catch (err) { alert("Lỗi: " + err); }
             }; reader.readAsText(file);
         }
+        
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
             const downloadAnchorNode = document.createElement('a'); downloadAnchorNode.setAttribute("href", dataStr); 
             downloadAnchorNode.setAttribute("download", "Henry_Master_DB_" + new Date().toLocaleDateString('vi-VN').replace(/\//g,'-') + ".json");
-            document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); showToast("Đã xuất file thành công! Nhớ Upload OneDrive.");
+            document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); showToast("Đã xuất file thành công!");
         }
 
-        // --- QUẢN LÝ USER VÀ PHÂN QUYỀN MỚI ---
         function renderUserList() {
             const list = document.getElementById('userList'); if(!list) return; list.innerHTML = '';
             db.users.forEach((u, i) => {
@@ -716,7 +701,6 @@
                     });
                 } else { permHTML = '<span style="font-size:11px; color:gray;">Không có quyền</span>'; }
 
-                // Chặn việc xóa chính mình hoặc xóa Admin cuối cùng
                 let isMe = (currentUser && currentUser.id === u.id);
                 let delBtn = (u.permissions.includes('users') && db.users.filter(x=>x.permissions && x.permissions.includes('users')).length === 1) || isMe ? '' : `<button class="btn btn-outline" onclick="deleteUser(${i})" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-trash"></i></button>`;
                 
@@ -727,22 +711,17 @@
             const u = document.getElementById('newUser').value.trim(); const p = document.getElementById('newPass').value; 
             if(!u || !p) return alert("Nhập đủ tên và pass!"); if(db.users.find(x => x.user === u)) return alert("Tên đăng nhập đã tồn tại!");
             
-            // Lấy danh sách các quyền được tích
             let selectedPerms = [];
             document.querySelectorAll('.cb-perm:checked').forEach(cb => selectedPerms.push(cb.value));
 
             db.users.push({ id: 'u'+Date.now(), user: u, pass: p, role: 'custom', permissions: selectedPerms });
             document.getElementById('newUser').value = ''; document.getElementById('newPass').value = ''; 
-            
-            // Reset checkbox
             document.querySelectorAll('.cb-perm').forEach(cb => cb.checked = false);
-            
             saveData(); showToast("Đã tạo User!");
         }
         function deleteUser(i) { if(confirm("Xóa User này?")) { db.users.splice(i, 1); saveData(); showToast("Đã xóa User!"); } }
         function changePass(i) { const np = prompt(`Nhập mật khẩu mới cho ${db.users[i].user}:`); if(np) { db.users[i].pass = np; saveData(); showToast("Đổi pass thành công!"); } }
 
-        // --- HÀM QUẢN TRỊ DỮ LIỆU KHÁC ---
         function showToast(msg) { const toast = document.getElementById("toast"); toast.innerText = msg; toast.className = "show"; setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000); }
 
         function renderSettings() {
@@ -763,7 +742,14 @@
             const container = document.getElementById('bookingAddonsList'); container.innerHTML = '';
             db.addons.forEach((a, i) => { container.innerHTML += `<div class="addon-item"><div style="display:flex; align-items:center; gap: 10px; width: 100%;"><input type="checkbox" class="chk-addon" id="chk_addon_${i}" data-name="${a.name}" onchange="calcTotal()" style="width: 20px; height: 20px;"><label for="chk_addon_${i}" style="flex:1; font-weight:700; color:var(--dark); font-size:14px;">${a.name}</label></div><div style="display:flex; gap:10px; width:100%; margin-top:5px;"><input type="number" class="val-addon-price" id="val_addon_price_${i}" value="${a.price}" oninput="calcTotal()" placeholder="Giá VND" style="flex:2;"><input type="number" class="val-addon-qty" id="val_addon_qty_${i}" value="1" min="1" oninput="calcTotal()" style="flex:1;" placeholder="SL"></div><div class="border-t" style="width: 100%; display:flex; align-items:center; margin-top:5px;"><label style="cursor: pointer; color: var(--gray-text);" title="In lên hóa đơn PDF"><input type="checkbox" id="show_pdf_addon_${i}" checked style="width: auto;"> In dòng này lên PDF</label></div></div>`; });
         }
-        function addBookingRoomRow() { const container = document.getElementById('bookingRoomsList'); const row = document.createElement('div'); row.className = 'dynamic-row room-row'; let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); row.innerHTML = `<select class="room-select" onchange="calcTotal()">${options}</select><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" placeholder="SL Phòng" style="font-weight:bold;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền đ" style="background:#f8fafc; font-weight:700; color:var(--primary);"><button class="btn btn-outline" onclick="this.parentElement.remove(); calcTotal();" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-xmark"></i> Xóa</button>`; container.appendChild(row); }
+        
+        function addBookingRoomRow() { 
+            const container = document.getElementById('bookingRoomsList'); 
+            const row = document.createElement('div'); row.className = 'dynamic-row room-row'; 
+            let options = '<option value="">-- Chọn Hạng phòng --</option>'; db.rooms.forEach(r => options += `<option value="${r}">${r}</option>`); 
+            row.innerHTML = `<div style="flex: 1 1 100%; display:flex; flex-direction:column; gap:5px;"><select class="room-select" onchange="calcTotal()">${options}</select><label style="font-size:13px; color:var(--danger); font-weight:600; cursor:pointer;"><input type="checkbox" class="room-no-bf" onchange="calcTotal()"> Không ăn sáng (-300,000đ/đêm)</label></div><input type="number" class="room-qty" value="1" min="1" oninput="calcTotal()" placeholder="SL Phòng" style="font-weight:bold; flex: 1 1 20%;"><input type="text" class="room-subtotal" readonly placeholder="Thành tiền đ" style="background:#f8fafc; font-weight:700; color:var(--primary); flex: 1 1 40%;"><button class="btn btn-outline" onclick="this.parentElement.remove(); calcTotal();" style="color:var(--danger); border-color:var(--danger); flex: 1 1 100%;"><i class="fa-solid fa-xmark"></i> Xóa hạng phòng này</button>`; 
+            container.appendChild(row); 
+        }
 
         function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); } }
         function delRoom(i) { db.rooms.splice(i, 1); saveData(); }
@@ -808,28 +794,120 @@
             });
         }
 
-        // Calculations
+        // --- TÍNH TOÁN THEO TỪNG ĐÊM (PER-NIGHT CALCULATION VÀ FIX CROSS-SEASON) ---
         function formatMoney(num) { return new Intl.NumberFormat('vi-VN').format(num); }
         function formatDateVN(dateStr) { if (!dateStr) return ""; const parts = dateStr.split('-'); return parts.length===3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr; }
-        function getWeekendCounts(arrStr, depStr) {
-            let start = new Date(arrStr); let end = new Date(depStr); let fri = 0, sat = 0;
-            if(isNaN(start) || isNaN(end) || end <= start) return { fri, sat, totalNights: 0 };
-            let current = new Date(start); let totalNights = 0; while(current < end) { if(current.getDay() === 5) fri++; if(current.getDay() === 6) sat++; current.setDate(current.getDate() + 1); totalNights++; } return { fri, sat, totalNights };
-        }
-
+        
         function calcTotal() {
-            const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value; const { fri, sat, totalNights } = getWeekendCounts(arr, dep); const cId = document.getElementById('selectCompany').value; let grandTotal = 0; const comp = db.companies.find(c => c.id === cId); const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
-            let friSur = 0, satSur = 0, wkndMsg = ""; if (season && season.surcharge && season.surcharge.enabled) { friSur = season.surcharge.fri || 0; satSur = season.surcharge.sat || 0; if(fri > 0 || sat > 0) wkndMsg = `<i class="fa-solid fa-circle-info"></i> Hệ thống tự động cộng ${fri} đêm T6 (+${formatMoney(friSur)}) và ${sat} đêm T7 (+${formatMoney(satSur)}) / phòng.`; } document.getElementById('weekendNotice').innerHTML = wkndMsg;
-            document.querySelectorAll('.room-row').forEach(row => { const roomType = row.querySelector('.room-select').value; const qty = parseInt(row.querySelector('.room-qty').value) || 1; let price = 0; if(season && roomType) price = season.rates[roomType] || 0; const subtotal = ((price * totalNights) + (fri * friSur) + (sat * satSur)) * qty; row.querySelector('.room-subtotal').value = roomType ? formatMoney(subtotal) : ""; grandTotal += subtotal; });
-            document.querySelectorAll('.addon-item').forEach((row, i) => { const isChecked = document.getElementById(`chk_addon_${i}`).checked; const price = parseInt(document.getElementById(`val_addon_price_${i}`).value) || 0; const qty = parseInt(document.getElementById(`val_addon_qty_${i}`).value) || 1; if(isChecked) grandTotal += (price * totalNights * qty); });
+            const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value; 
+            const cId = document.getElementById('selectCompany').value; 
+            const comp = db.companies.find(c => c.id === cId);
+            
+            let grandTotal = 0; 
+            let showWkndNotice = false;
+            let totalFri = 0, totalSat = 0, totalNightsGlobal = 0;
+            
+            if(arr && dep && new Date(arr) < new Date(dep)) {
+                let tempCurrent = new Date(arr);
+                let tempEnd = new Date(dep);
+                while(tempCurrent < tempEnd) {
+                    if (tempCurrent.getDay() === 5) totalFri++;
+                    if (tempCurrent.getDay() === 6) totalSat++;
+                    totalNightsGlobal++;
+                    tempCurrent.setDate(tempCurrent.getDate() + 1);
+                }
+            }
+
+            document.querySelectorAll('.room-row').forEach(row => {
+                const roomType = row.querySelector('.room-select').value; 
+                const qty = parseInt(row.querySelector('.room-qty').value) || 1; 
+                const noBf = row.querySelector('.room-no-bf') ? row.querySelector('.room-no-bf').checked : false;
+                
+                if(!roomType || !arr || !dep || new Date(arr) >= new Date(dep)) {
+                    row.querySelector('.room-subtotal').value = "";
+                    return;
+                }
+
+                let roomSubtotal = 0;
+                let current = new Date(arr);
+                let end = new Date(dep);
+                
+                // VÒNG LẶP TÍNH GIÁ CHUẨN TỪNG ĐÊM
+                while(current < end) {
+                    // Khử chênh lệch múi giờ để lấy chuẩn chuỗi "YYYY-MM-DD"
+                    let adjDate = new Date(current.getTime() - (current.getTimezoneOffset() * 60000));
+                    let dStr = adjDate.toISOString().split('T')[0];
+                    
+                    // Soi chiếu xem ngày hôm đó rơi vào mùa nào
+                    let season = comp ? comp.seasons.find(s => dStr >= s.start && dStr <= s.end) : null;
+                    let rate = season ? (season.rates[roomType] || 0) : 0;
+                    
+                    if (season && season.surcharge && season.surcharge.enabled) {
+                        showWkndNotice = true;
+                        if (current.getDay() === 5) rate += (season.surcharge.fri || 0);
+                        if (current.getDay() === 6) rate += (season.surcharge.sat || 0);
+                    }
+                    
+                    // Xử lý trừ tiền Không ăn sáng
+                    if (noBf) rate -= 300000;
+                    
+                    roomSubtotal += rate;
+                    current.setDate(current.getDate() + 1);
+                }
+                
+                let finalSub = roomSubtotal * qty;
+                row.querySelector('.room-subtotal').value = formatMoney(finalSub) + " đ";
+                grandTotal += finalSub;
+            });
+
+            // Cập nhật câu thông báo về Weekend
+            let wkndMsg = "";
+            if (showWkndNotice && (totalFri > 0 || totalSat > 0)) {
+                wkndMsg = `<i class="fa-solid fa-circle-info"></i> Booking có ${totalFri} đêm T6 và ${totalSat} đêm T7. Hệ thống tự động tách tính giá chuẩn theo từng đêm.`; 
+            }
+            document.getElementById('weekendNotice').innerHTML = wkndMsg;
+
+            // Tính tiền Add-on
+            document.querySelectorAll('.addon-item').forEach((row, i) => { 
+                const isChecked = document.getElementById(`chk_addon_${i}`).checked; 
+                const price = parseInt(document.getElementById(`val_addon_price_${i}`).value) || 0; 
+                const qty = parseInt(document.getElementById(`val_addon_qty_${i}`).value) || 1; 
+                if(isChecked) grandTotal += (price * totalNightsGlobal * qty); 
+            });
             document.getElementById('finalTotalRate').value = formatMoney(grandTotal);
         }
 
         function getBookingData() {
-            const data = { rooms: [], addons: [], wkndMsg: '' }; const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value; const { fri, sat, totalNights } = getWeekendCounts(arr, dep); const comp = db.companies.find(c => c.id === document.getElementById('selectCompany').value); const season = comp ? comp.seasons.find(s => arr >= s.start && arr <= s.end) : null;
-            let friSur = 0, satSur = 0; if (season && season.surcharge && season.surcharge.enabled) { friSur = season.surcharge.fri || 0; satSur = season.surcharge.sat || 0; }
-            document.querySelectorAll('.room-row').forEach(row => { const type = row.querySelector('.room-select').value, qty = row.querySelector('.room-qty').value, sub = row.querySelector('.room-subtotal').value; if(type) { let desc = type; if(fri > 0 && friSur > 0) desc += ` (+T6)`; if(sat > 0 && satSur > 0) desc += ` (+T7)`; data.rooms.push({ type: desc, qty, sub }); } });
-            document.querySelectorAll('.addon-item').forEach((row, i) => { if(document.getElementById(`chk_addon_${i}`).checked) { data.addons.push({ name: document.getElementById(`chk_addon_${i}`).getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${i}`).value, price: document.getElementById(`val_addon_price_${i}`).value, showOnPdf: document.getElementById(`show_pdf_addon_${i}`).checked }); } }); data.totalNights = totalNights; return data;
+            const data = { rooms: [], addons: [], wkndMsg: '', hasNoBreakfast: false }; 
+            const arr = document.getElementById('arrivalDate').value, dep = document.getElementById('departureDate').value; 
+            
+            let totalNights = 0;
+            if(arr && dep && new Date(arr) < new Date(dep)) {
+                totalNights = Math.round((new Date(dep) - new Date(arr)) / (1000 * 60 * 60 * 24));
+            }
+            
+            document.querySelectorAll('.room-row').forEach(row => { 
+                const type = row.querySelector('.room-select').value, 
+                      qty = row.querySelector('.room-qty').value, 
+                      sub = row.querySelector('.room-subtotal').value,
+                      noBf = row.querySelector('.room-no-bf') ? row.querySelector('.room-no-bf').checked : false;
+                
+                if(type) { 
+                    let desc = type; 
+                    if(noBf) {
+                        desc += ` (Không ăn sáng)`;
+                        data.hasNoBreakfast = true;
+                    }
+                    data.rooms.push({ type: desc, qty, sub }); 
+                } 
+            });
+            document.querySelectorAll('.addon-item').forEach((row, i) => { 
+                if(document.getElementById(`chk_addon_${i}`).checked) { 
+                    data.addons.push({ name: document.getElementById(`chk_addon_${i}`).getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${i}`).value, price: document.getElementById(`val_addon_price_${i}`).value, showOnPdf: document.getElementById(`show_pdf_addon_${i}`).checked }); 
+                } 
+            }); 
+            data.totalNights = totalNights; 
+            return data;
         }
 
         function mapDataToTemplate(templateElement) {
@@ -841,7 +919,21 @@
             let adultCount = document.getElementById('adults').value, childCount = document.getElementById('children').value; let personStr = adultCount + " Adult(s)"; if (parseInt(childCount) > 0) personStr += ", " + childCount + " Child(ren)"; templateElement.querySelector('.ph-persons').innerText = personStr;
             templateElement.querySelector('.ph-arrival').innerText = formatDateVN(document.getElementById('arrivalDate').value); templateElement.querySelector('.ph-departure').innerText = formatDateVN(document.getElementById('departureDate').value);
             const bData = getBookingData(); templateElement.querySelector('.ph-nights').innerText = bData.totalNights; templateElement.querySelector('.ph-grandTotal').innerText = document.getElementById('finalTotalRate').value + " nett";
-            let comments = document.getElementById('bookingComments').value.trim(); let commentSection = templateElement.querySelector('.ph-comment-section'); if(comments !== "") { commentSection.style.display = 'block'; templateElement.querySelector('.ph-comments-text').innerText = comments; } else { commentSection.style.display = 'none'; }
+            
+            let comments = document.getElementById('bookingComments').value.trim(); 
+            // Cài đặt dòng Note in lên PDF
+            if(bData.hasNoBreakfast) {
+                comments = "⚠️ LƯU Ý: BOOKING KHÔNG BAO GỒM ĂN SÁNG (Room Only).\n\n" + comments;
+            }
+
+            let commentSection = templateElement.querySelector('.ph-comment-section'); 
+            if(comments !== "") { 
+                commentSection.style.display = 'block'; 
+                templateElement.querySelector('.ph-comments-text').innerText = comments; 
+            } else { 
+                commentSection.style.display = 'none'; 
+            }
+
             const comp = db.companies.find(c => c.id === cId); let policyText = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : "Cancellation Policy applies as per Hotel standards."; templateElement.querySelector('.ph-policy-text').innerHTML = policyText; const tbody = templateElement.querySelector('.ph-table-body'); tbody.innerHTML = '';
             bData.rooms.forEach(r => { tbody.innerHTML += `<tr><td><b>Room:</b> ${r.type}</td><td style="text-align: center;">${r.qty}</td><td style="text-align: right;">${r.sub}</td></tr>`; });
             bData.addons.forEach(a => { if(a.showOnPdf) { const sub = formatMoney(a.price * a.qty * bData.totalNights) + " đ"; tbody.innerHTML += `<tr><td style="color:var(--gray-text);"><b>Add-on:</b> ${a.name}</td><td style="text-align: center; color:var(--gray-text);">${a.qty}</td><td style="text-align: right; color:var(--gray-text);">${sub}</td></tr>`; } });
@@ -861,9 +953,14 @@
             const bData = getBookingData(); const cId = document.getElementById('selectCompany').value; const comp = db.companies.find(c => c.id === cId);
             let rawPolicy = (comp && comp.policy && comp.policy.trim() !== "") ? comp.policy : "Vui lòng xem trong hợp đồng."; rawPolicy = rawPolicy.replace(/<br\s*\/?>/gi, '\n').replace(/<\/p>|<\/div>/gi, '\n'); let cleanPolicy = stripHtml(rawPolicy).trim();
             let adultCount = document.getElementById('adults').value, childCount = document.getElementById('children').value; let personStr = adultCount + " Lớn"; if (parseInt(childCount) > 0) personStr += ", " + childCount + " Trẻ em";
-            let comments = document.getElementById('bookingComments').value.trim(); let commentBlock = comments ? `\nGHI CHÚ:\n${comments}\n` : '';
-            let roomsStr = bData.rooms.map(r => `- ${r.type} x ${r.qty} (Thành tiền: ${r.sub} đ)`).join('\n'); let addonsStr = bData.addons.filter(a => a.showOnPdf).map(a => `- ${a.name} x ${a.qty} (${formatMoney(a.price)} đ)`).join('\n'); let wkndNotice = document.getElementById('weekendNotice').innerText;
-            const content = `Dear Quý Công Ty,\n\nKhách sạn xin xác nhận đặt phòng:\nMã đặt phòng: ${document.getElementById('confNo').value}\nKhách hàng: ${document.getElementById('guestName').value}\nSố lượng khách: ${personStr}\nNgày đến: ${formatDateVN(document.getElementById('arrivalDate').value)}\nNgày đi: ${formatDateVN(document.getElementById('departureDate').value)}\nSố đêm: ${bData.totalNights}\n\nCHI TIẾT DỊCH VỤ:\n${roomsStr || '- Không có'}\n${addonsStr ? '\nPHỤ THU:\n' + addonsStr : ''}\n${wkndNotice ? '\n* LƯU Ý: ' + wkndNotice + '\n' : ''}${commentBlock}\nTỔNG THANH TOÁN: ${document.getElementById('finalTotalRate').value} nett\n\nTrân trọng.`;
+            
+            let comments = document.getElementById('bookingComments').value.trim(); 
+            let bfNote = bData.hasNoBreakfast ? "\n* LƯU Ý: BOOKING KHÔNG BAO GỒM ĂN SÁNG (Room Only).\n" : "";
+            let commentBlock = comments ? `\nGHI CHÚ KHÁCH:\n${comments}\n` : '';
+
+            let roomsStr = bData.rooms.map(r => `- ${r.type} x ${r.qty} (Thành tiền: ${r.sub})`).join('\n'); let addonsStr = bData.addons.filter(a => a.showOnPdf).map(a => `- ${a.name} x ${a.qty} (${formatMoney(a.price)} đ)`).join('\n'); let wkndNotice = document.getElementById('weekendNotice').innerText;
+            
+            const content = `Dear Quý Công Ty,\n\nKhách sạn xin xác nhận đặt phòng:\nMã đặt phòng: ${document.getElementById('confNo').value}\nKhách hàng: ${document.getElementById('guestName').value}\nSố lượng khách: ${personStr}\nNgày đến: ${formatDateVN(document.getElementById('arrivalDate').value)}\nNgày đi: ${formatDateVN(document.getElementById('departureDate').value)}\nSố đêm: ${bData.totalNights}\n\nCHI TIẾT DỊCH VỤ:\n${roomsStr || '- Không có'}\n${addonsStr ? '\nPHỤ THU:\n' + addonsStr : ''}\n${wkndNotice ? '\n* LƯU Ý PHỤ THU: ' + wkndNotice + '\n' : ''}${bfNote}${commentBlock}\nTỔNG THANH TOÁN: ${document.getElementById('finalTotalRate').value} nett\n\nTrân trọng.`;
             navigator.clipboard.writeText(content); showToast("Đã copy nội dung chữ chuẩn Email/Zalo!");
         }
 
