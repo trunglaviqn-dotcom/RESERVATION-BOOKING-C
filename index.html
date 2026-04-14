@@ -65,10 +65,11 @@
         label { font-size: 13px; font-weight: 600; color: var(--gray-text); }
         input, select, textarea { padding: 12px 14px; border: 1px solid var(--gray-border); border-radius: 8px; font-family: 'Inter', sans-serif; transition: 0.2s; font-size: 14px; width: 100%; background: #fff;}
         input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); }
+        input[type="checkbox"] { width: auto; accent-color: var(--primary); cursor: pointer;}
         
         .perm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; padding: 15px; background: var(--gray-bg); border-radius: 8px; border: 1px dashed #cbd5e1; }
         .perm-label { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer; color: var(--dark-light); }
-        .perm-label input { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+        .perm-label input { width: 16px; height: 16px; }
         .badge-perm { font-size: 11px; background: #e0e7ff; color: var(--primary); padding: 3px 6px; border-radius: 4px; margin-right: 4px; display: inline-block; margin-top: 5px; font-weight: 600; border: 1px solid #c7d2fe;}
         .badge-perm.bg-warn { background: #fef3c7; color: #b45309; border-color: #fde68a;}
         .badge-perm.bg-danger { background: #fee2e2; color: #b91c1c; border-color: #fecaca;}
@@ -199,7 +200,7 @@
             <input type="password" id="loginPass" class="login-input" placeholder="Mật khẩu">
             <button class="btn-login" onclick="attemptLogin()">Đăng Nhập Hệ Thống</button>
             <div class="login-footer">
-                Secured Internal System v3.3 (Discount & Search)
+                Secured Internal System v3.4 (Discount vs Override)
             </div>
         </div>
     </div>
@@ -275,17 +276,28 @@
                 </div>
 
                 <div class="card">
-                    <h2 class="card-title"><i class="fa-solid fa-mug-hot"></i> 3. Phụ Thu & Giảm Giá</h2>
+                    <h2 class="card-title"><i class="fa-solid fa-mug-hot"></i> 3. Phụ Thu & Cài Đặt Giá</h2>
                     <div id="bookingAddonsList" style="margin-bottom: 20px;"></div>
                     
                     <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px dashed var(--gray-border); margin-bottom: 20px;">
-                        <h4 style="margin:0 0 10px 0; color:var(--dark); font-size: 14px;"><i class="fa-solid fa-tags"></i> Áp dụng giảm giá / Ghi đè giá</h4>
-                        <div style="display:flex; gap:10px; flex-wrap: wrap;">
-                            <select id="bookingDiscountSelect" style="flex:2; min-width:200px;" onchange="handleDiscountChange()">
-                                <option value="">-- Không giảm giá --</option>
-                                <option value="manual_override" style="font-weight:bold; color:var(--primary);">Ghi đè bằng Giá Thủ Công (Manual Override)</option>
-                                </select>
-                            <input type="number" id="bookingManualInput" placeholder="Nhập tổng tiền mong muốn..." style="flex:1; min-width:150px; display:none;" oninput="calcTotal()">
+                        <div style="display:flex; flex-direction:column; gap:15px;">
+                            <div>
+                                <label style="font-size: 13px; font-weight: 600; color: var(--dark); display:block; margin-bottom:5px;"><i class="fa-solid fa-tag"></i> Chương trình Khuyến mãi (Promotion)</label>
+                                <select id="bookingDiscountSelect" onchange="calcTotal()" style="width:100%;">
+                                    <option value="">-- Không áp dụng khuyến mãi --</option>
+                                    </select>
+                            </div>
+                            
+                            <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                                <label style="font-size: 13px; font-weight: 600; color: var(--danger); display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                    <input type="checkbox" id="enableManualPrice" onchange="toggleManualPrice()" style="width: 18px; height: 18px; accent-color: var(--danger);">
+                                    Ghi đè giá chốt thủ công (Manual Override)
+                                </label>
+                                <div id="manualPriceContainer" style="display:none; margin-top:10px;">
+                                    <p style="font-size:12px; color:var(--gray-text); margin-bottom:8px;"><i>* Khi bật chế độ này, hệ thống sẽ bỏ qua mọi tính toán khuyến mãi ở trên và lấy số tiền bạn nhập làm Tổng Bill cuối cùng.</i></p>
+                                    <input type="number" id="bookingManualInput" placeholder="Nhập số tiền chốt cuối (VNĐ)..." style="width:100%; border-color: var(--danger);" oninput="calcTotal()">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -353,7 +365,7 @@
                             <label class="perm-label"><input type="checkbox" class="cb-perm" value="companies"> Hồ sơ Công ty</label>
                             <label class="perm-label"><input type="checkbox" class="cb-perm" value="discounts"> Quản lý Giảm giá</label>
                             <label class="perm-label"><input type="checkbox" class="cb-perm" value="settings"> Cài đặt Hệ thống</label>
-                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="users"> Phân quyền Admin</label>
+                            <label class="perm-label"><input type="checkbox" class="cb-perm" value="users"> Quản trị User</label>
                         </div>
                         <button class="btn btn-dark" style="width: 100%; margin-bottom: 15px;" onclick="createUser()"><i class="fa-solid fa-user-plus"></i> Tạo Tài Khoản Mới</button>
                         <ul id="userList" class="list-group" style="max-height: 250px; border: 1px solid var(--gray-border); border-radius: 8px;"></ul>
@@ -395,9 +407,9 @@
                         </div>
                         
                         <div class="card" id="card-discounts" style="margin-top: 20px; border-top: 4px solid var(--success);">
-                            <h2 class="card-title"><i class="fa-solid fa-tags"></i> Chính Sách Giảm Giá (Discount)</h2>
+                            <h2 class="card-title"><i class="fa-solid fa-tags"></i> Các Chương Trình Khuyến Mãi</h2>
                             <div style="display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap;">
-                                <input type="text" id="newDiscName" placeholder="Tên (VD: Mùa Hè)" style="flex: 2; min-width: 100px;">
+                                <input type="text" id="newDiscName" placeholder="Tên (VD: Ưu đãi Hè)" style="flex: 2; min-width: 100px;">
                                 <select id="newDiscType" style="flex: 1; min-width: 70px;">
                                     <option value="percent">%</option>
                                     <option value="amount">VNĐ</option>
@@ -432,6 +444,31 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="userEditModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-modal" onclick="closeModal('userEditModal')">&times;</span>
+            <h2 style="margin-top:0; color:var(--dark); font-size: 18px;"><i class="fa-solid fa-user-pen"></i> Chỉnh Sửa Phân Quyền User</h2>
+            
+            <div class="form-group" style="margin-bottom:20px; margin-top: 15px;">
+                <label>Tên đăng nhập (Username)</label>
+                <input type="text" id="editUsernameInput" placeholder="Tên user...">
+            </div>
+            
+            <label style="font-weight:600; margin-bottom:10px; display:block; font-size:13px; color: var(--dark-light);">Danh sách quyền hạn:</label>
+            <div class="perm-grid" style="grid-template-columns: 1fr 1fr;">
+                <label class="perm-label"><input type="checkbox" class="cb-edit-perm" value="b2b"> Tạo B2B</label>
+                <label class="perm-label"><input type="checkbox" class="cb-edit-perm" value="b2c"> Cấp Khách lẻ</label>
+                <label class="perm-label"><input type="checkbox" class="cb-edit-perm" value="history"> Xem Lịch sử</label>
+                <label class="perm-label"><input type="checkbox" class="cb-edit-perm" value="companies"> Hồ sơ Công ty</label>
+                <label class="perm-label"><input type="checkbox" class="cb-edit-perm" value="discounts"> Quản lý Giảm giá</label>
+                <label class="perm-label"><input type="checkbox" class="cb-edit-perm" value="settings"> Cài đặt Hệ thống</label>
+                <label class="perm-label"><input type="checkbox" class="cb-edit-perm" value="users"> Quản trị User</label>
+            </div>
+            
+            <button class="btn btn-primary" style="width:100%; margin-top:15px; padding: 12px;" onclick="saveEditedUser()"><i class="fa-solid fa-floppy-disk"></i> Lưu Cập Nhật User</button>
         </div>
     </div>
 
@@ -525,7 +562,7 @@
 
         const ALL_PERMS = {
             'b2b': 'Tạo B2B', 'b2c': 'Tạo Khách Lẻ', 'history': 'Xem Lịch Sử', 
-            'companies': 'Hồ sơ Cty', 'discounts': 'Giảm giá', 'settings': 'Cấu Hình', 'users': 'Phân quyền'
+            'companies': 'Hồ sơ Cty', 'discounts': 'Giảm giá', 'settings': 'Cấu Hình', 'users': 'Quản trị Admin'
         };
 
         function initDatabase() {
@@ -558,7 +595,7 @@
         function saveData() { 
             localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); 
             renderCompanyList(); renderUserList(); renderHistoryLog(document.getElementById('searchHistoryInput') ? document.getElementById('searchHistoryInput').value : "");
-            renderDiscountDropdown(); // Cập nhật luôn dropdown
+            renderDiscountDropdown(); 
         }
 
         function attemptLogin() {
@@ -608,10 +645,7 @@
             
             document.getElementById('card-pdf').style.display = p.includes('settings') ? 'block' : 'none';
             document.getElementById('col-rooms-addons').style.display = (p.includes('settings') || p.includes('discounts')) ? 'block' : 'none';
-            
-            // Xử lý logic ẩn hiện riêng khối Cài đặt phòng và Giảm giá
             document.getElementById('card-discounts').style.display = p.includes('discounts') ? 'block' : 'none';
-            
             document.getElementById('col-companies').style.display = p.includes('companies') ? 'block' : 'none';
 
             const bottomGrid = document.getElementById('settings-bottom-grid');
@@ -670,18 +704,17 @@
                 if(chkBox && chkBox.checked) { savedAddons.push({ name: chkBox.getAttribute('data-name'), qty: document.getElementById(`val_addon_qty_${idx}`).value, price: document.getElementById(`val_addon_price_${idx}`).value }); } 
             });
 
-            // Lưu kèm lựa chọn giảm giá
             const selDisc = document.getElementById('bookingDiscountSelect').value;
+            const isManual = document.getElementById('enableManualPrice').checked;
             const manDisc = document.getElementById('bookingManualInput').value;
             
-            const log = { id: Date.now(), dateSaved: new Date().toLocaleDateString('vi-VN') + " " + new Date().toLocaleTimeString('vi-VN'), confNo: confNo, guestName: guestName, companyId: cId, companyName: compName, total: total, details: { adults, children, arrivalDate, departureDate, bookingComments, savedRooms, savedAddons, selectedDiscount: selDisc, manualDiscountVal: manDisc } };
+            const log = { id: Date.now(), dateSaved: new Date().toLocaleDateString('vi-VN') + " " + new Date().toLocaleTimeString('vi-VN'), confNo: confNo, guestName: guestName, companyId: cId, companyName: compName, total: total, details: { adults, children, arrivalDate, departureDate, bookingComments, savedRooms, savedAddons, selectedDiscount: selDisc, isManualOverride: isManual, manualDiscountVal: manDisc } };
             db.bookingHistory.unshift(log); if(db.bookingHistory.length > 100) db.bookingHistory.pop(); saveData(); showToast("Đã lưu vào Tab Lịch Sử Booking!"); 
         }
 
         function renderHistoryLog(filterText = "") {
             const tbody = document.getElementById('historyTableBody'); const emptyMsg = document.getElementById('emptyHistoryMsg'); if(!tbody) return; tbody.innerHTML = '';
             
-            // Tìm kiếm theo Mã phòng HOẶC tên khách
             const filteredLogs = db.bookingHistory.filter(log => 
                 (log.confNo && log.confNo.toLowerCase().includes(filterText.toLowerCase())) ||
                 (log.guestName && log.guestName.toLowerCase().includes(filterText.toLowerCase()))
@@ -690,7 +723,6 @@
             if(filteredLogs.length === 0) { emptyMsg.style.display = "block"; } else {
                 emptyMsg.style.display = "none";
                 filteredLogs.forEach((log, i) => { 
-                    // Chú ý: Vì mảng đã filter nên phải tìm đúng index trong mảng gốc nếu muốn thao tác Xóa/Copy. 
                     const originalIndex = db.bookingHistory.findIndex(orig => orig.id === log.id);
                     tbody.innerHTML += `<tr><td style="color:var(--gray-text); font-size:13px;">${log.dateSaved}</td><td><span style="background:#e0e7ff; color:var(--primary); padding:6px 10px; border-radius:6px; font-weight:700;">${log.confNo}</span></td><td><b style="color:var(--dark);">${log.guestName}</b></td><td>${log.companyName}</td><td style="text-align: right; color: var(--secondary); font-weight: 800; font-size: 15px;">${log.total}</td><td style="text-align: center;"><div class="action-group" style="justify-content: center;"><button class="btn btn-outline" onclick="loadBookingFromHistory(${originalIndex})" title="Copy"><i class="fa-solid fa-copy"></i> Dùng lại</button><button class="btn btn-danger" onclick="deleteHistoryLog(${originalIndex})" title="Xóa"><i class="fa-solid fa-trash"></i></button></div></td></tr>`; 
                 });
@@ -716,13 +748,20 @@
                 }); 
             } else { addBookingRoomRow(); }
             
-            // Phục hồi lại tùy chọn Discount
             if(log.details.selectedDiscount) {
                 document.getElementById('bookingDiscountSelect').value = log.details.selectedDiscount;
-                if(log.details.manualDiscountVal) document.getElementById('bookingManualInput').value = log.details.manualDiscountVal;
-                handleDiscountChange();
+            } else {
+                document.getElementById('bookingDiscountSelect').value = "";
             }
 
+            if(log.details.isManualOverride) {
+                document.getElementById('enableManualPrice').checked = true;
+                document.getElementById('bookingManualInput').value = log.details.manualDiscountVal || "";
+            } else {
+                document.getElementById('enableManualPrice').checked = false;
+                document.getElementById('bookingManualInput').value = "";
+            }
+            toggleManualPrice();
             calcTotal(); switchTab('booking-b2b'); showToast("Đã lấy lại dữ liệu thành công!");
         }
 
@@ -760,6 +799,9 @@
             document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); showToast("Đã xuất file thành công!");
         }
 
+        // --- TÍNH NĂNG MỚI: QUẢN TRỊ USER CHUYÊN SÂU ---
+        let currentEditingUserIndex = null;
+
         function renderUserList() {
             const list = document.getElementById('userList'); if(!list) return; list.innerHTML = '';
             db.users.forEach((u, i) => {
@@ -775,11 +817,12 @@
                 } else { permHTML = '<span style="font-size:11px; color:gray;">Không có quyền</span>'; }
 
                 let isMe = (currentUser && currentUser.id === u.id);
-                let delBtn = (u.permissions.includes('users') && db.users.filter(x=>x.permissions && x.permissions.includes('users')).length === 1) || isMe ? '' : `<button class="btn btn-outline" onclick="deleteUser(${i})" style="color:var(--danger); border-color:var(--danger);"><i class="fa-solid fa-trash"></i></button>`;
+                let delBtn = (u.permissions.includes('users') && db.users.filter(x=>x.permissions && x.permissions.includes('users')).length === 1) || isMe ? '' : `<button class="btn btn-outline" onclick="deleteUser(${i})" style="color:var(--danger); border-color:var(--danger);" title="Xóa User"><i class="fa-solid fa-trash"></i></button>`;
                 
-                list.innerHTML += `<li><div style="flex:1;"><div><b style="color:var(--dark); font-size:15px;">${u.user}</b></div><div style="margin-top:4px;">${permHTML}</div></div><div class="action-group"><button class="btn btn-outline" onclick="changePass(${i})">Đổi Pass</button>${delBtn}</div></li>`;
+                list.innerHTML += `<li><div style="flex:1;"><div><b style="color:var(--dark); font-size:15px;">${u.user}</b></div><div style="margin-top:4px;">${permHTML}</div></div><div class="action-group"><button class="btn btn-outline" onclick="changePass(${i})" title="Đổi Pass"><i class="fa-solid fa-key"></i></button><button class="btn btn-secondary" onclick="openEditUserModal(${i})" title="Sửa Phân Quyền"><i class="fa-solid fa-pen"></i></button>${delBtn}</div></li>`;
             });
         }
+        
         function createUser() {
             const u = document.getElementById('newUser').value.trim(); const p = document.getElementById('newPass').value; 
             if(!u || !p) return alert("Nhập đủ tên và pass!"); if(db.users.find(x => x.user === u)) return alert("Tên đăng nhập đã tồn tại!");
@@ -792,6 +835,54 @@
             document.querySelectorAll('.cb-perm').forEach(cb => cb.checked = false);
             saveData(); showToast("Đã tạo User!");
         }
+
+        function openEditUserModal(index) {
+            currentEditingUserIndex = index;
+            const u = db.users[index];
+            document.getElementById('editUsernameInput').value = u.user;
+            
+            document.querySelectorAll('.cb-edit-perm').forEach(cb => {
+                cb.checked = u.permissions && u.permissions.includes(cb.value);
+            });
+            
+            document.getElementById('userEditModal').style.display = 'block';
+        }
+
+        function saveEditedUser() {
+            if (currentEditingUserIndex === null) return;
+            const newName = document.getElementById('editUsernameInput').value.trim();
+            if (!newName) return alert("Tên đăng nhập không được để trống!");
+            
+            // Check duplicate name (except itself)
+            if(db.users.find((x, i) => x.user === newName && i !== currentEditingUserIndex)) {
+                return alert("Tên đăng nhập này đã được sử dụng bởi người khác!");
+            }
+
+            let newPerms = [];
+            document.querySelectorAll('.cb-edit-perm:checked').forEach(cb => newPerms.push(cb.value));
+            
+            // Validate: Không được tự tước quyền Admin của chính mình nếu là Admin cuối cùng
+            let u = db.users[currentEditingUserIndex];
+            let isMe = (currentUser && currentUser.id === u.id);
+            if (isMe && u.permissions.includes('users') && !newPerms.includes('users')) {
+                let otherAdmins = db.users.filter(x => x.id !== u.id && x.permissions && x.permissions.includes('users')).length;
+                if(otherAdmins === 0) return alert("Bạn là Admin duy nhất, không thể tự gỡ quyền Quản trị User của chính mình!");
+            }
+
+            db.users[currentEditingUserIndex].user = newName;
+            db.users[currentEditingUserIndex].permissions = newPerms;
+            
+            saveData();
+            closeModal('userEditModal');
+            showToast("Đã cập nhật User thành công!");
+            
+            // Nếu tự sửa chính mình thì reload để apply rule mới
+            if(isMe) {
+                currentUser = db.users[currentEditingUserIndex];
+                applyRolePermissions();
+            }
+        }
+
         function deleteUser(i) { if(confirm("Xóa User này?")) { db.users.splice(i, 1); saveData(); showToast("Đã xóa User!"); } }
         function changePass(i) { const np = prompt(`Nhập mật khẩu mới cho ${db.users[i].user}:`); if(np) { db.users[i].pass = np; saveData(); showToast("Đổi pass thành công!"); } }
 
@@ -847,7 +938,7 @@
             const select = document.getElementById('bookingDiscountSelect');
             if(!select) return;
             const preVal = select.value;
-            let html = `<option value="">-- Không giảm giá --</option><option value="manual_override" style="font-weight:bold; color:var(--primary);">Ghi đè bằng Giá Thủ Công (Manual Override)</option>`;
+            let html = `<option value="">-- Không áp dụng khuyến mãi --</option>`;
             db.discounts.forEach(d => {
                 const labelStr = d.type === 'percent' ? `${d.name} (-${d.value}%)` : `${d.name} (-${formatMoney(d.value)}đ)`;
                 html += `<option value="${d.id}">${labelStr}</option>`;
@@ -893,13 +984,18 @@
         function formatMoney(num) { return new Intl.NumberFormat('vi-VN').format(num); }
         function formatDateVN(dateStr) { if (!dateStr) return ""; const parts = dateStr.split('-'); return parts.length===3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr; }
         
-        function handleDiscountChange() {
-            const select = document.getElementById('bookingDiscountSelect');
-            const manualInput = document.getElementById('bookingManualInput');
-            if (select.value === 'manual_override') {
-                manualInput.style.display = 'block';
+        function toggleManualPrice() {
+            const isManual = document.getElementById('enableManualPrice').checked;
+            const manualContainer = document.getElementById('manualPriceContainer');
+            const discSelect = document.getElementById('bookingDiscountSelect');
+            
+            if (isManual) {
+                manualContainer.style.display = 'block';
+                discSelect.disabled = true; // Khóa chọn Promotion khi đang ghi đè giá
             } else {
-                manualInput.style.display = 'none';
+                manualContainer.style.display = 'none';
+                discSelect.disabled = false;
+                document.getElementById('bookingManualInput').value = ""; // Clear input khi tắt
             }
             calcTotal();
         }
@@ -975,20 +1071,23 @@
 
             let grandTotal = baseTotalRooms + baseTotalAddons;
             
-            // XỬ LÝ CHIẾT KHẤU / GHI ĐÈ GIÁ TỔNG
+            // LOGIC TÁCH BIỆT: PROMOTION VS MANUAL OVERRIDE
             const discSelect = document.getElementById('bookingDiscountSelect').value;
+            const isManual = document.getElementById('enableManualPrice').checked;
+            const manualVal = parseInt(document.getElementById('bookingManualInput').value);
+
             let finalOutput = grandTotal;
             let discountNoticeStr = "";
 
-            if (discSelect === 'manual_override') {
-                const manualVal = parseInt(document.getElementById('bookingManualInput').value);
-                if(!isNaN(manualVal)) {
-                    finalOutput = manualVal;
-                    let diff = grandTotal - finalOutput;
-                    if(diff > 0) discountNoticeStr = `* Đã điều chỉnh tay: Giảm ${formatMoney(diff)}đ so với gốc`;
-                    else if (diff < 0) discountNoticeStr = `* Đã điều chỉnh tay: Tăng ${formatMoney(Math.abs(diff))}đ so với gốc`;
-                }
-            } else if (discSelect !== "") {
+            if (isManual && !isNaN(manualVal)) {
+                // XỬ LÝ GHI ĐÈ GIÁ (ƯU TIÊN TUYỆT ĐỐI)
+                finalOutput = manualVal;
+                let diff = grandTotal - finalOutput;
+                if(diff > 0) discountNoticeStr = `* Đã ghi đè giá chốt: Tự động giảm ${formatMoney(diff)}đ so với hệ thống`;
+                else if (diff < 0) discountNoticeStr = `* Đã ghi đè giá chốt: Tự động tăng ${formatMoney(Math.abs(diff))}đ so với hệ thống`;
+                else discountNoticeStr = `* Đã khóa giá chốt thủ công.`;
+            } else if (!isManual && discSelect !== "") {
+                // XỬ LÝ KHUYẾN MÃI (NẾU KHÔNG GHI ĐÈ TAY)
                 const discObj = db.discounts.find(d => d.id === discSelect);
                 if(discObj) {
                     let amountToDeduct = 0;
@@ -998,7 +1097,7 @@
                         amountToDeduct = discObj.value;
                     }
                     finalOutput = grandTotal - amountToDeduct;
-                    discountNoticeStr = `* Áp dụng "${discObj.name}": Giảm ${formatMoney(amountToDeduct)}đ`;
+                    discountNoticeStr = `* Áp dụng Khuyến mãi "${discObj.name}": Trừ ${formatMoney(amountToDeduct)}đ`;
                 }
             }
 
@@ -1039,8 +1138,6 @@
             }); 
             
             data.totalNights = totalNights; 
-            
-            // Lấy thông tin text Giảm giá 
             data.discountStr = document.getElementById('discountNotice').innerText;
 
             return data;
@@ -1056,7 +1153,6 @@
             templateElement.querySelector('.ph-arrival').innerText = formatDateVN(document.getElementById('arrivalDate').value); templateElement.querySelector('.ph-departure').innerText = formatDateVN(document.getElementById('departureDate').value);
             const bData = getBookingData(); templateElement.querySelector('.ph-nights').innerText = bData.totalNights; 
             
-            // Tách xuất PDF mượt mà với hàng Giảm giá
             const discRow = templateElement.querySelector('.ph-discount-tr');
             if(bData.discountStr) {
                 discRow.style.display = 'table-row';
@@ -1068,7 +1164,7 @@
             templateElement.querySelector('.ph-grandTotal').innerText = document.getElementById('finalTotalRate').value + " nett";
             
             let comments = document.getElementById('bookingComments').value.trim(); 
-            if(bData.hasNoBreakfast) { comments = "⚠️ BOOKING KHÔNG BAO GỒM ĂN SÁNG (Room Only).\n\n" + comments; }
+            if(bData.hasNoBreakfast) { comments = "⚠️ LƯU Ý TỚI KHÁCH: BOOKING KHÔNG BAO GỒM ĂN SÁNG (Room Only).\n\n" + comments; }
 
             let commentSection = templateElement.querySelector('.ph-comment-section'); 
             if(comments !== "") { 
@@ -1102,7 +1198,7 @@
 
             let roomsStr = bData.rooms.map(r => `- ${r.type} x ${r.qty} (Thành tiền: ${r.sub})`).join('\n'); let addonsStr = bData.addons.filter(a => a.showOnPdf).map(a => `- ${a.name} x ${a.qty} (${formatMoney(a.price)} đ)`).join('\n'); let wkndNotice = document.getElementById('weekendNotice').innerText;
             
-            let discBlock = bData.discountStr ? `\nCHIẾT KHẤU / ĐIỀU CHỈNH:\n${bData.discountStr}\n` : '';
+            let discBlock = bData.discountStr ? `\nCHIẾT KHẤU / GHI ĐÈ:\n${bData.discountStr}\n` : '';
 
             const content = `Dear Quý Công Ty,\n\nKhách sạn xin xác nhận đặt phòng:\nMã đặt phòng: ${document.getElementById('confNo').value}\nKhách hàng: ${document.getElementById('guestName').value}\nSố lượng khách: ${personStr}\nNgày đến: ${formatDateVN(document.getElementById('arrivalDate').value)}\nNgày đi: ${formatDateVN(document.getElementById('departureDate').value)}\nSố đêm: ${bData.totalNights}\n\nCHI TIẾT DỊCH VỤ:\n${roomsStr || '- Không có'}\n${addonsStr ? '\nPHỤ THU:\n' + addonsStr : ''}${discBlock}\n${wkndNotice ? '\n* Ghi chú cuối tuần: ' + wkndNotice + '\n' : ''}${bfNote}${commentBlock}\nTỔNG THANH TOÁN: ${document.getElementById('finalTotalRate').value} nett\n\nTrân trọng.`;
             navigator.clipboard.writeText(content); showToast("Đã copy nội dung chữ chuẩn Email/Zalo!");
