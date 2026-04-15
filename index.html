@@ -200,8 +200,21 @@
             <input type="password" id="loginPass" class="login-input" placeholder="Mật khẩu">
             <button class="btn-login" onclick="attemptLogin()">Đăng Nhập Hệ Thống</button>
             <div class="login-footer">
-                Secured Internal System v3.5 (Fix Session & UI Sync)
+                Secured Internal System v3.7 (Update Noti)
             </div>
+        </div>
+    </div>
+
+    <div id="updateModal" class="modal" style="z-index: 10000;">
+        <div class="modal-content" style="max-width: 550px; background: linear-gradient(to bottom right, #ffffff, #f0fdf4); border: 2px solid var(--secondary);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <i class="fa-solid fa-bullhorn" style="font-size: 40px; color: var(--secondary); margin-bottom: 10px;"></i>
+                <h2 style="color: var(--dark); margin: 0; font-size: 22px;">Cập Nhật Tính Năng Mới!</h2>
+                <span style="display: inline-block; background: var(--secondary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 10px;">Phiên bản <span id="sysVerText"></span></span>
+            </div>
+            <div id="updateContent" style="font-size: 14px; color: var(--dark-light); line-height: 1.6; margin-bottom: 25px; background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--gray-border);">
+                </div>
+            <button class="btn btn-secondary" style="width: 100%; padding: 14px; font-size: 16px;" onclick="closeUpdateModal()">Tôi đã hiểu & Bắt đầu sử dụng</button>
         </div>
     </div>
 
@@ -550,6 +563,33 @@
     <div id="toast">Thông báo hệ thống</div>
 
     <script>
+        // === KHAI BÁO VERSION VÀ RELEASE NOTES ===
+        const SYSTEM_VERSION = "3.7";
+        const RELEASE_NOTES = `
+            <ul style="margin-left: 20px; display: flex; flex-direction: column; gap: 10px; color: var(--dark-light);">
+                <li><b>Cơ chế thông báo (Mới):</b> Tự động hiển thị màn hình giới thiệu tính năng khi có bản cập nhật mới. Chỉ hiển thị 1 lần cho mỗi phiên bản đối với mỗi máy.</li>
+                <li><b>Nâng cấp sức chứa:</b> Mở rộng giới hạn lưu trữ lên đến <b>100.000 bookings</b> kèm theo cơ chế "Cảnh báo tràn bộ nhớ RAM" an toàn để tránh mất dữ liệu.</li>
+                <li><b>Tách biệt Giảm Giá:</b> Tính năng Khuyến mãi (Promotion) giờ đây hoàn toàn độc lập với tính năng Ghi đè giá (Manual Override).</li>
+                <li><b>Đồng bộ Giao diện (UI Sync):</b> Khắc phục lỗi phải ấn F5. Mọi thao tác thêm Hạng phòng, thêm Add-on sẽ hiển thị theo thời gian thực (Real-time).</li>
+                <li><b>Auto-Login:</b> Khắc phục triệt để lỗi bị văng tài khoản khi tải lại trang web nhờ cơ chế lưu Session.</li>
+            </ul>
+        `;
+
+        function checkUpdateNotification() {
+            const lastSeen = localStorage.getItem('henry_last_version');
+            if (lastSeen !== SYSTEM_VERSION) {
+                document.getElementById('sysVerText').innerText = SYSTEM_VERSION;
+                document.getElementById('updateContent').innerHTML = RELEASE_NOTES;
+                document.getElementById('updateModal').style.display = 'block';
+            }
+        }
+
+        function closeUpdateModal() {
+            localStorage.setItem('henry_last_version', SYSTEM_VERSION);
+            document.getElementById('updateModal').style.display = 'none';
+        }
+        // ==========================================
+
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
@@ -592,11 +632,17 @@
         let db = initDatabase();
         
         function saveData() { 
-            localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); 
-            renderCompanyList(); 
-            renderUserList(); 
-            renderHistoryLog(document.getElementById('searchHistoryInput') ? document.getElementById('searchHistoryInput').value : "");
-            renderDiscountDropdown(); 
+            try {
+                localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); 
+                renderCompanyList(); 
+                renderUserList(); 
+                renderHistoryLog(document.getElementById('searchHistoryInput') ? document.getElementById('searchHistoryInput').value : "");
+                renderDiscountDropdown(); 
+                return true;
+            } catch (e) {
+                alert("⚠️ LỖI TRÀN BỘ NHỚ TRÌNH DUYỆT: \nTrình duyệt (Chrome/Safari) chỉ cho phép lưu tối đa ~5MB (khoảng 2.000 - 3.000 bookings). Hệ thống đã chạm ngưỡng giới hạn phần cứng và không thể lưu thêm!\n\nVui lòng vào Tab Cài Đặt -> XUẤT FILE ĐỒNG BỘ MỚI để sao lưu dữ liệu, sau đó xóa bớt lịch sử Booking cũ để tiếp tục sử dụng.");
+                return false;
+            }
         }
 
         function attemptLogin() {
@@ -605,19 +651,20 @@
             const foundUser = db.users.find(x => x.user === u && x.pass === p);
             if(foundUser) {
                 currentUser = foundUser;
-                sessionStorage.setItem('henry_logged_user', currentUser.user); // Lưu phiên đăng nhập
+                sessionStorage.setItem('henry_logged_user', currentUser.user); 
                 document.getElementById('loginOverlay').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('loginOverlay').style.display = "none";
                     document.getElementById('appContainer').style.display = "flex"; 
                     applyRolePermissions();
+                    checkUpdateNotification(); // Check Noti sau khi login thành công
                 }, 500);
             } else { alert("Sai tên đăng nhập hoặc mật khẩu!"); }
         }
 
         function logout() {
             currentUser = null;
-            sessionStorage.removeItem('henry_logged_user'); // Xóa phiên đăng nhập
+            sessionStorage.removeItem('henry_logged_user'); 
             document.getElementById('loginUser').value = ""; document.getElementById('loginPass').value = "";
             document.getElementById('appContainer').style.display = "none";
             document.getElementById('loginOverlay').style.display = "flex"; document.getElementById('loginOverlay').style.opacity = "1";
@@ -712,7 +759,15 @@
             const manDisc = document.getElementById('bookingManualInput').value;
             
             const log = { id: Date.now(), dateSaved: new Date().toLocaleDateString('vi-VN') + " " + new Date().toLocaleTimeString('vi-VN'), confNo: confNo, guestName: guestName, companyId: cId, companyName: compName, total: total, details: { adults, children, arrivalDate, departureDate, bookingComments, savedRooms, savedAddons, selectedDiscount: selDisc, isManualOverride: isManual, manualDiscountVal: manDisc } };
-            db.bookingHistory.unshift(log); if(db.bookingHistory.length > 100) db.bookingHistory.pop(); saveData(); showToast("Đã lưu vào Tab Lịch Sử Booking!"); 
+            
+            db.bookingHistory.unshift(log); 
+            if(db.bookingHistory.length > 100000) db.bookingHistory.pop(); 
+            
+            if (saveData()) {
+                showToast("Đã lưu vào Tab Lịch Sử Booking!"); 
+            } else {
+                db.bookingHistory.shift();
+            }
         }
 
         function renderHistoryLog(filterText = "") {
@@ -878,7 +933,7 @@
             
             if(isMe) {
                 currentUser = db.users[currentEditingUserIndex];
-                sessionStorage.setItem('henry_logged_user', currentUser.user); // Cập nhật lại session nếu đổi tên
+                sessionStorage.setItem('henry_logged_user', currentUser.user);
                 applyRolePermissions();
             }
         }
@@ -888,7 +943,6 @@
 
         function showToast(msg) { const toast = document.getElementById("toast"); toast.innerText = msg; toast.className = "show"; setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000); }
 
-        // BẢN VÁ: Gọi toàn bộ các hàm render UI đồng thời vào đây để làm mới ngay lập tức
         function renderSettings() {
             const rList = document.getElementById('roomList'); rList.innerHTML = ''; db.rooms.forEach((r, i) => rList.innerHTML += `<li>${r} <button class="btn btn-outline" onclick="delRoom(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
             const aList = document.getElementById('addonList'); aList.innerHTML = ''; db.addons.forEach((a, i) => aList.innerHTML += `<li>${a.name} <span style="color:var(--secondary); font-weight:bold;">${formatMoney(a.price)}</span> <button class="btn btn-outline" onclick="delAddon(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
@@ -923,7 +977,6 @@
             container.appendChild(row); 
         }
 
-        // BẢN VÁ: Bổ sung lời gọi renderSettings() và renderBookingAddons() để đồng bộ UI
         function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); renderSettings(); showToast("Đã thêm hạng phòng!"); } }
         function delRoom(i) { db.rooms.splice(i, 1); saveData(); renderSettings(); }
         function addAddon() { const n = document.getElementById('newAddonName').value; const p = parseInt(document.getElementById('newAddonPrice').value)||0; if(n) { db.addons.push({id: Date.now(), name: n, price: p}); document.getElementById('newAddonName').value=''; document.getElementById('newAddonPrice').value=''; saveData(); renderSettings(); renderBookingAddons(); showToast("Đã thêm Add-on!"); } }
@@ -983,7 +1036,7 @@
             });
         }
 
-        function formatMoney(num) { return new Intl.NumberFormat('vi-VN').format(num); }
+        function formatMoney(num) { return new Intl.NumberFormat('en-US').format(num); }
         function formatDateVN(dateStr) { if (!dateStr) return ""; const parts = dateStr.split('-'); return parts.length===3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : dateStr; }
         
         function toggleManualPrice() {
@@ -1245,7 +1298,6 @@
 
         document.getElementById("loginPass").addEventListener("keyup", function(event) { if (event.key === "Enter") attemptLogin(); });
         
-        // BẢN VÁ AUTO-LOGIN KHI F5
         window.onload = function() {
             renderSettings(); 
             renderUserList(); 
@@ -1263,6 +1315,7 @@
                     document.getElementById('loginOverlay').style.display = "none";
                     document.getElementById('appContainer').style.display = "flex"; 
                     applyRolePermissions();
+                    checkUpdateNotification(); // Check Noti nếu Auto-login
                 }
             }
         };
