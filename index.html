@@ -200,7 +200,7 @@
             <input type="password" id="loginPass" class="login-input" placeholder="Mật khẩu">
             <button class="btn-login" onclick="attemptLogin()">Đăng Nhập Hệ Thống</button>
             <div class="login-footer">
-                Secured Internal System v3.4 (Discount vs Override)
+                Secured Internal System v3.5 (Fix Session & UI Sync)
             </div>
         </div>
     </div>
@@ -285,7 +285,7 @@
                                 <label style="font-size: 13px; font-weight: 600; color: var(--dark); display:block; margin-bottom:5px;"><i class="fa-solid fa-tag"></i> Chương trình Khuyến mãi (Promotion)</label>
                                 <select id="bookingDiscountSelect" onchange="calcTotal()" style="width:100%;">
                                     <option value="">-- Không áp dụng khuyến mãi --</option>
-                                    </select>
+                                </select>
                             </div>
                             
                             <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
@@ -550,13 +550,11 @@
     <div id="toast">Thông báo hệ thống</div>
 
     <script>
-        // --- 0. UI CONTROLS ---
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.querySelector('.sidebar-overlay').classList.toggle('active');
         }
 
-        // --- 1. CORE & DATA ---
         const MASTER_DB_KEY = 'henryPro_Data_Master';
         let currentUser = null;
 
@@ -592,9 +590,12 @@
         }
 
         let db = initDatabase();
+        
         function saveData() { 
             localStorage.setItem(MASTER_DB_KEY, JSON.stringify(db)); 
-            renderCompanyList(); renderUserList(); renderHistoryLog(document.getElementById('searchHistoryInput') ? document.getElementById('searchHistoryInput').value : "");
+            renderCompanyList(); 
+            renderUserList(); 
+            renderHistoryLog(document.getElementById('searchHistoryInput') ? document.getElementById('searchHistoryInput').value : "");
             renderDiscountDropdown(); 
         }
 
@@ -604,6 +605,7 @@
             const foundUser = db.users.find(x => x.user === u && x.pass === p);
             if(foundUser) {
                 currentUser = foundUser;
+                sessionStorage.setItem('henry_logged_user', currentUser.user); // Lưu phiên đăng nhập
                 document.getElementById('loginOverlay').style.opacity = "0";
                 setTimeout(() => {
                     document.getElementById('loginOverlay').style.display = "none";
@@ -615,6 +617,7 @@
 
         function logout() {
             currentUser = null;
+            sessionStorage.removeItem('henry_logged_user'); // Xóa phiên đăng nhập
             document.getElementById('loginUser').value = ""; document.getElementById('loginPass').value = "";
             document.getElementById('appContainer').style.display = "none";
             document.getElementById('loginOverlay').style.display = "flex"; document.getElementById('loginOverlay').style.opacity = "1";
@@ -799,7 +802,6 @@
             document.body.appendChild(downloadAnchorNode); downloadAnchorNode.click(); downloadAnchorNode.remove(); showToast("Đã xuất file thành công!");
         }
 
-        // --- TÍNH NĂNG MỚI: QUẢN TRỊ USER CHUYÊN SÂU ---
         let currentEditingUserIndex = null;
 
         function renderUserList() {
@@ -853,7 +855,6 @@
             const newName = document.getElementById('editUsernameInput').value.trim();
             if (!newName) return alert("Tên đăng nhập không được để trống!");
             
-            // Check duplicate name (except itself)
             if(db.users.find((x, i) => x.user === newName && i !== currentEditingUserIndex)) {
                 return alert("Tên đăng nhập này đã được sử dụng bởi người khác!");
             }
@@ -861,7 +862,6 @@
             let newPerms = [];
             document.querySelectorAll('.cb-edit-perm:checked').forEach(cb => newPerms.push(cb.value));
             
-            // Validate: Không được tự tước quyền Admin của chính mình nếu là Admin cuối cùng
             let u = db.users[currentEditingUserIndex];
             let isMe = (currentUser && currentUser.id === u.id);
             if (isMe && u.permissions.includes('users') && !newPerms.includes('users')) {
@@ -876,9 +876,9 @@
             closeModal('userEditModal');
             showToast("Đã cập nhật User thành công!");
             
-            // Nếu tự sửa chính mình thì reload để apply rule mới
             if(isMe) {
                 currentUser = db.users[currentEditingUserIndex];
+                sessionStorage.setItem('henry_logged_user', currentUser.user); // Cập nhật lại session nếu đổi tên
                 applyRolePermissions();
             }
         }
@@ -888,6 +888,7 @@
 
         function showToast(msg) { const toast = document.getElementById("toast"); toast.innerText = msg; toast.className = "show"; setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000); }
 
+        // BẢN VÁ: Gọi toàn bộ các hàm render UI đồng thời vào đây để làm mới ngay lập tức
         function renderSettings() {
             const rList = document.getElementById('roomList'); rList.innerHTML = ''; db.rooms.forEach((r, i) => rList.innerHTML += `<li>${r} <button class="btn btn-outline" onclick="delRoom(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
             const aList = document.getElementById('addonList'); aList.innerHTML = ''; db.addons.forEach((a, i) => aList.innerHTML += `<li>${a.name} <span style="color:var(--secondary); font-weight:bold;">${formatMoney(a.price)}</span> <button class="btn btn-outline" onclick="delAddon(${i})"><i class="fa-solid fa-trash"></i></button></li>`);
@@ -922,17 +923,18 @@
             container.appendChild(row); 
         }
 
-        function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); } }
-        function delRoom(i) { db.rooms.splice(i, 1); saveData(); }
-        function addAddon() { const n = document.getElementById('newAddonName').value; const p = parseInt(document.getElementById('newAddonPrice').value)||0; if(n) { db.addons.push({id: Date.now(), name: n, price: p}); document.getElementById('newAddonName').value=''; document.getElementById('newAddonPrice').value=''; saveData(); renderBookingAddons(); } }
-        function delAddon(i) { db.addons.splice(i, 1); saveData(); renderBookingAddons(); }
+        // BẢN VÁ: Bổ sung lời gọi renderSettings() và renderBookingAddons() để đồng bộ UI
+        function addRoom() { const v = document.getElementById('newRoom').value; if(v) { db.rooms.push(v); document.getElementById('newRoom').value=''; saveData(); renderSettings(); showToast("Đã thêm hạng phòng!"); } }
+        function delRoom(i) { db.rooms.splice(i, 1); saveData(); renderSettings(); }
+        function addAddon() { const n = document.getElementById('newAddonName').value; const p = parseInt(document.getElementById('newAddonPrice').value)||0; if(n) { db.addons.push({id: Date.now(), name: n, price: p}); document.getElementById('newAddonName').value=''; document.getElementById('newAddonPrice').value=''; saveData(); renderSettings(); renderBookingAddons(); showToast("Đã thêm Add-on!"); } }
+        function delAddon(i) { db.addons.splice(i, 1); saveData(); renderSettings(); renderBookingAddons(); }
         function addCompany() { const v = document.getElementById('newCompany').value; if(v) { db.companies.push({id: 'c'+Date.now(), name: v, policy: '', seasons: []}); document.getElementById('newCompany').value=''; saveData(); } }
         function delCompany(i) { db.companies.splice(i, 1); saveData(); }
         function renameCompany(index) { const newName = prompt("Nhập tên mới:", db.companies[index].name); if(newName) { db.companies[index].name = newName.trim(); saveData(); showToast("Đã cập nhật!"); } }
         function copyCompany(index) { const o = db.companies[index]; const c = JSON.parse(JSON.stringify(o)); c.id = 'c' + Date.now(); c.name = o.name + " (Copy)"; c.seasons.forEach(s => s.id = 's' + Math.random().toString(36).substr(2, 9)); db.companies.splice(index + 1, 0, c); saveData(); showToast("Đã nhân bản công ty!"); }
 
-        function addDiscount() { const n = document.getElementById('newDiscName').value; const t = document.getElementById('newDiscType').value; const v = parseInt(document.getElementById('newDiscValue').value)||0; if(n && v > 0) { db.discounts.push({id: 'd'+Date.now(), name: n, type: t, value: v}); document.getElementById('newDiscName').value=''; document.getElementById('newDiscValue').value=''; saveData(); renderSettings(); } }
-        function delDiscount(i) { db.discounts.splice(i, 1); saveData(); renderSettings(); }
+        function addDiscount() { const n = document.getElementById('newDiscName').value; const t = document.getElementById('newDiscType').value; const v = parseInt(document.getElementById('newDiscValue').value)||0; if(n && v > 0) { db.discounts.push({id: 'd'+Date.now(), name: n, type: t, value: v}); document.getElementById('newDiscName').value=''; document.getElementById('newDiscValue').value=''; saveData(); renderSettings(); renderDiscountDropdown(); showToast("Đã thêm Khuyến mãi!"); } }
+        function delDiscount(i) { db.discounts.splice(i, 1); saveData(); renderSettings(); renderDiscountDropdown(); }
         
         function renderDiscountDropdown() {
             const select = document.getElementById('bookingDiscountSelect');
@@ -991,11 +993,11 @@
             
             if (isManual) {
                 manualContainer.style.display = 'block';
-                discSelect.disabled = true; // Khóa chọn Promotion khi đang ghi đè giá
+                discSelect.disabled = true;
             } else {
                 manualContainer.style.display = 'none';
                 discSelect.disabled = false;
-                document.getElementById('bookingManualInput').value = ""; // Clear input khi tắt
+                document.getElementById('bookingManualInput').value = "";
             }
             calcTotal();
         }
@@ -1071,7 +1073,6 @@
 
             let grandTotal = baseTotalRooms + baseTotalAddons;
             
-            // LOGIC TÁCH BIỆT: PROMOTION VS MANUAL OVERRIDE
             const discSelect = document.getElementById('bookingDiscountSelect').value;
             const isManual = document.getElementById('enableManualPrice').checked;
             const manualVal = parseInt(document.getElementById('bookingManualInput').value);
@@ -1080,14 +1081,12 @@
             let discountNoticeStr = "";
 
             if (isManual && !isNaN(manualVal)) {
-                // XỬ LÝ GHI ĐÈ GIÁ (ƯU TIÊN TUYỆT ĐỐI)
                 finalOutput = manualVal;
                 let diff = grandTotal - finalOutput;
                 if(diff > 0) discountNoticeStr = `* Đã ghi đè giá chốt: Tự động giảm ${formatMoney(diff)}đ so với hệ thống`;
                 else if (diff < 0) discountNoticeStr = `* Đã ghi đè giá chốt: Tự động tăng ${formatMoney(Math.abs(diff))}đ so với hệ thống`;
                 else discountNoticeStr = `* Đã khóa giá chốt thủ công.`;
             } else if (!isManual && discSelect !== "") {
-                // XỬ LÝ KHUYẾN MÃI (NẾU KHÔNG GHI ĐÈ TAY)
                 const discObj = db.discounts.find(d => d.id === discSelect);
                 if(discObj) {
                     let amountToDeduct = 0;
@@ -1246,13 +1245,27 @@
 
         document.getElementById("loginPass").addEventListener("keyup", function(event) { if (event.key === "Enter") attemptLogin(); });
         
-        renderSettings(); 
-        renderUserList(); 
-        renderHistoryLog(); 
-        addBookingRoomRow(); 
-        renderCompanyDropdown();
-        renderBookingAddons(); 
-        renderDiscountDropdown();
+        // BẢN VÁ AUTO-LOGIN KHI F5
+        window.onload = function() {
+            renderSettings(); 
+            renderUserList(); 
+            renderHistoryLog(); 
+            addBookingRoomRow(); 
+            renderCompanyDropdown();
+            renderBookingAddons(); 
+            renderDiscountDropdown();
+
+            const savedUser = sessionStorage.getItem('henry_logged_user');
+            if(savedUser) {
+                const foundUser = db.users.find(x => x.user === savedUser);
+                if(foundUser) {
+                    currentUser = foundUser;
+                    document.getElementById('loginOverlay').style.display = "none";
+                    document.getElementById('appContainer').style.display = "flex"; 
+                    applyRolePermissions();
+                }
+            }
+        };
     </script>
 </body>
 </html>
